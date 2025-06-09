@@ -1,4 +1,4 @@
-import { UserType } from '@/types/Auth';
+import { UserType } from '@/types/auth';
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 
