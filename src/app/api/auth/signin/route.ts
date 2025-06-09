@@ -30,7 +30,7 @@ export async function POST(req: NextRequest) {
       maxAge: 60 * 60 * 24 * 7,
     });
 
-    return NextResponse.json({ message: '로그인 성공' });
+    return NextResponse.json({ message: '로그인 성공', user: data.user });
   } catch (err) {
     console.error('로그인 중계 에러:', err);
     return NextResponse.json(
