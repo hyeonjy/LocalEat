@@ -1,5 +1,6 @@
 'use client';
 
+import { useAuthStore } from '@/store/authStore';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useRouter } from 'next/navigation';
 import { useForm } from 'react-hook-form';
@@ -38,6 +39,9 @@ const Signin = () => {
         alert(responseData.message || '로그인 실패');
         return;
       }
+
+      // Zustand에 저장
+      useAuthStore.getState().setUser(responseData.user);
 
       alert('로그인 성공!');
       router.push('/');
