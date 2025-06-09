@@ -48,15 +48,42 @@ const Signin = () => {
   };
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)}>
-      <input placeholder="이메일" {...register('email')} />
-      {errors.email && <p>{errors.email.message}</p>}
+    <div className="flex min-h-screen items-center justify-center bg-gray-50">
+      <form
+        onSubmit={handleSubmit(onSubmit)}
+        className="w-full max-w-md rounded-lg bg-white p-8 shadow-md"
+      >
+        <h2 className="mb-6 text-center text-2xl font-bold text-gray-800">
+          로그인
+        </h2>
 
-      <input type="password" placeholder="비밀번호" {...register('password')} />
-      {errors.password && <p>{errors.password.message}</p>}
+        <input
+          className="mb-4 w-full rounded-md border border-gray-300 px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+          placeholder="이메일"
+          {...register('email')}
+        />
+        {errors.email && (
+          <p className="mb-4 text-sm text-red-600">{errors.email.message}</p>
+        )}
 
-      <button type="submit">로그인</button>
-    </form>
+        <input
+          className="mb-4 w-full rounded-md border border-gray-300 px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+          type="password"
+          placeholder="비밀번호"
+          {...register('password')}
+        />
+        {errors.password && (
+          <p className="mb-4 text-sm text-red-600">{errors.password.message}</p>
+        )}
+
+        <button
+          type="submit"
+          className="w-full rounded-md bg-blue-600 px-4 py-2 font-medium text-white transition duration-200 hover:bg-blue-700"
+        >
+          로그인
+        </button>
+      </form>
+    </div>
   );
 };
 
