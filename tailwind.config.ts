@@ -15,9 +15,9 @@ const config: Config = {
       fontSize: {
         // Title
         'title-2xl': ['40px', { lineHeight: '140%', fontWeight: '600' }],
-        'title-xl': ['24px', { lineHeight: '140%', fontWeight: '700' }],
+        'title-xl': ['30px', { lineHeight: '100%', fontWeight: '600' }],
         'title-lb': ['20px', { lineHeight: '140%', fontWeight: '700' }],
-        'title-lm': ['20px', { lineHeight: '140%', fontWeight: '500' }],
+        'title-lm': ['19px', { lineHeight: '150%', fontWeight: '700' }],
         'title-mb': ['16px', { lineHeight: '140%', fontWeight: '600' }],
         'title-mm': ['16px', { lineHeight: '140%', fontWeight: '500' }],
         'title-sb': ['12px', { lineHeight: '140%', fontWeight: '500' }],
@@ -31,7 +31,7 @@ const config: Config = {
         'label-xlm': ['20px', { lineHeight: '140%', fontWeight: '500' }],
         'label-lmb': ['18px', { lineHeight: '140%', fontWeight: '500' }],
         'label-lm': ['16px', { lineHeight: '140%', fontWeight: '500' }],
-        'label-mb': ['12px', { lineHeight: '140%', fontWeight: '700' }],
+        'label-mb': ['16px', { lineHeight: '130%', fontWeight: '400' }],
         'label-mm': ['12px', { lineHeight: '140%', fontWeight: '500' }],
         'label-sb': ['10px', { lineHeight: '140%', fontWeight: '700' }],
         'label-sm': ['10px', { lineHeight: '140%', fontWeight: '500' }],
