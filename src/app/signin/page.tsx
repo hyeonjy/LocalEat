@@ -52,6 +52,15 @@ const Signin = () => {
     }
   };
 
+  const handleLogout = async () => {
+    console.log(1);
+    await fetch('http://localhost:4000/auth/logout', {
+      method: 'POST',
+      credentials: 'include', // 쿠키를 함께 보내려면 꼭 필요함
+    });
+    router.push('/signin');
+  };
+
   return (
     <div className="flex min-h-screen items-center justify-center bg-gray-50">
       <form
@@ -91,6 +100,9 @@ const Signin = () => {
           <div>카카오 로그인</div>
         </a>
       </form>
+      <button onClick={handleLogout}>
+        <p>로그아웃</p>
+      </button>
     </div>
   );
 };
