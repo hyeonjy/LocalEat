@@ -36,4 +36,5 @@ export type MenuProps = {
   image_url: string;
   description: string;
   created_at: string;
+  badge: string;
 };
