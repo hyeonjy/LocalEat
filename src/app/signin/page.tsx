@@ -1,6 +1,7 @@
 'use client';
 
 import { useAuthStore } from '@/store/authStore';
+import { KAKAO_AUTH_URL } from '@/types/auth';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useRouter } from 'next/navigation';
 import { useForm } from 'react-hook-form';
@@ -86,6 +87,9 @@ const Signin = () => {
         >
           로그인
         </button>
+        <a href={KAKAO_AUTH_URL}>
+          <div>카카오 로그인</div>
+        </a>
       </form>
     </div>
   );
