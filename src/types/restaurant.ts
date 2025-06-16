@@ -38,3 +38,42 @@ export type MenuProps = {
   created_at: string;
   badge: string;
 };
+
+export type ReactionType = '공감해요' | '도움이 됐어요';
+
+export type StandardReviewPhoto = {
+  id: number;
+  review_id: number;
+  type: 'food' | 'receipt';
+  image_url: string;
+  uploaded_at: string;
+};
+
+export type StandardReviewReactions = {
+  [key in ReactionType]?: number;
+};
+
+export type StandardReviewProps = {
+  id: number;
+  user_id: number;
+  restaurant_id: number;
+  type: 'standard';
+  rating: number;
+  visited_at: string;
+  created_at: string;
+  updated_at: string;
+  content: string;
+  keywords: string[];
+  visited_date: string;
+  visit_count: number;
+  visited_time_slot: 'morning' | 'lunch' | 'afternoon' | 'dinner';
+  nickname: string;
+  profile_image: string;
+  photos: StandardReviewPhoto[];
+  reactions: StandardReviewReactions;
+};
+
+export type keywordSummaryProps = {
+  keyword: string;
+  count: number;
+};
