@@ -1,5 +1,6 @@
 import { RestaurantProps } from '@/types/restaurant';
 import Image from 'next/image';
+import ReviewWriteButton from './ReviewWriteButton';
 
 type RestaurantHeaderProps = {
   restaurant: RestaurantProps;
@@ -97,15 +98,7 @@ const RestaurantHeader = ({ restaurant }: RestaurantHeaderProps) => {
           {restaurant.parking ? '주차 가능' : '주차 불가'} |{' '}
           {restaurant.pet_allowed ? '반려동물 출입 가능' : '반려동물 출입 제한'}
         </p>
-        <button className="flex w-full items-center justify-center rounded-[9px] border border-[#9E9D9D] px-[16px] py-[12px] text-label-lmb">
-          <span className="mr-[7px]">리뷰 작성하기</span>
-          <Image
-            src="/assets/icons/arrow_back_ios_new.svg"
-            alt="오른쪽 화살표 아이콘"
-            width={20}
-            height={20}
-          />
-        </button>
+        <ReviewWriteButton restaurantId={restaurant.id} />
       </div>
     </div>
   );
