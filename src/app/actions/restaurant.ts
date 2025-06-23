@@ -7,6 +7,19 @@ import {
   StandardReviewProps,
 } from '@/types/restaurant';
 
+export const getRestaurantInfoAndMenus = async (id: string) => {
+  const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
+
+  const res = await fetch(`${backendUrl}/restaurants/${id}/basic`);
+  const data = await res.json();
+
+  if (!res.ok) {
+    throw new Error(data.message || '에러 발생');
+  }
+
+  return data;
+};
+
 export const getRestaurantById = async (
   id: string,
 ): Promise<{
