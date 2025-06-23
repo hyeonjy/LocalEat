@@ -1,15 +1,20 @@
 import { MenuProps, RestaurantProps } from '@/types/restaurant';
 import Image from 'next/image';
-import { useState } from 'react';
 import { RatingInput } from './RatingInput';
 
 type RestaurantInfoProps = {
   restaurant: RestaurantProps;
   menus: MenuProps[];
+  rating: number;
+  setRating: (rating: number) => void;
 };
-const RestaurantInfo = ({ restaurant, menus }: RestaurantInfoProps) => {
-  const [stars, setStars] = useState(0);
 
+const RestaurantInfo = ({
+  restaurant,
+  menus,
+  rating,
+  setRating,
+}: RestaurantInfoProps) => {
   return (
     <div className="mt-[60px]">
       <h1 className="mb-[32px] text-center text-[30px] font-semibold leading-[140%]">
@@ -46,7 +51,7 @@ const RestaurantInfo = ({ restaurant, menus }: RestaurantInfoProps) => {
           ))}
         </div>
 
-        <RatingInput stars={stars} onChange={setStars} />
+        <RatingInput ratings={rating} onChange={setRating} />
       </section>
     </div>
   );

@@ -1,8 +1,8 @@
 export const RatingInput = ({
-  stars,
+  ratings,
   onChange,
 }: {
-  stars: number;
+  ratings: number;
   onChange: (n: number) => void;
 }) => {
   return (
@@ -20,11 +20,11 @@ export const RatingInput = ({
             aria-label={`${n}점`}
             className="flex h-[50px] w-[50px] items-center justify-center"
           >
-            <Star filled={n <= stars} />
+            <Star filled={n <= ratings} />
           </button>
         ))}
       </div>
-      <input type="hidden" name="rating" value={stars} />
+      <input type="hidden" name="rating" value={ratings} />
 
       <span className="text-[#47474D text-[14px] font-medium leading-[130%]">
         또 오고 싶어요

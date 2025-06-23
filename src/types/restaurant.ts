@@ -73,6 +73,21 @@ export type StandardReviewProps = {
   reactions: StandardReviewReactions;
 };
 
+export type StandardReviewPostProps = {
+  restaurantId: string;
+  userId: number;
+  content: string;
+  keywords: string[];
+  rating: number;
+  visitedAt: string;
+  visitedTimeSlot: 'morning' | 'lunch' | 'afternoon' | 'dinner';
+  photos: (string | File | null)[];
+  images?: {
+    type: 'food' | 'receipt';
+    file: File;
+  }[];
+};
+
 export type keywordSummaryProps = {
   keyword: string;
   count: number;
