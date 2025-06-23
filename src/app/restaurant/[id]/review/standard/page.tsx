@@ -2,6 +2,7 @@
 
 import { getRestaurantInfoAndMenus } from '@/app/actions/restaurant';
 import { Calendar } from '@/components/ui/calendar';
+import { useAuthStore } from '@/store/authStore';
 import { useQuery } from '@tanstack/react-query';
 import { useState } from 'react';
 import KeywordSelection from '../_components/KeywordSelection';
@@ -27,6 +28,8 @@ const StandardReviewForm = ({ params }: StandardReviewPageProps) => {
   const [photos, setPhotos] = useState<File[]>([]);
   const [keywords, setKeywords] = useState<string[]>([]);
   const [content, setContent] = useState('');
+  const [rating, setRating] = useState<number>(0);
+  const { user } = useAuthStore();
 
   const { data, isPending, error } = useQuery({
     queryKey: ['restaurant-info', restaurantId],
@@ -46,6 +49,36 @@ const StandardReviewForm = ({ params }: StandardReviewPageProps) => {
     });
 
     console.log(Object.fromEntries(formData.entries()));
+
+    // 영수증과 사진을 각각 다른 타입으로 구분
+    const reviewImages = [];
+
+    // 영수증 추가 (type: 'receipt')
+    if (receiptImage instanceof File) {
+      reviewImages.push({
+        type: 'receipt',
+        imageUrl: receiptImage,
+      });
+    }
+
+    // 사진들 추가 (type: 'food')
+    photos.forEach((photo) => {
+      reviewImages.push({
+        type: 'food',
+        imageUrl: photo,
+      });
+    });
+
+    const review = {
+      restaurantId,
+      userId: user?.id,
+      content,
+      keywords,
+      rating,
+      visitedAt: visitDate?.toISOString(),
+      visitedTimeSlot: visitTime,
+      photos: reviewImages,
+    };
   };
 
   const handlePhotoDelete = (index: number) => {
@@ -79,7 +112,12 @@ const StandardReviewForm = ({ params }: StandardReviewPageProps) => {
       onSubmit={handleSubmit}
       className="mt-[64px] flex flex-col items-center"
     >
-      <RestaurantInfo restaurant={data.restaurant} menus={data.menus} />
+      <RestaurantInfo
+        restaurant={data.restaurant}
+        menus={data.menus}
+        rating={rating}
+        setRating={setRating}
+      />
 
       <section className="mt-[32px] flex w-[791px] flex-col rounded-[50px] bg-[#FDF8F6] p-[40px]">
         <span className="mb-[20px] text-[20px] font-semibold leading-[140%]">
