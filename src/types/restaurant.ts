@@ -73,6 +73,20 @@ export type StandardReviewProps = {
   reactions: StandardReviewReactions;
 };
 
+export type StandardReviewPayload = {
+  restaurantId: string;
+  userId: number;
+  content: string;
+  keywords: string[];
+  rating: number;
+  visitedAt: string;
+  visitedTimeSlot: 'morning' | 'lunch' | 'afternoon' | 'dinner';
+  photos: {
+    type: 'food' | 'receipt';
+    imageUrl: string;
+  }[];
+};
+
 export type keywordSummaryProps = {
   keyword: string;
   count: number;
