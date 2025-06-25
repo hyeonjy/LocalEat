@@ -73,7 +73,7 @@ export type StandardReviewProps = {
   reactions: StandardReviewReactions;
 };
 
-export type StandardReviewPostProps = {
+export type StandardReviewPayload = {
   restaurantId: string;
   userId: number;
   content: string;
@@ -81,10 +81,9 @@ export type StandardReviewPostProps = {
   rating: number;
   visitedAt: string;
   visitedTimeSlot: 'morning' | 'lunch' | 'afternoon' | 'dinner';
-  photos: (string | File | null)[];
-  images?: {
+  photos: {
     type: 'food' | 'receipt';
-    file: File;
+    imageUrl: string;
   }[];
 };
 
