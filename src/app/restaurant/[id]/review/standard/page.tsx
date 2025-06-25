@@ -1,9 +1,14 @@
 'use client';
 
-import { getRestaurantInfoAndMenus } from '@/app/actions/restaurant';
+import {
+  createStandardReview,
+  getRestaurantInfoAndMenus,
+} from '@/app/actions/restaurant';
 import { Calendar } from '@/components/ui/calendar';
 import { useAuthStore } from '@/store/authStore';
+import { StandardReviewPayload } from '@/types/restaurant';
 import { useQuery } from '@tanstack/react-query';
+import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import KeywordSelection from '../_components/KeywordSelection';
 import PhotoUpload from '../_components/PhotoUpload';
@@ -30,6 +35,7 @@ const StandardReviewForm = ({ params }: StandardReviewPageProps) => {
   const [content, setContent] = useState('');
   const [rating, setRating] = useState<number>(0);
   const { user } = useAuthStore();
+  const router = useRouter();
 
   const { data, isPending, error } = useQuery({
     queryKey: ['restaurant-info', restaurantId],
@@ -60,7 +66,21 @@ const StandardReviewForm = ({ params }: StandardReviewPageProps) => {
     });
 
     const result = await res.json();
-    console.log('업로드 결과:', result);
+
+    const review = {
+      restaurantId,
+      userId: user?.id,
+      content,
+      keywords,
+      rating,
+      visitedAt: visitDate?.toISOString(),
+      visitedTimeSlot: visitTime,
+      photos: result.uploadedPhotos,
+    };
+
+    await createStandardReview(review as StandardReviewPayload);
+
+    router.push(`/restaurant/${restaurantId}`);
   };
 
   const handlePhotoDelete = (index: number) => {
