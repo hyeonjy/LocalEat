@@ -39,46 +39,28 @@ const StandardReviewForm = ({ params }: StandardReviewPageProps) => {
   if (isPending) return <div>로딩 중…</div>;
   if (error) return <div>에러 발생: {error.message}</div>;
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
     const formData = new FormData(e.currentTarget);
 
-    photos.forEach((photo) => {
-      formData.append('photos', photo);
-    });
-
-    console.log(Object.fromEntries(formData.entries()));
-
-    // 영수증과 사진을 각각 다른 타입으로 구분
-    const reviewImages = [];
-
-    // 영수증 추가 (type: 'receipt')
-    if (receiptImage instanceof File) {
-      reviewImages.push({
-        type: 'receipt',
-        imageUrl: receiptImage,
-      });
+    if (receiptImage) {
+      formData.append('photos', receiptImage);
+      formData.append('photoTypes', 'receipt');
     }
 
-    // 사진들 추가 (type: 'food')
     photos.forEach((photo) => {
-      reviewImages.push({
-        type: 'food',
-        imageUrl: photo,
-      });
+      formData.append('photos', photo);
+      formData.append('photoTypes', 'food');
     });
 
-    const review = {
-      restaurantId,
-      userId: user?.id,
-      content,
-      keywords,
-      rating,
-      visitedAt: visitDate?.toISOString(),
-      visitedTimeSlot: visitTime,
-      photos: reviewImages,
-    };
+    const res = await fetch('/api/upload', {
+      method: 'POST',
+      body: formData,
+    });
+
+    const result = await res.json();
+    console.log('업로드 결과:', result);
   };
 
   const handlePhotoDelete = (index: number) => {
