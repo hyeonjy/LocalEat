@@ -57,7 +57,6 @@ const ReceiptUpload = ({
             type="file"
             accept="image/*"
             onChange={(e) => {
-              console.log('>>>>>> ', e.target.files?.[0]);
               onReceiptAdd(e.target.files?.[0] || null);
             }}
             className="hidden"
