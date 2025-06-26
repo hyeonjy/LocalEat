@@ -1,3 +1,4 @@
+import { getRestaurantStatus } from '@/lib/getRestaurantStatus';
 import { RestaurantProps } from '@/types/restaurant';
 import Image from 'next/image';
 import ReviewWriteButton from './ReviewWriteButton';
@@ -7,6 +8,8 @@ type RestaurantHeaderProps = {
 };
 
 const RestaurantHeader = ({ restaurant }: RestaurantHeaderProps) => {
+  const openingState = getRestaurantStatus(restaurant.opening_hours);
+
   return (
     <div className="flex h-[524px] w-full items-center justify-between gap-[65px] px-5 xl:w-[1200px] xl:px-0">
       <Image
@@ -75,7 +78,7 @@ const RestaurantHeader = ({ restaurant }: RestaurantHeaderProps) => {
             width={24}
             height={24}
           />
-          {restaurant.address}
+          {openingState}
         </p>
 
         <p className="mb-[12px] flex h-[24px] items-center gap-2 text-body-mm text-[#646464]">
