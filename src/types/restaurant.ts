@@ -5,6 +5,16 @@ export type OpeningHourProps = {
   closed?: boolean;
 };
 
+export type OpeningHours = {
+  mon: OpeningHourProps;
+  tue: OpeningHourProps;
+  wed: OpeningHourProps;
+  thu: OpeningHourProps;
+  fri: OpeningHourProps;
+  sat: OpeningHourProps;
+  sun: OpeningHourProps;
+};
+
 export type RestaurantProps = {
   id: number;
   name: string;
@@ -13,15 +23,7 @@ export type RestaurantProps = {
   lng: number;
   phone: string;
   category: string;
-  opening_hours: {
-    mon: OpeningHourProps;
-    tue: OpeningHourProps;
-    wed: OpeningHourProps;
-    thu: OpeningHourProps;
-    fri: OpeningHourProps;
-    sat: OpeningHourProps;
-    sun: OpeningHourProps;
-  };
+  opening_hours: OpeningHours;
   closed_days: string;
   parking?: boolean;
   pet_allowed?: boolean;
