@@ -21,6 +21,7 @@ const RestaurantDetail = async ({ params }: RestaurantDetailProps) => {
         standardReviews={reviews.standard}
         graphicReviews={reviews.graphic}
         keywordSummary={keywordSummary}
+        restaurantId={params.id}
       />
     </div>
   );

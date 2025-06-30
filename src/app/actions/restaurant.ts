@@ -1,5 +1,6 @@
 'use server';
 
+import api from '@/lib/axios';
 import {
   keywordSummaryProps,
   MenuProps,
@@ -62,4 +63,18 @@ export const createStandardReview = async (
   }
 
   return data;
+};
+
+export const getRestaurantReaction = async (id: string) => {
+  try {
+    const res = await api.get(`/restaurants/${id}/review/reactions`);
+    return res.data;
+  } catch (error: any) {
+    // 로그인 안함 or 토큰 만료
+    if (error.response?.status === 401) {
+      return 'UNAUTHORIZED';
+    }
+
+    throw new Error('리뷰 리액션 조회 중 에러 발생');
+  }
 };

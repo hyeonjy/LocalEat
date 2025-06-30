@@ -93,3 +93,8 @@ export type keywordSummaryProps = {
   keyword: string;
   count: number;
 };
+
+export type ReactionProps = {
+  review_id: number;
+  type: string;
+};
