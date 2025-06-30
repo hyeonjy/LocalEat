@@ -1,5 +1,6 @@
 'use client';
 
+import { useAuthStore } from '@/store/authStore';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useEffect, useRef, useState } from 'react';
@@ -7,6 +8,7 @@ import { useEffect, useRef, useState } from 'react';
 const ReviewWriteButton = ({ restaurantId }: { restaurantId: number }) => {
   const [open, setOpen] = useState(false);
   const modalRef = useRef<HTMLDivElement>(null);
+  const { user } = useAuthStore();
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -27,10 +29,19 @@ const ReviewWriteButton = ({ restaurantId }: { restaurantId: number }) => {
     };
   }, [open]);
 
+  const handleOpenClick = () => {
+    if (!user) {
+      alert('로그인 후 리뷰를 작성할 수 있어요!');
+      return;
+    }
+
+    setOpen(true);
+  };
+
   return (
     <>
       <button
-        onClick={() => setOpen(true)}
+        onClick={handleOpenClick}
         className="flex w-full items-center justify-center rounded-[9px] border border-[#9E9D9D] px-[16px] py-[12px] text-label-lmb"
       >
         <span className="mr-[7px]">리뷰 작성하기</span>
@@ -48,7 +59,7 @@ const ReviewWriteButton = ({ restaurantId }: { restaurantId: number }) => {
           <div ref={modalRef} className="flex gap-[30px]">
             <Link
               href={`/restaurant/${restaurantId}/review/standard`}
-              className="shadow-inset-lg flex h-[470px] w-[350px] flex-col items-center justify-center rounded-[40px] bg-white"
+              className="flex h-[470px] w-[350px] flex-col items-center justify-center rounded-[40px] bg-white shadow-inset-lg"
             >
               <Image
                 src={'/assets/icons/standard.svg'}
@@ -61,7 +72,7 @@ const ReviewWriteButton = ({ restaurantId }: { restaurantId: number }) => {
             </Link>
             <Link
               href={`/restaurant/${restaurantId}/review/graphic`}
-              className="shadow-inset-lg flex h-[470px] w-[350px] flex-col items-center justify-center rounded-[40px] bg-white"
+              className="flex h-[470px] w-[350px] flex-col items-center justify-center rounded-[40px] bg-white shadow-inset-lg"
             >
               <Image
                 src={'/assets/icons/graphic.svg'}

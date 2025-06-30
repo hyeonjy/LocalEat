@@ -31,7 +31,6 @@ const SignUp = () => {
   const router = useRouter();
 
   const onSubmit = async (data: FormData) => {
-    console.log('data: ', data);
     try {
       const res = await fetch('/api/auth/signup', {
         method: 'POST',
