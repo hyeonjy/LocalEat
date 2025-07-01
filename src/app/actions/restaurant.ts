@@ -1,6 +1,6 @@
 'use server';
 
-import api from '@/lib/axios';
+import { createServerApi } from '@/lib/serverApi';
 import {
   keywordSummaryProps,
   MenuProps,
@@ -8,6 +8,7 @@ import {
   StandardReviewPayload,
   StandardReviewProps,
 } from '@/types/restaurant';
+import { cookies } from 'next/headers';
 
 export const getRestaurantInfoAndMenus = async (id: string) => {
   const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
@@ -45,36 +46,41 @@ export const getRestaurantById = async (
 export const createStandardReview = async (
   reviewData: StandardReviewPayload,
 ) => {
-  const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
+  const accessToken = cookies().get('accessToken')?.value;
+  const refreshToken = cookies().get('refreshToken')?.value;
 
-  const res = await fetch(
-    `${backendUrl}/restaurants/${reviewData.restaurantId}/review/standard`,
-    {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(reviewData),
-    },
-  );
+  const serverApi = createServerApi(accessToken, refreshToken);
 
-  const data = await res.json();
+  try {
+    const res = await serverApi.post(
+      `/restaurants/${reviewData.restaurantId}/review/standard`,
+      reviewData,
+    );
 
-  if (!res.ok) {
-    throw new Error(data.message || '리뷰 등록 실패');
+    return { success: true, data: res.data };
+  } catch (error: any) {
+    if (error.name === 'RefreshTokenExpired') {
+      return { success: false, reason: 'UNAUTHORIZED' };
+    }
+    return { success: false, reason: 'UNKNOWN', message: error.message };
   }
-
-  return data;
 };
 
 export const getRestaurantReaction = async (id: string) => {
+  const accessToken = cookies().get('accessToken')?.value;
+  const refreshToken = cookies().get('refreshToken')?.value;
+
+  const serverApi = createServerApi(accessToken, refreshToken);
+
   try {
-    const res = await api.get(`/restaurants/${id}/review/reactions`);
-    return res.data;
+    const res = await serverApi.get(`/restaurants/${id}/review/reactions`);
+
+    return { success: true, data: res.data };
   } catch (error: any) {
-    // 로그인 안함 or 토큰 만료
-    if (error.response?.status === 401) {
-      return 'UNAUTHORIZED';
+    if (error.name === 'RefreshTokenExpired') {
+      return { success: false, reason: 'UNAUTHORIZED' };
     }
 
-    throw new Error('리뷰 리액션 조회 중 에러 발생');
+    return { success: false, reason: 'UNKNOWN', message: error.message };
   }
 };

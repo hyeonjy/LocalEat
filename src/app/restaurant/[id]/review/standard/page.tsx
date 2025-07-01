@@ -34,7 +34,7 @@ const StandardReviewForm = ({ params }: StandardReviewPageProps) => {
   const [keywords, setKeywords] = useState<string[]>([]);
   const [content, setContent] = useState('');
   const [rating, setRating] = useState<number>(0);
-  const { user } = useAuthStore();
+  const { user, clearUser } = useAuthStore();
   const router = useRouter();
 
   const { data, isPending, error } = useQuery({
@@ -78,9 +78,28 @@ const StandardReviewForm = ({ params }: StandardReviewPageProps) => {
       photos: result.uploadedPhotos,
     };
 
-    await createStandardReview(review as StandardReviewPayload);
+    try {
+      const result = await createStandardReview(
+        review as StandardReviewPayload,
+      );
 
-    router.push(`/restaurant/${restaurantId}`);
+      if (!result.success) {
+        if (result.reason === 'UNAUTHORIZED') {
+          alert('로그인 세션이 만료되었습니다. 다시 로그인해주세요.');
+          clearUser();
+          router.push('/signin');
+          return;
+        }
+
+        alert('리뷰 등록 실패');
+        return;
+      }
+
+      alert('리뷰 등록 성공');
+      router.push(`/restaurant/${restaurantId}`);
+    } catch (error: any) {
+      alert('리뷰 등록 실패');
+    }
   };
 
   const handlePhotoDelete = (index: number) => {

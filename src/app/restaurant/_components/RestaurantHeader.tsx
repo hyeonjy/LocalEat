@@ -5,9 +5,13 @@ import ReviewWriteButton from './ReviewWriteButton';
 
 type RestaurantHeaderProps = {
   restaurant: RestaurantProps;
+  reviewCount: number;
 };
 
-const RestaurantHeader = ({ restaurant }: RestaurantHeaderProps) => {
+const RestaurantHeader = ({
+  restaurant,
+  reviewCount,
+}: RestaurantHeaderProps) => {
   const openingState = getRestaurantStatus(restaurant.opening_hours);
 
   return (
@@ -58,7 +62,7 @@ const RestaurantHeader = ({ restaurant }: RestaurantHeaderProps) => {
             0.0
           </span>
           <span>|</span>
-          <span>리뷰 123개</span>
+          <span>리뷰 {reviewCount}개</span>
         </p>
 
         <p className="mb-[12px] flex h-[24px] items-center gap-2 text-body-mm text-[#646464]">
