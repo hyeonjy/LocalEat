@@ -37,17 +37,18 @@ const ReviewTabs = ({
 
   useEffect(() => {
     const fetchReaction = async () => {
-      const reaction = await getRestaurantReaction(restaurantId);
+      const result = await getRestaurantReaction(restaurantId);
 
-      if (reaction === 'UNAUTHORIZED') {
-        if (useAuthStore.getState().user) {
+      if (!result.success) {
+        if (result.reason === 'UNAUTHORIZED' && useAuthStore.getState().user) {
           useAuthStore.getState().clearUser();
           alert('로그인 세션이 만료되었습니다. 다시 로그인해주세요.');
         }
+
         return setMyReactions([]);
       }
 
-      setMyReactions(reaction);
+      setMyReactions(result.data);
     };
 
     fetchReaction();
