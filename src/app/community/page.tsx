@@ -54,7 +54,10 @@ const Community = () => {
         </div>
       </section>
       <section className="min-w-[1200px]">
-        <div className="py-[80px] [padding-left:18.75%] [padding-right:18.75%]">
+        <div className="relative z-[-99] py-[80px] [padding-left:18.75%] [padding-right:18.75%]">
+          <button className="absolute right-10 flex h-[100px] w-[100px] items-center justify-center rounded-[50px] bg-[#FEEDE6] p-[14.286px] shadow-[inset_-1px_-2px_4px_rgba(0,0,0,0.15),_0px_0px_4px_rgba(0,0,0,0.15)]">
+            +
+          </button>
           <p className="text-primary-normal font-pretendard text-[24px] font-semibold leading-[31.2px] tracking-[-0.36px] text-[#FA4D09]">
             맛집 탐방가 로컬잇터들의 동선 대공개!
           </p>
