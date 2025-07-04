@@ -72,76 +72,90 @@ const ReviewTabs = ({
         </TabsTrigger>
       </TabsList>
       <TabsContent value="standard" className="mx-auto w-full max-w-[1120px]">
-        {standardReviews.map((standardReview) => {
-          const visited_at = new Date(standardReview.visited_at);
-          const isThisYear =
-            visited_at.getFullYear() === new Date().getFullYear();
+        {standardReviews.length > 0 ? (
+          standardReviews.map((standardReview) => {
+            const visited_at = new Date(standardReview.visited_at);
+            const isThisYear =
+              visited_at.getFullYear() === new Date().getFullYear();
 
-          const formattedDate = isThisYear
-            ? `${String(visited_at.getMonth() + 1).padStart(2, '0')}.${String(visited_at.getDate()).padStart(2, '0')}`
-            : `${visited_at.getFullYear()}.${String(visited_at.getMonth() + 1).padStart(2, '0')}.${String(visited_at.getDate()).padStart(2, '0')}`;
+            const formattedDate = isThisYear
+              ? `${String(visited_at.getMonth() + 1).padStart(2, '0')}.${String(visited_at.getDate()).padStart(2, '0')}`
+              : `${visited_at.getFullYear()}.${String(visited_at.getMonth() + 1).padStart(2, '0')}.${String(visited_at.getDate()).padStart(2, '0')}`;
 
-          return (
-            <div
-              className="mb-[20px] flex flex-col border-b border-[#C7C7CC]"
-              key={standardReview.id}
-            >
-              <div className="mb-[16px] flex items-center">
-                <Image
-                  src={standardReview.profile_image}
-                  alt={standardReview.nickname}
-                  width={40}
-                  height={40}
-                  className="mr-[10px] h-[40px] w-[40ox] rounded-[50%] bg-white"
-                />
-                <p className="text-lm mr-[12px] font-semibold">
-                  {standardReview.nickname}
-                </p>
-                <p className="text-sm text-gray-400">
-                  {formattedDate} • {standardReview.visit_count}번째 방문 •
-                  로컬인증
-                </p>
-              </div>
-              <p className="mb-[12px] w-full text-lg">
-                {standardReview.content}
-              </p>
-              <div className="mb-[20px] flex items-center gap-[10px]">
-                <button
-                  className={cn(
-                    'flex h-[32px] items-center justify-center rounded-full border border-[#C7C7CC] px-[12px] py-[8px] text-[#5F5F68]',
-                    isReacted(standardReview.id, '공감해요') &&
-                      'bg-orange-400 text-white',
-                  )}
-                >
-                  공감해요 {standardReview.reactions['공감해요']}
-                </button>
-                <button
-                  className={cn(
-                    'flex h-[32px] items-center justify-center rounded-full border border-[#C7C7CC] px-[12px] py-[8px] text-[#5F5F68]',
-                    isReacted(standardReview.id, '도움이 됐어요') &&
-                      'bg-orange-400 text-white',
-                  )}
-                >
-                  도움이 됐어요 {standardReview.reactions['도움이 됐어요']}
-                </button>
-              </div>
-              <div className="mb-[20px] flex items-center gap-[10px]">
-                {standardReview.photos.map((photo) => (
+            return (
+              <div
+                className="mb-[20px] flex flex-col border-b border-[#C7C7CC]"
+                key={standardReview.id}
+              >
+                <div className="mb-[16px] flex items-center">
                   <Image
-                    key={photo.id}
-                    src={photo.image_url}
-                    alt="photo"
-                    width={193}
-                    height={226}
-                    className="h-[226px] w-[193px] rounded-[20px]"
+                    src={standardReview.profile_image}
+                    alt={standardReview.nickname}
+                    width={40}
+                    height={40}
+                    className="mr-[10px] h-[40px] w-[40ox] rounded-[50%] bg-white"
                   />
-                ))}
+                  <p className="text-lm mr-[12px] font-semibold">
+                    {standardReview.nickname}
+                  </p>
+                  <p className="text-sm text-gray-400">
+                    {formattedDate} • {standardReview.visit_count}번째 방문 •
+                    로컬인증
+                  </p>
+                </div>
+                <p className="mb-[12px] w-full text-lg">
+                  {standardReview.content}
+                </p>
+                <div className="mb-[20px] flex items-center gap-[10px]">
+                  <button
+                    className={cn(
+                      'flex h-[32px] items-center justify-center rounded-full border border-[#C7C7CC] px-[12px] py-[8px] text-[#5F5F68]',
+                      isReacted(standardReview.id, '공감해요') &&
+                        'bg-orange-400 text-white',
+                    )}
+                  >
+                    공감해요 {standardReview.reactions['공감해요']}
+                  </button>
+                  <button
+                    className={cn(
+                      'flex h-[32px] items-center justify-center rounded-full border border-[#C7C7CC] px-[12px] py-[8px] text-[#5F5F68]',
+                      isReacted(standardReview.id, '도움이 됐어요') &&
+                        'bg-orange-400 text-white',
+                    )}
+                  >
+                    도움이 됐어요 {standardReview.reactions['도움이 됐어요']}
+                  </button>
+                </div>
+                <div className="mb-[20px] flex items-center gap-[10px]">
+                  {standardReview.photos.map((photo) => (
+                    <Image
+                      key={photo.id}
+                      src={photo.image_url}
+                      alt="photo"
+                      width={193}
+                      height={226}
+                      className="h-[226px] w-[193px] rounded-[20px]"
+                    />
+                  ))}
+                </div>
               </div>
-            </div>
-          );
-        })}
+            );
+          })
+        ) : (
+          <p className="my-[50px] ml-[10px] text-lg text-gray-500">
+            리얼 리뷰가 없습니다. 첫 리뷰를 남겨주세요.
+          </p>
+        )}
       </TabsContent>
-      <TabsContent value="graphic">리얼 스토리 리뷰들</TabsContent>
+      <TabsContent value="graphic" className="mx-auto w-full max-w-[1120px]">
+        {graphicReviews.length > 0 ? (
+          <p className="my-[10px]">리얼 스토리 리뷰들</p>
+        ) : (
+          <p className="my-[50px] ml-[10px] text-lg text-gray-500">
+            리얼 스토리가 없습니다. 첫 리뷰를 남겨주세요.
+          </p>
+        )}
+      </TabsContent>
     </Tabs>
   );
 };
