@@ -11,9 +11,9 @@ import { useQuery } from '@tanstack/react-query';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import KeywordSelection from '../_components/KeywordSelection';
-import PhotoUpload from '../_components/PhotoUpload';
-import ReceiptUpload from '../_components/ReceiptUpload';
+import MultiPhotoUpload from '../_components/MultiPhotoUpload';
 import RestaurantInfo from '../_components/RestaurantInfo';
+import SinglePhotoUpload from '../_components/SinglePhotoUpload';
 import TimeSelection from '../_components/TimeSelection';
 
 const MAX_PHOTOS = 4;
@@ -162,11 +162,8 @@ const StandardReviewForm = ({ params }: StandardReviewPageProps) => {
       </section>
 
       <section className="mt-[32px] flex gap-[20px]">
-        <ReceiptUpload
-          receiptImage={receiptImage}
-          onReceiptAdd={handleReceiptAdd}
-        />
-        <PhotoUpload
+        <SinglePhotoUpload image={receiptImage} onImageAdd={handleReceiptAdd} />
+        <MultiPhotoUpload
           photos={photos}
           onPhotoAdd={handlePhotoAdd}
           onPhotoDelete={handlePhotoDelete}

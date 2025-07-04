@@ -22,14 +22,14 @@ export async function POST(req: NextRequest) {
       httpOnly: true,
       secure: false,
       sameSite: 'lax',
-      maxAge: 1000 * 60 * 60, // 1시간
+      maxAge: 60 * 60, // 1시간
     });
 
     cookies().set('refreshToken', data.refreshToken, {
       httpOnly: true,
       secure: false,
       sameSite: 'lax',
-      maxAge: 1000 * 60 * 60 * 24 * 7, // 7일
+      maxAge: 60 * 60 * 24 * 7, // 7일
     });
 
     return NextResponse.json({ message: '로그인 성공', user: data.user });
