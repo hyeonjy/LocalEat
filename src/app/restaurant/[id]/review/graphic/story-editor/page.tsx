@@ -113,7 +113,22 @@ const StoryEditorPage = () => {
       if (!el) return prev;
 
       const newId = el.id + '_' + Date.now();
-      const newEl = { ...el, id: newId, x: el.x + 20, y: el.y + 20 };
+      const newEl = {
+        ...el,
+        id: newId,
+        x: el.x + 20,
+        y: el.y + 20,
+        // 현재 리사이즈된 크기를 새로운 원본 크기로 설정
+        originalWidth: el.width,
+        originalHeight: el.height,
+        fontSize: el.fontSize || 14,
+      };
+
+      // 리사이즈된 요소라면 resizedElements에도 추가
+      if (resizedElements.has(el.id)) {
+        setResizedElements((prev) => new Set(prev).add(newId));
+      }
+
       // 복사 후 새 요소 선택
       setTimeout(() => setSelectedElementId(newId), 0);
       return [...prev, newEl];
