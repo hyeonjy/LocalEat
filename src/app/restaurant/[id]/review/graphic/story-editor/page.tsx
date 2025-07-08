@@ -184,7 +184,10 @@ const StoryEditorPage = () => {
   const selectedElement = elements.find((el) => el.id === selectedElementId);
   const selectedToolbarPos = selectedElement
     ? {
-        top: selectedElement.y * scale.y - 30,
+        top:
+          selectedElement.y * scale.y -
+          (selectedElement.height * scale.y) / 2 -
+          10,
         left: selectedElement.x * scale.x,
         width: selectedElement.width,
       }
