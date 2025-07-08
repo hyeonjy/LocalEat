@@ -5,6 +5,7 @@ import { TEMPLATES } from '@/constants/template';
 import type { Template } from '@/types/template';
 import Image from 'next/image';
 import { useEffect, useRef, useState } from 'react';
+import { Rnd } from 'react-rnd';
 import EditorHeader from '../../_components/EditorHeader';
 
 const BASE_W = 495;
@@ -49,12 +50,42 @@ const StoryEditorPage = () => {
   const [selectedElementId, setSelectedElementId] = useState<string | null>(
     null,
   );
+  const [resizedElements, setResizedElements] = useState<Set<string>>(
+    new Set(),
+  );
+
+  const calculateTagSize = (content: string, fontSize = 14) => {
+    const canvas = document.createElement('canvas');
+    const context = canvas.getContext('2d');
+    if (!context) return { width: 100, height: 32 };
+
+    context.font = `${fontSize}px -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif`;
+    const textWidth = context.measureText(content).width;
+
+    const paddingX = 20;
+    const paddingY = 8;
+    const borderWidth = 2;
+    const margin = 10;
+
+    return {
+      width: Math.max(textWidth + paddingX + borderWidth + margin, 60),
+      height: Math.max(fontSize + paddingY + borderWidth, 32),
+    };
+  };
 
   // 템플릿 선택 시 요소 상태 초기화
   useEffect(() => {
     if (selectedTemplate) {
-      setElements(selectedTemplate.elements.map((el) => ({ ...el })));
+      setElements(
+        selectedTemplate.elements.map((el) => ({
+          ...el,
+          fontSize: el.fontSize || 14,
+          originalWidth: el.width,
+          originalHeight: el.height,
+        })),
+      );
       setSelectedElementId(null);
+      setResizedElements(new Set());
     }
   }, [selectedTemplate]);
 
@@ -63,6 +94,7 @@ const StoryEditorPage = () => {
     if (image && !selectedTemplate) {
       setElements([]);
       setSelectedElementId(null);
+      setResizedElements(new Set());
     }
   }, [image, selectedTemplate]);
 
@@ -88,7 +120,6 @@ const StoryEditorPage = () => {
     });
   };
 
-  // 요소 클릭 핸들러
   const handleElementClick = (e: React.MouseEvent, id: string) => {
     e.stopPropagation();
     setSelectedElementId(id);
@@ -97,6 +128,56 @@ const StoryEditorPage = () => {
   // 캔버스 클릭 시 선택 해제
   const handleCanvasClick = () => {
     setSelectedElementId(null);
+  };
+
+  const updateElementPosition = (id: string, x: number, y: number) => {
+    setElements((prev) =>
+      prev.map((el) =>
+        el.id === id
+          ? {
+              ...el,
+              x: (x + (el.width * scale.x) / 2) / scale.x,
+              y: (y + (el.height * scale.y) / 2) / scale.y,
+            }
+          : el,
+      ),
+    );
+  };
+
+  const updateElementSizeAndPosition = (
+    id: string,
+    x: number,
+    y: number,
+    width: number,
+    height: number,
+  ) => {
+    setElements((prev) =>
+      prev.map((el) => {
+        if (el.id === id) {
+          const newElement = {
+            ...el,
+            x: (x + width / 2) / scale.x,
+            y: (y + height / 2) / scale.y,
+            width: width / scale.x,
+            height: height / scale.y,
+          };
+
+          // 텍스트나 태그인 경우 fontSize도 조정
+          if (el.type === 'text' || el.type === 'tag') {
+            const originalFontSize = 14;
+            const originalWidth = el.originalWidth || el.width;
+            const originalHeight = el.originalHeight || el.height;
+            const widthRatio = width / scale.x / originalWidth;
+            const heightRatio = height / scale.y / originalHeight;
+            const scaleRatio = Math.min(widthRatio, heightRatio);
+            newElement.fontSize = Math.max(originalFontSize * scaleRatio, 8); // 최소 8px
+          }
+
+          return newElement;
+        }
+        return el;
+      }),
+    );
   };
 
   // 선택된 요소의 위치와 정보 계산
@@ -108,6 +189,69 @@ const StoryEditorPage = () => {
         width: selectedElement.width,
       }
     : null;
+
+  const resizeHandleStyles = {
+    topLeft: {
+      width: '12px',
+      height: '12px',
+      backgroundColor: '#fff',
+      border: '2px solid #FA4D09',
+      borderRadius: '50%',
+      position: 'absolute' as const,
+      top: '-6px',
+      left: '-6px',
+    },
+    left: {
+      width: '9px',
+      height: '12px',
+      backgroundColor: '#fff',
+      border: '2px solid #FA4D09',
+      borderRadius: '50%',
+      position: 'absolute' as const,
+      top: 'calc(50% - 6px)',
+      left: '-5px',
+    },
+    bottomLeft: {
+      width: '12px',
+      height: '12px',
+      backgroundColor: '#fff',
+      border: '2px solid #FA4D09',
+      borderRadius: '50%',
+      position: 'absolute' as const,
+      bottom: '-6px',
+      left: '-6px',
+    },
+    topRight: {
+      width: '12px',
+      height: '12px',
+      backgroundColor: '#fff',
+      border: '2px solid #FA4D09',
+      borderRadius: '50%',
+      position: 'absolute' as const,
+      top: '-6px',
+      right: '-6px',
+    },
+    right: {
+      width: '9px',
+      height: '12px',
+      backgroundColor: '#fff',
+      border: '2px solid #FA4D09',
+      borderRadius: '50%',
+      position: 'absolute' as const,
+      top: 'calc(50% - 6px)',
+      right: '-5px',
+    },
+    bottomRight: {
+      width: '12px',
+      height: '12px',
+      backgroundColor: '#fff',
+      border: '2px solid #FA4D09',
+      borderRadius: '50%',
+      position: 'absolute' as const,
+      bottom: '-6px',
+      right: '-6px',
+    },
+  };
 
   return (
     <>
@@ -165,7 +309,7 @@ const StoryEditorPage = () => {
           {/* canvas */}
           <main className="ml-[384px] flex h-[calc(100vh-65px)] flex-1 items-center justify-center bg-[#F5F5F5] py-10 pl-5">
             <div
-              className="relative overflow-hidden rounded bg-white shadow-inner"
+              className="relative overflow-visible rounded bg-white shadow-inner"
               style={{ width: canvasW, height: canvasH, aspectRatio: '9 / 16' }}
               onClick={handleCanvasClick}
             >
@@ -216,79 +360,224 @@ const StoryEditorPage = () => {
                   />
                   {/* 요소 */}
                   {elements.map((el) => {
-                    const top = el.y * scale.y;
-                    const left = el.x * scale.x;
-                    const transformBase = `
-                      translate(-50%, -50%)
-                      scale(${scale.x}, ${scale.y})
-                      ${el.rotation ? `rotate(${el.rotation}deg)` : ''}
-                      ${el.flipX ? 'scaleX(-1)' : ''}
-                    `;
+                    const width = el.width * scale.x;
+                    const height = el.height * scale.y;
+                    const x = el.x * scale.x - width / 2;
+                    const y = el.y * scale.y - height / 2;
                     const isSelected = el.id === selectedElementId;
+
                     if (el.type === 'sticker') {
                       return (
-                        <div
+                        <Rnd
                           key={el.id}
-                          className="absolute cursor-pointer"
-                          style={{
-                            top,
-                            left,
-                            width: el.width,
-                            height: el.height,
-                            transform: transformBase,
-                            zIndex: isSelected ? 10 : 1,
+                          position={{ x, y }}
+                          size={{ width, height }}
+                          enableResizing={isSelected}
+                          disableDragging={!isSelected}
+                          onDragStop={(e, data) => {
+                            updateElementPosition(el.id, data.x, data.y);
                           }}
-                          onClick={(e) => handleElementClick(e, el.id)}
+                          onResizeStop={(
+                            e,
+                            direction,
+                            ref,
+                            delta,
+                            position,
+                          ) => {
+                            updateElementSizeAndPosition(
+                              el.id,
+                              position.x,
+                              position.y,
+                              parseInt(ref.style.width),
+                              parseInt(ref.style.height),
+                            );
+                          }}
+                          onResize={(e, direction, ref, delta, position) => {
+                            updateElementSizeAndPosition(
+                              el.id,
+                              position.x,
+                              position.y,
+                              parseInt(ref.style.width),
+                              parseInt(ref.style.height),
+                            );
+                          }}
+                          bounds="parent"
+                          resizeHandleStyles={resizeHandleStyles}
+                          renderDirections={['nw', 'w', 'sw', 'ne', 'e', 'se']}
+                          style={{
+                            border: isSelected ? '1px solid #FA4D09' : 'none',
+                          }}
                         >
-                          <Image
-                            src={el.src}
-                            alt="sticker"
-                            width={el.width}
-                            height={el.height}
-                            className="h-full w-full select-none"
-                            draggable={false}
-                          />
-                        </div>
+                          <div
+                            className="h-full w-full cursor-pointer"
+                            style={{
+                              transform: `${el.rotation ? `rotate(${el.rotation}deg)` : ''} ${el.flipX ? 'scaleX(-1)' : ''}`,
+                            }}
+                            onClick={(e) => handleElementClick(e, el.id)}
+                          >
+                            <Image
+                              src={el.src}
+                              alt="sticker"
+                              width={el.width}
+                              height={el.height}
+                              className="h-full w-full select-none"
+                              draggable={false}
+                            />
+                          </div>
+                        </Rnd>
                       );
                     }
+
                     if (el.type === 'text') {
                       return (
-                        <div
+                        <Rnd
                           key={el.id}
-                          className={`absolute flex cursor-pointer items-center justify-center overflow-hidden whitespace-nowrap px-[10px] py-[6px] text-center ${isSelected ? 'ring-2 ring-[#FA4D09]' : ''}`}
-                          style={{
-                            top,
-                            left,
-                            height: el.height,
-                            transform: transformBase,
-                            color: el.color,
-                            backgroundColor: el.backgroundColor,
-                            zIndex: isSelected ? 10 : 1,
+                          position={{ x, y }}
+                          size={{
+                            width,
+                            height,
                           }}
-                          onClick={(e) => handleElementClick(e, el.id)}
+                          enableResizing={isSelected}
+                          disableDragging={!isSelected}
+                          onDragStop={(e, data) => {
+                            updateElementPosition(el.id, data.x, data.y);
+                          }}
+                          onResizeStop={(
+                            e,
+                            direction,
+                            ref,
+                            delta,
+                            position,
+                          ) => {
+                            updateElementSizeAndPosition(
+                              el.id,
+                              position.x,
+                              position.y,
+                              parseInt(ref.style.width),
+                              parseInt(ref.style.height),
+                            );
+                          }}
+                          onResize={(e, direction, ref, delta, position) => {
+                            updateElementSizeAndPosition(
+                              el.id,
+                              position.x,
+                              position.y,
+                              parseInt(ref.style.width),
+                              parseInt(ref.style.height),
+                            );
+                          }}
+                          bounds="parent"
+                          resizeHandleStyles={resizeHandleStyles}
+                          renderDirections={['nw', 'w', 'sw', 'ne', 'e', 'se']}
+                          style={{
+                            border: isSelected ? '1px solid #FA4D09' : 'none',
+                          }}
                         >
-                          {el.content}
-                        </div>
+                          <div
+                            className="flex h-full w-full cursor-pointer items-center justify-center overflow-hidden px-[10px] py-[6px] text-center"
+                            style={{
+                              color: el.color,
+                              backgroundColor: el.backgroundColor,
+                              transform: `${el.rotation ? `rotate(${el.rotation}deg)` : ''} ${el.flipX ? 'scaleX(-1)' : ''}`,
+                              boxSizing: 'border-box',
+                              fontSize: `${(el.fontSize || 14) * Math.pow(Math.min(scale.x, scale.y), 1.2)}px`,
+                            }}
+                            onClick={(e) => handleElementClick(e, el.id)}
+                          >
+                            {el.content}
+                          </div>
+                        </Rnd>
                       );
                     }
+
                     if (el.type === 'tag') {
+                      const isResized = resizedElements.has(el.id);
+                      let tagWidth, tagHeight;
+
+                      if (isResized) {
+                        tagWidth = width;
+                        tagHeight = height;
+                      } else {
+                        const calculatedSize = calculateTagSize(
+                          el.content,
+                          (el.fontSize || 14) *
+                            Math.pow(Math.min(scale.x, scale.y), 1.2),
+                        );
+                        tagWidth = calculatedSize.width * scale.x;
+                        tagHeight = calculatedSize.height * scale.y;
+                      }
+
                       return (
-                        <div
-                          key={el.id}
-                          className={`absolute flex cursor-pointer items-center justify-center overflow-hidden whitespace-nowrap rounded-[999px] border border-[#FA4D09] px-[10px] py-[4px] text-center ${isSelected ? 'ring-2 ring-[#FA4D09]' : ''}`}
-                          style={{
-                            top,
-                            left,
+                        <Rnd
+                          default={{
+                            x: 0,
+                            y: 0,
+                            width: el.width,
                             height: el.height,
-                            transform: transformBase,
-                            color: el.color,
-                            backgroundColor: el.backgroundColor,
-                            zIndex: isSelected ? 10 : 1,
                           }}
-                          onClick={(e) => handleElementClick(e, el.id)}
+                          key={el.id}
+                          position={{ x, y }}
+                          size={{
+                            width: tagWidth,
+                            height: tagHeight,
+                          }}
+                          enableResizing={isSelected}
+                          disableDragging={!isSelected}
+                          onDragStop={(e, data) => {
+                            updateElementPosition(el.id, data.x, data.y);
+                          }}
+                          onResizeStop={(
+                            e,
+                            direction,
+                            ref,
+                            delta,
+                            position,
+                          ) => {
+                            updateElementSizeAndPosition(
+                              el.id,
+                              position.x,
+                              position.y,
+                              parseInt(ref.style.width),
+                              parseInt(ref.style.height),
+                            );
+                            setResizedElements((prev) =>
+                              new Set(prev).add(el.id),
+                            );
+                          }}
+                          onResize={(e, direction, ref, delta, position) => {
+                            updateElementSizeAndPosition(
+                              el.id,
+                              position.x,
+                              position.y,
+                              parseInt(ref.style.width),
+                              parseInt(ref.style.height),
+                            );
+                            setResizedElements((prev) =>
+                              new Set(prev).add(el.id),
+                            );
+                          }}
+                          bounds="parent"
+                          resizeHandleStyles={resizeHandleStyles}
+                          renderDirections={['nw', 'w', 'sw', 'ne', 'e', 'se']}
+                          style={{
+                            border: isSelected ? '1px solid #FA4D09' : 'none',
+                          }}
                         >
-                          {el.content}
-                        </div>
+                          <div
+                            className="flex h-full w-full cursor-pointer items-center justify-center rounded-[999px] border border-[#FA4D09] px-[10px] py-[4px] text-center"
+                            style={{
+                              color: el.color,
+                              backgroundColor: el.backgroundColor,
+                              transform: `${el.rotation ? `rotate(${el.rotation}deg)` : ''} ${el.flipX ? 'scaleX(-1)' : ''}`,
+                              boxSizing: 'border-box',
+                              width: '100%',
+                              fontSize: `${(el.fontSize || 14) * Math.pow(Math.min(scale.x, scale.y), 1.2)}px`,
+                            }}
+                            onClick={(e) => handleElementClick(e, el.id)}
+                          >
+                            {el.content}
+                          </div>
+                        </Rnd>
                       );
                     }
                   })}
