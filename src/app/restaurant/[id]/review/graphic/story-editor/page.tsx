@@ -445,7 +445,7 @@ const StoryEditorPage = () => {
   return (
     <>
       <EditorHeader />
-      <div className="pt-[64px]">
+      <div className="pt-[82px]">
         <div className="relative mx-auto flex w-full xl:w-[1200px]">
           {/* 왼쪽 사이드바 */}
           <Tabs
