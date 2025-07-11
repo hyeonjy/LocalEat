@@ -17,6 +17,72 @@ const TABS = [
   { name: '스티커', value: 'sticker' },
 ] as const;
 
+const TEXT_BOX_OPTIONS = [
+  {
+    id: 'text_black_bg',
+    type: 'text',
+    content: '간단한 후기를 추가해주세요!',
+    width: 280,
+    height: 33,
+    fontSize: 14,
+    color: '#FFFFFF',
+    backgroundColor: '#000000',
+  },
+  {
+    id: 'text_white_bg',
+    type: 'text',
+    content: '간단한 후기를 추가해주세요!',
+    width: 280,
+    height: 33,
+    fontSize: 14,
+    color: '#000000',
+    backgroundColor: '#FFFFFF',
+  },
+];
+
+const TAG_OPTIONS = [
+  {
+    id: 'tag_filled',
+    type: 'tag',
+    content: '@ 가게명',
+    color: '#FFFFFF',
+    backgroundColor: '#FA4D09',
+    name: '가게명 태그',
+  },
+  {
+    id: 'tag_outline',
+    type: 'tag',
+    content: '# 키워드',
+    color: '#FA4D09',
+    backgroundColor: 'transparent',
+    name: '키워드 태그',
+  },
+];
+
+const LOGO_OPTIONS = [
+  {
+    id: 'logo_orange',
+    type: 'sticker',
+    src: `/assets/stickers/sticker1.svg`,
+  },
+  {
+    id: 'logo_green',
+    type: 'sticker',
+    src: `/assets/stickers/sticker2.svg`,
+  },
+  {
+    id: 'logo_localeat',
+    type: 'sticker',
+    src: `/assets/stickers/sticker3.svg`,
+  },
+];
+
+const STICKER_OPTIONS = Array.from({ length: 7 }, (_, i) => ({
+  id: `sticker_${i + 4}`,
+  type: 'sticker',
+  src: `/assets/stickers/sticker${i + 4}.svg`,
+}));
+
 // canvas 크기 및 스케일 계산
 const useResponsiveCanvas = () => {
   const [{ w, h }, setSize] = useState({ w: BASE_W, h: BASE_H });
@@ -71,6 +137,62 @@ const StoryEditorPage = () => {
       width: Math.max(textWidth + paddingX + borderWidth + margin, 60),
       height: Math.max(fontSize + paddingY + borderWidth, 32),
     };
+  };
+
+  const addNewElement = (option: any) => {
+    const newId = `${option.id}_${Date.now()}`;
+
+    let newElement;
+
+    if (option.type === 'text') {
+      newElement = {
+        id: newId,
+        type: 'text',
+        content: option.content,
+        x: BASE_W / 2,
+        y: BASE_H / 2,
+        width: option.width,
+        height: option.height,
+        color: option.color,
+        backgroundColor: option.backgroundColor,
+        fontSize: 14,
+        originalWidth: 120,
+        originalHeight: 40,
+      };
+    } else if (option.type === 'tag') {
+      const tagSize = calculateTagSize(option.content, 14);
+      newElement = {
+        id: newId,
+        type: 'tag',
+        content: option.content,
+        x: BASE_W / 2,
+        y: BASE_H / 2,
+        width: tagSize.width,
+        height: tagSize.height,
+        color: option.color,
+        backgroundColor: option.backgroundColor,
+        fontSize: 14,
+        originalWidth: tagSize.width,
+        originalHeight: tagSize.height,
+      };
+    } else if (option.type === 'sticker') {
+      newElement = {
+        id: newId,
+        type: 'sticker',
+        src: option.src,
+        x: BASE_W / 2,
+        y: BASE_H / 2,
+        width: 60,
+        height: 60,
+        originalWidth: 60,
+        originalHeight: 60,
+      };
+    }
+
+    if (newElement) {
+      setElements((prev) => [...prev, newElement]);
+      setSelectedElementId(newId);
+    }
   };
 
   // 템플릿 선택 시 요소 상태 초기화
@@ -312,15 +434,108 @@ const StoryEditorPage = () => {
               </div>
             </TabsContent>
 
-            <TabsContent value="text">
-              <p className="pt-4 text-sm text-gray-400">
-                텍스트 탭 콘텐츠 준비 중
-              </p>
+            <TabsContent value="text" className="mt-0">
+              <div className="pt-5">
+                <div className="mb-5">
+                  <h3 className="mb-4 text-[16px] font-semibold leading-[130%]">
+                    텍스트 박스
+                  </h3>
+                  <div className="flex flex-col gap-4">
+                    {TEXT_BOX_OPTIONS.map((option) => (
+                      <div
+                        key={option.id}
+                        className="w-[337px] cursor-pointer rounded-[12px] bg-[#FAFAFA] p-5 text-center transition-colors"
+                        onClick={() => addNewElement(option)}
+                      >
+                        <div
+                          className="box-border h-[33px] w-[199px] px-[10px] py-[6px] text-center text-[15px] font-normal leading-[130%]"
+                          style={{
+                            color: option.color,
+                            backgroundColor: option.backgroundColor,
+                          }}
+                        >
+                          {option.content}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                <div>
+                  <h3 className="mb-4 text-[16px] font-semibold leading-[130%]">
+                    태그
+                  </h3>
+                  <div className="flex gap-3">
+                    {TAG_OPTIONS.map((option) => (
+                      <div
+                        key={option.id}
+                        className="w-[120px] cursor-pointer rounded-[12px] bg-[#FAFAFA] p-5 text-center transition-colors"
+                        onClick={() => addNewElement(option)}
+                      >
+                        <div
+                          className="h-[29px] w-[80px] rounded-full border border-current px-[10px] py-1 text-[15px] font-normal leading-[130%]"
+                          style={{
+                            color: option.color,
+                            backgroundColor: option.backgroundColor,
+                          }}
+                        >
+                          {option.content}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
             </TabsContent>
-            <TabsContent value="sticker">
-              <p className="pt-4 text-sm text-gray-400">
-                스티커 탭 콘텐츠 준비 중
-              </p>
+
+            <TabsContent value="sticker" className="mt-0">
+              <div className="pt-5">
+                <div className="mb-6">
+                  <h3 className="mb-5 text-[16px] font-semibold leading-[130%]">
+                    로고
+                  </h3>
+                  <div className="flex gap-[6px]">
+                    {LOGO_OPTIONS.map((option) => (
+                      <div
+                        key={option.id}
+                        className="flex h-[108px] w-[108px] cursor-pointer items-center justify-center rounded-[12px] bg-[#FAFAFA]"
+                        onClick={() => addNewElement(option)}
+                      >
+                        <Image
+                          src={option.src}
+                          alt={option.id}
+                          width={40}
+                          height={40}
+                          className="object-contain"
+                        />
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                <div>
+                  <h3 className="mb-5 text-[16px] font-semibold leading-[130%]">
+                    스티커
+                  </h3>
+                  <div className="grid w-[336px] grid-cols-3 gap-x-[6px] gap-y-[14px]">
+                    {STICKER_OPTIONS.map((option) => (
+                      <div
+                        key={option.id}
+                        className="flex h-[108px] w-[108px] cursor-pointer items-center justify-center rounded-[12px] bg-[#FAFAFA]"
+                        onClick={() => addNewElement(option)}
+                      >
+                        <Image
+                          src={option.src}
+                          alt={option.id}
+                          width={40}
+                          height={40}
+                          className="object-contain"
+                        />
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
             </TabsContent>
           </Tabs>
 
@@ -365,241 +580,16 @@ const StoryEditorPage = () => {
                 </div>
               )}
 
+              {/* 배경 이미지 */}
               {selectedTemplate ? (
-                <>
-                  {/* 배경 이미지 */}
-                  <Image
-                    src={selectedTemplate.background}
-                    alt="template-bg"
-                    width={canvasW}
-                    height={canvasH}
-                    className="h-full w-full select-none rounded object-cover"
-                    draggable={false}
-                  />
-                  {/* 요소 */}
-                  {elements.map((el) => {
-                    const width = el.width * scale.x;
-                    const height = el.height * scale.y;
-                    const x = el.x * scale.x - width / 2;
-                    const y = el.y * scale.y - height / 2;
-                    const isSelected = el.id === selectedElementId;
-
-                    if (el.type === 'sticker') {
-                      return (
-                        <Rnd
-                          key={el.id}
-                          position={{ x, y }}
-                          size={{ width, height }}
-                          enableResizing={isSelected}
-                          disableDragging={!isSelected}
-                          onDragStop={(e, data) => {
-                            updateElementPosition(el.id, data.x, data.y);
-                          }}
-                          onResizeStop={(
-                            e,
-                            direction,
-                            ref,
-                            delta,
-                            position,
-                          ) => {
-                            updateElementSizeAndPosition(
-                              el.id,
-                              position.x,
-                              position.y,
-                              parseInt(ref.style.width),
-                              parseInt(ref.style.height),
-                            );
-                          }}
-                          onResize={(e, direction, ref, delta, position) => {
-                            updateElementSizeAndPosition(
-                              el.id,
-                              position.x,
-                              position.y,
-                              parseInt(ref.style.width),
-                              parseInt(ref.style.height),
-                            );
-                          }}
-                          bounds="parent"
-                          resizeHandleStyles={resizeHandleStyles}
-                          renderDirections={['nw', 'w', 'sw', 'ne', 'e', 'se']}
-                          style={{
-                            border: isSelected ? '1px solid #FA4D09' : 'none',
-                          }}
-                        >
-                          <div
-                            className="h-full w-full cursor-pointer"
-                            style={{
-                              transform: `${el.rotation ? `rotate(${el.rotation}deg)` : ''} ${el.flipX ? 'scaleX(-1)' : ''}`,
-                            }}
-                            onClick={(e) => handleElementClick(e, el.id)}
-                          >
-                            <Image
-                              src={el.src}
-                              alt="sticker"
-                              width={el.width}
-                              height={el.height}
-                              className="h-full w-full select-none"
-                              draggable={false}
-                            />
-                          </div>
-                        </Rnd>
-                      );
-                    }
-
-                    if (el.type === 'text') {
-                      return (
-                        <Rnd
-                          key={el.id}
-                          position={{ x, y }}
-                          size={{
-                            width,
-                            height,
-                          }}
-                          enableResizing={isSelected}
-                          disableDragging={!isSelected}
-                          onDragStop={(e, data) => {
-                            updateElementPosition(el.id, data.x, data.y);
-                          }}
-                          onResizeStop={(
-                            e,
-                            direction,
-                            ref,
-                            delta,
-                            position,
-                          ) => {
-                            updateElementSizeAndPosition(
-                              el.id,
-                              position.x,
-                              position.y,
-                              parseInt(ref.style.width),
-                              parseInt(ref.style.height),
-                            );
-                          }}
-                          onResize={(e, direction, ref, delta, position) => {
-                            updateElementSizeAndPosition(
-                              el.id,
-                              position.x,
-                              position.y,
-                              parseInt(ref.style.width),
-                              parseInt(ref.style.height),
-                            );
-                          }}
-                          bounds="parent"
-                          resizeHandleStyles={resizeHandleStyles}
-                          renderDirections={['nw', 'w', 'sw', 'ne', 'e', 'se']}
-                          style={{
-                            border: isSelected ? '1px solid #FA4D09' : 'none',
-                          }}
-                        >
-                          <div
-                            className="flex h-full w-full cursor-pointer items-center justify-center overflow-hidden px-[10px] py-[6px] text-center"
-                            style={{
-                              color: el.color,
-                              backgroundColor: el.backgroundColor,
-                              transform: `${el.rotation ? `rotate(${el.rotation}deg)` : ''} ${el.flipX ? 'scaleX(-1)' : ''}`,
-                              boxSizing: 'border-box',
-                              fontSize: `${(el.fontSize || 14) * Math.pow(Math.min(scale.x, scale.y), 1.2)}px`,
-                            }}
-                            onClick={(e) => handleElementClick(e, el.id)}
-                          >
-                            {el.content}
-                          </div>
-                        </Rnd>
-                      );
-                    }
-
-                    if (el.type === 'tag') {
-                      const isResized = resizedElements.has(el.id);
-                      let tagWidth, tagHeight;
-
-                      if (isResized) {
-                        tagWidth = width;
-                        tagHeight = height;
-                      } else {
-                        const calculatedSize = calculateTagSize(
-                          el.content,
-                          (el.fontSize || 14) *
-                            Math.pow(Math.min(scale.x, scale.y), 1.2),
-                        );
-                        tagWidth = calculatedSize.width * scale.x;
-                        tagHeight = calculatedSize.height * scale.y;
-                      }
-
-                      return (
-                        <Rnd
-                          default={{
-                            x: 0,
-                            y: 0,
-                            width: el.width,
-                            height: el.height,
-                          }}
-                          key={el.id}
-                          position={{ x, y }}
-                          size={{
-                            width: tagWidth,
-                            height: tagHeight,
-                          }}
-                          enableResizing={isSelected}
-                          disableDragging={!isSelected}
-                          onDragStop={(e, data) => {
-                            updateElementPosition(el.id, data.x, data.y);
-                          }}
-                          onResizeStop={(
-                            e,
-                            direction,
-                            ref,
-                            delta,
-                            position,
-                          ) => {
-                            updateElementSizeAndPosition(
-                              el.id,
-                              position.x,
-                              position.y,
-                              parseInt(ref.style.width),
-                              parseInt(ref.style.height),
-                            );
-                            setResizedElements((prev) =>
-                              new Set(prev).add(el.id),
-                            );
-                          }}
-                          onResize={(e, direction, ref, delta, position) => {
-                            updateElementSizeAndPosition(
-                              el.id,
-                              position.x,
-                              position.y,
-                              parseInt(ref.style.width),
-                              parseInt(ref.style.height),
-                            );
-                            setResizedElements((prev) =>
-                              new Set(prev).add(el.id),
-                            );
-                          }}
-                          bounds="parent"
-                          resizeHandleStyles={resizeHandleStyles}
-                          renderDirections={['nw', 'w', 'sw', 'ne', 'e', 'se']}
-                          style={{
-                            border: isSelected ? '1px solid #FA4D09' : 'none',
-                          }}
-                        >
-                          <div
-                            className="flex h-full w-full cursor-pointer items-center justify-center rounded-[999px] border border-[#FA4D09] px-[10px] py-[4px] text-center"
-                            style={{
-                              color: el.color,
-                              backgroundColor: el.backgroundColor,
-                              transform: `${el.rotation ? `rotate(${el.rotation}deg)` : ''} ${el.flipX ? 'scaleX(-1)' : ''}`,
-                              boxSizing: 'border-box',
-                              width: '100%',
-                              fontSize: `${(el.fontSize || 14) * Math.pow(Math.min(scale.x, scale.y), 1.2)}px`,
-                            }}
-                            onClick={(e) => handleElementClick(e, el.id)}
-                          >
-                            {el.content}
-                          </div>
-                        </Rnd>
-                      );
-                    }
-                  })}
-                </>
+                <Image
+                  src={selectedTemplate.background}
+                  alt="template-bg"
+                  width={canvasW}
+                  height={canvasH}
+                  className="h-full w-full select-none rounded object-cover"
+                  draggable={false}
+                />
               ) : image ? (
                 <Image
                   src={image}
@@ -611,9 +601,211 @@ const StoryEditorPage = () => {
                 />
               ) : (
                 <div className="flex h-full w-full items-center justify-center text-sm text-gray-400">
-                  이미지를 업로드하세요
+                  템플릿을 선택하거나 텍스트/스티커를 추가하세요
                 </div>
               )}
+
+              {/* 요소들 */}
+              {elements.map((el) => {
+                const width = el.width * scale.x;
+                const height = el.height * scale.y;
+                const x = el.x * scale.x - width / 2;
+                const y = el.y * scale.y - height / 2;
+                const isSelected = el.id === selectedElementId;
+
+                if (el.type === 'sticker') {
+                  return (
+                    <Rnd
+                      key={el.id}
+                      position={{ x, y }}
+                      size={{ width, height }}
+                      enableResizing={isSelected}
+                      disableDragging={!isSelected}
+                      onDragStop={(e, data) => {
+                        updateElementPosition(el.id, data.x, data.y);
+                      }}
+                      onResizeStop={(e, direction, ref, delta, position) => {
+                        updateElementSizeAndPosition(
+                          el.id,
+                          position.x,
+                          position.y,
+                          parseInt(ref.style.width),
+                          parseInt(ref.style.height),
+                        );
+                      }}
+                      onResize={(e, direction, ref, delta, position) => {
+                        updateElementSizeAndPosition(
+                          el.id,
+                          position.x,
+                          position.y,
+                          parseInt(ref.style.width),
+                          parseInt(ref.style.height),
+                        );
+                      }}
+                      bounds="parent"
+                      resizeHandleStyles={resizeHandleStyles}
+                      renderDirections={['nw', 'w', 'sw', 'ne', 'e', 'se']}
+                      style={{
+                        border: isSelected ? '1px solid #FA4D09' : 'none',
+                      }}
+                    >
+                      <div
+                        className="h-full w-full cursor-pointer"
+                        style={{
+                          transform: `${el.rotation ? `rotate(${el.rotation}deg)` : ''} ${el.flipX ? 'scaleX(-1)' : ''}`,
+                        }}
+                        onClick={(e) => handleElementClick(e, el.id)}
+                      >
+                        <Image
+                          src={el.src}
+                          alt="sticker"
+                          width={el.width}
+                          height={el.height}
+                          className="h-full w-full select-none"
+                          draggable={false}
+                        />
+                      </div>
+                    </Rnd>
+                  );
+                }
+
+                if (el.type === 'text') {
+                  return (
+                    <Rnd
+                      key={el.id}
+                      position={{ x, y }}
+                      size={{
+                        width,
+                        height,
+                      }}
+                      enableResizing={isSelected}
+                      disableDragging={!isSelected}
+                      onDragStop={(e, data) => {
+                        updateElementPosition(el.id, data.x, data.y);
+                      }}
+                      onResizeStop={(e, direction, ref, delta, position) => {
+                        updateElementSizeAndPosition(
+                          el.id,
+                          position.x,
+                          position.y,
+                          parseInt(ref.style.width),
+                          parseInt(ref.style.height),
+                        );
+                      }}
+                      onResize={(e, direction, ref, delta, position) => {
+                        updateElementSizeAndPosition(
+                          el.id,
+                          position.x,
+                          position.y,
+                          parseInt(ref.style.width),
+                          parseInt(ref.style.height),
+                        );
+                      }}
+                      bounds="parent"
+                      resizeHandleStyles={resizeHandleStyles}
+                      renderDirections={['nw', 'w', 'sw', 'ne', 'e', 'se']}
+                      style={{
+                        border: isSelected ? '1px solid #FA4D09' : 'none',
+                      }}
+                    >
+                      <div
+                        className="flex h-full w-full cursor-pointer items-center justify-center overflow-hidden px-[10px] py-[6px] text-center"
+                        style={{
+                          color: el.color,
+                          backgroundColor: el.backgroundColor,
+                          transform: `${el.rotation ? `rotate(${el.rotation}deg)` : ''} ${el.flipX ? 'scaleX(-1)' : ''}`,
+                          boxSizing: 'border-box',
+                          fontSize: `${(el.fontSize || 14) * Math.pow(Math.min(scale.x, scale.y), 1.2)}px`,
+                        }}
+                        onClick={(e) => handleElementClick(e, el.id)}
+                      >
+                        {el.content}
+                      </div>
+                    </Rnd>
+                  );
+                }
+
+                if (el.type === 'tag') {
+                  const isResized = resizedElements.has(el.id);
+                  let tagWidth, tagHeight;
+
+                  if (isResized) {
+                    tagWidth = width;
+                    tagHeight = height;
+                  } else {
+                    const calculatedSize = calculateTagSize(
+                      el.content,
+                      (el.fontSize || 14) *
+                        Math.pow(Math.min(scale.x, scale.y), 1.2),
+                    );
+                    tagWidth = calculatedSize.width * scale.x;
+                    tagHeight = calculatedSize.height * scale.y;
+                  }
+
+                  return (
+                    <Rnd
+                      default={{
+                        x: 0,
+                        y: 0,
+                        width: el.width,
+                        height: el.height,
+                      }}
+                      key={el.id}
+                      position={{ x, y }}
+                      size={{
+                        width: tagWidth,
+                        height: tagHeight,
+                      }}
+                      enableResizing={isSelected}
+                      disableDragging={!isSelected}
+                      onDragStop={(e, data) => {
+                        updateElementPosition(el.id, data.x, data.y);
+                      }}
+                      onResizeStop={(e, direction, ref, delta, position) => {
+                        updateElementSizeAndPosition(
+                          el.id,
+                          position.x,
+                          position.y,
+                          parseInt(ref.style.width),
+                          parseInt(ref.style.height),
+                        );
+                        setResizedElements((prev) => new Set(prev).add(el.id));
+                      }}
+                      onResize={(e, direction, ref, delta, position) => {
+                        updateElementSizeAndPosition(
+                          el.id,
+                          position.x,
+                          position.y,
+                          parseInt(ref.style.width),
+                          parseInt(ref.style.height),
+                        );
+                        setResizedElements((prev) => new Set(prev).add(el.id));
+                      }}
+                      bounds="parent"
+                      resizeHandleStyles={resizeHandleStyles}
+                      renderDirections={['nw', 'w', 'sw', 'ne', 'e', 'se']}
+                      style={{
+                        border: isSelected ? '1px solid #FA4D09' : 'none',
+                      }}
+                    >
+                      <div
+                        className="flex h-full w-full cursor-pointer items-center justify-center rounded-[999px] border border-[#FA4D09] px-[10px] py-[4px] text-center"
+                        style={{
+                          color: el.color,
+                          backgroundColor: el.backgroundColor,
+                          transform: `${el.rotation ? `rotate(${el.rotation}deg)` : ''} ${el.flipX ? 'scaleX(-1)' : ''}`,
+                          boxSizing: 'border-box',
+                          width: '100%',
+                          fontSize: `${(el.fontSize || 14) * Math.pow(Math.min(scale.x, scale.y), 1.2)}px`,
+                        }}
+                        onClick={(e) => handleElementClick(e, el.id)}
+                      >
+                        {el.content}
+                      </div>
+                    </Rnd>
+                  );
+                }
+              })}
             </div>
           </main>
         </div>
