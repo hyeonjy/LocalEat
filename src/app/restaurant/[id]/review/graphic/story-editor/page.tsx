@@ -222,6 +222,15 @@ const StoryEditorPage = () => {
     }
   }, [image, selectedTemplate]);
 
+  // 컴포넌트 언마운트 시 메모리 해제
+  useEffect(() => {
+    return () => {
+      if (image && image.startsWith('blob:')) {
+        URL.revokeObjectURL(image);
+      }
+    };
+  }, [image]);
+
   const handleDeleteElement = (e?: React.MouseEvent) => {
     if (e) e.stopPropagation();
     if (!selectedElementId) return;
@@ -305,6 +314,27 @@ const StoryEditorPage = () => {
     } else if (e.key === 'Escape') {
       setEditingElementId(null);
       setEditingText('');
+    }
+  };
+
+  const handleImageUpload = () => {
+    fileInputRef.current?.click();
+  };
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file && file.type.startsWith('image/')) {
+      // 이전 이미지 URL이 있으면 메모리에서 해제
+      if (image && image.startsWith('blob:')) {
+        URL.revokeObjectURL(image);
+      }
+
+      const imageUrl = URL.createObjectURL(file);
+      setImage(imageUrl);
+      setSelectedTemplate(null);
+      setElements([]);
+      setSelectedElementId(null);
+      setResizedElements(new Set());
     }
   };
 
@@ -444,7 +474,14 @@ const StoryEditorPage = () => {
 
   return (
     <>
-      <EditorHeader />
+      <EditorHeader onImageUpload={handleImageUpload} />
+      <input
+        ref={fileInputRef}
+        type="file"
+        accept="image/*"
+        onChange={handleFileChange}
+        className="hidden"
+      />
       <div className="pt-[82px]">
         <div className="relative mx-auto flex w-full xl:w-[1200px]">
           {/* 왼쪽 사이드바 */}
@@ -475,6 +512,9 @@ const StoryEditorPage = () => {
                     height={220}
                     className="cursor-pointer rounded-lg object-cover shadow-md"
                     onClick={() => {
+                      if (image && image.startsWith('blob:')) {
+                        URL.revokeObjectURL(image);
+                      }
                       setSelectedTemplate(tpl);
                       setImage(tpl.background);
                     }}
