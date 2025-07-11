@@ -54,7 +54,7 @@ const TAG_OPTIONS = [
     type: 'tag',
     content: '# 키워드',
     color: '#FA4D09',
-    backgroundColor: 'transparent',
+    backgroundColor: '#FFFFFF',
     name: '키워드 태그',
   },
 ];
@@ -119,6 +119,8 @@ const StoryEditorPage = () => {
   const [resizedElements, setResizedElements] = useState<Set<string>>(
     new Set(),
   );
+  const [editingElementId, setEditingElementId] = useState<string | null>(null);
+  const [editingText, setEditingText] = useState<string>('');
 
   const calculateTagSize = (content: string, fontSize = 14) => {
     const canvas = document.createElement('canvas');
@@ -259,12 +261,59 @@ const StoryEditorPage = () => {
 
   const handleElementClick = (e: React.MouseEvent, id: string) => {
     e.stopPropagation();
+    if (editingElementId && editingElementId !== id) {
+      handleTextSubmit();
+    }
     setSelectedElementId(id);
+  };
+
+  const handleElementDoubleClick = (e: React.MouseEvent, id: string) => {
+    e.stopPropagation();
+    const element = elements.find((el) => el.id === id);
+    if (element && (element.type === 'text' || element.type === 'tag')) {
+      setEditingElementId(id);
+      setEditingText(element.content);
+    }
+  };
+
+  const handleTextChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setEditingText(e.target.value);
+  };
+
+  const handleTextSubmit = () => {
+    if (editingElementId) {
+      const newText = editingText.trim();
+      if (newText) {
+        setElements((prev) =>
+          prev.map((el) =>
+            el.id === editingElementId ? { ...el, content: newText } : el,
+          ),
+        );
+      }
+      // 빈 텍스트인 경우 원래 내용 유지
+      else {
+        window.alert('빈 텍스트는 허용되지 않습니다.');
+      }
+    }
+    setEditingElementId(null);
+    setEditingText('');
+  };
+
+  const handleTextKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter') {
+      handleTextSubmit();
+    } else if (e.key === 'Escape') {
+      setEditingElementId(null);
+      setEditingText('');
+    }
   };
 
   // 캔버스 클릭 시 선택 해제
   const handleCanvasClick = () => {
     setSelectedElementId(null);
+    if (editingElementId) {
+      handleTextSubmit();
+    }
   };
 
   const updateElementPosition = (id: string, x: number, y: number) => {
@@ -546,7 +595,7 @@ const StoryEditorPage = () => {
               style={{ width: canvasW, height: canvasH, aspectRatio: '9 / 16' }}
               onClick={handleCanvasClick}
             >
-              {selectedToolbarPos && (
+              {selectedToolbarPos && !editingElementId && (
                 <div
                   className="absolute z-30 flex items-center gap-[12px] px-[12px] py-[8px]"
                   style={{
@@ -670,6 +719,8 @@ const StoryEditorPage = () => {
                 }
 
                 if (el.type === 'text') {
+                  const isEditing = editingElementId === el.id;
+
                   return (
                     <Rnd
                       key={el.id}
@@ -678,8 +729,8 @@ const StoryEditorPage = () => {
                         width,
                         height,
                       }}
-                      enableResizing={isSelected}
-                      disableDragging={!isSelected}
+                      enableResizing={isSelected && !isEditing}
+                      disableDragging={!isSelected || isEditing}
                       onDragStop={(e, data) => {
                         updateElementPosition(el.id, data.x, data.y);
                       }}
@@ -709,7 +760,7 @@ const StoryEditorPage = () => {
                       }}
                     >
                       <div
-                        className="flex h-full w-full cursor-pointer items-center justify-center overflow-hidden px-[10px] py-[6px] text-center"
+                        className="flex h-full w-full items-center justify-center overflow-hidden px-[10px] py-[6px] text-center"
                         style={{
                           color: el.color,
                           backgroundColor: el.backgroundColor,
@@ -718,14 +769,36 @@ const StoryEditorPage = () => {
                           fontSize: `${(el.fontSize || 14) * Math.pow(Math.min(scale.x, scale.y), 1.2)}px`,
                         }}
                         onClick={(e) => handleElementClick(e, el.id)}
+                        onDoubleClick={(e) =>
+                          handleElementDoubleClick(e, el.id)
+                        }
                       >
-                        {el.content}
+                        {isEditing ? (
+                          <input
+                            type="text"
+                            value={editingText}
+                            onChange={handleTextChange}
+                            onKeyDown={handleTextKeyDown}
+                            onBlur={handleTextSubmit}
+                            autoFocus
+                            className="w-full bg-transparent text-center outline-none"
+                            style={{
+                              color: el.color,
+                              fontSize: `${(el.fontSize || 14) * Math.pow(Math.min(scale.x, scale.y), 1.2)}px`,
+                            }}
+                          />
+                        ) : (
+                          <span className="cursor-pointer select-none">
+                            {el.content}
+                          </span>
+                        )}
                       </div>
                     </Rnd>
                   );
                 }
 
                 if (el.type === 'tag') {
+                  const isEditing = editingElementId === el.id;
                   const isResized = resizedElements.has(el.id);
                   let tagWidth, tagHeight;
 
@@ -756,8 +829,8 @@ const StoryEditorPage = () => {
                         width: tagWidth,
                         height: tagHeight,
                       }}
-                      enableResizing={isSelected}
-                      disableDragging={!isSelected}
+                      enableResizing={isSelected && !isEditing}
+                      disableDragging={!isSelected || isEditing}
                       onDragStop={(e, data) => {
                         updateElementPosition(el.id, data.x, data.y);
                       }}
@@ -789,7 +862,7 @@ const StoryEditorPage = () => {
                       }}
                     >
                       <div
-                        className="flex h-full w-full cursor-pointer items-center justify-center rounded-[999px] border border-[#FA4D09] px-[10px] py-[4px] text-center"
+                        className="flex h-full w-full items-center justify-center rounded-[999px] border border-[#FA4D09] px-[10px] py-[4px] text-center"
                         style={{
                           color: el.color,
                           backgroundColor: el.backgroundColor,
@@ -799,8 +872,29 @@ const StoryEditorPage = () => {
                           fontSize: `${(el.fontSize || 14) * Math.pow(Math.min(scale.x, scale.y), 1.2)}px`,
                         }}
                         onClick={(e) => handleElementClick(e, el.id)}
+                        onDoubleClick={(e) =>
+                          handleElementDoubleClick(e, el.id)
+                        }
                       >
-                        {el.content}
+                        {isEditing ? (
+                          <input
+                            type="text"
+                            value={editingText}
+                            onChange={handleTextChange}
+                            onKeyDown={handleTextKeyDown}
+                            onBlur={handleTextSubmit}
+                            autoFocus
+                            className="w-full bg-transparent text-center outline-none"
+                            style={{
+                              color: el.color,
+                              fontSize: `${(el.fontSize || 14) * Math.pow(Math.min(scale.x, scale.y), 1.2)}px`,
+                            }}
+                          />
+                        ) : (
+                          <span className="cursor-pointer select-none">
+                            {el.content}
+                          </span>
+                        )}
                       </div>
                     </Rnd>
                   );
