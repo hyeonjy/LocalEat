@@ -1,13 +1,14 @@
 import { cn } from '@/lib/utils';
 import Image from 'next/image';
 import Link from 'next/link';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef } from 'react';
 
 type SinglePhotoUploadProps = {
-  image: string | File | null;
-  onImageAdd: (file: File | null) => void;
+  image: string | null;
+  onImageAdd: (file: File | string | null) => void;
   type?: 'receipt' | 'story';
   page?: 'standard' | 'graphic';
+  onStoryDataChange?: (data: any) => void;
 };
 
 const SinglePhotoUpload = ({
@@ -15,25 +16,40 @@ const SinglePhotoUpload = ({
   onImageAdd,
   type = 'receipt',
   page = 'standard',
+  onStoryDataChange,
 }: SinglePhotoUploadProps) => {
   const inputRef = useRef<HTMLInputElement>(null);
-  const [receiptUrl, setPhotoUrl] = useState<string | null>(null);
 
+  // localStorage에서 스토리 데이터 로드
   useEffect(() => {
-    if (image instanceof File) {
-      const url = URL.createObjectURL(image);
-      setPhotoUrl(url);
-    }
+    if (type === 'story') {
+      const savedStoryImage = localStorage.getItem('storyImage');
+      const savedStoryData = localStorage.getItem('storyData');
 
-    // 컴포넌트 언마운트 시 또는 image 변경 시 이전 URL 정리
-    return () => {
-      if (image instanceof File) {
-        URL.revokeObjectURL(receiptUrl as string);
+      if (savedStoryImage) {
+        onImageAdd(savedStoryImage);
       }
-    };
-  }, [image]);
+
+      if (savedStoryData) {
+        try {
+          const parsedData = JSON.parse(savedStoryData);
+          onStoryDataChange?.(parsedData);
+        } catch (error) {
+          console.error('스토리 데이터 파싱 실패:', error);
+        }
+      }
+    }
+  }, [type]);
 
   const handleImageDelete = () => {
+    if (type === 'story') {
+      localStorage.removeItem('storyData');
+      localStorage.removeItem('storyImage');
+      if (onStoryDataChange) {
+        onStoryDataChange(null);
+      }
+    }
+
     onImageAdd(null);
     if (inputRef.current) {
       inputRef.current.value = '';
@@ -95,7 +111,7 @@ const SinglePhotoUpload = ({
                 width={24}
                 height={24}
               />
-              <span>스토리 업로드</span>
+              <span>{image ? '스토리 수정' : '스토리 업로드'}</span>
             </Link>
           )}
         </label>
@@ -108,13 +124,22 @@ const SinglePhotoUpload = ({
             )}
             style={{
               backgroundImage: image
-                ? `linear-gradient(0deg, rgba(56, 56, 56, 0.5), rgba(56, 56, 56, 0.5)), url(${receiptUrl})`
+                ? `linear-gradient(0deg, rgba(56, 56, 56, 0.5), rgba(56, 56, 56, 0.5)), url(${image})`
                 : undefined,
             }}
           />
-          <span className="absolute inset-0 z-10 flex items-center justify-center text-[14px] font-semibold leading-[100%] text-white">
-            예시 확인하기
-          </span>
+          {type === 'story' && image ? (
+            <Link
+              href="./graphic/story-editor"
+              className="absolute inset-0 z-10 flex items-center justify-center text-[14px] font-semibold leading-[100%] text-white"
+            >
+              예시 확인하기
+            </Link>
+          ) : (
+            <span className="absolute inset-0 z-10 flex items-center justify-center text-[14px] font-semibold leading-[100%] text-white">
+              예시 확인하기
+            </span>
+          )}
           {image && (
             <button
               type="button"

@@ -3,7 +3,9 @@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { TEMPLATES } from '@/constants/template';
 import type { Template } from '@/types/template';
+import html2canvas from 'html2canvas';
 import Image from 'next/image';
+import { useRouter } from 'next/navigation';
 import { useEffect, useRef, useState } from 'react';
 import { Rnd } from 'react-rnd';
 import EditorHeader from '../../_components/EditorHeader';
@@ -105,22 +107,52 @@ const useResponsiveCanvas = () => {
 };
 
 const StoryEditorPage = () => {
+  const router = useRouter();
   const { canvasW, canvasH, scale } = useResponsiveCanvas();
   const [selectedTemplate, setSelectedTemplate] = useState<Template | null>(
     null,
   );
   const [image, setImage] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const canvasRef = useRef<HTMLDivElement>(null);
 
   const [elements, setElements] = useState<any[]>([]);
   const [selectedElementId, setSelectedElementId] = useState<string | null>(
     null,
   );
-  const [resizedElements, setResizedElements] = useState<Set<string>>(
-    new Set(),
-  );
   const [editingElementId, setEditingElementId] = useState<string | null>(null);
   const [editingText, setEditingText] = useState<string>('');
+
+  // localStorage에서 스토리 데이터 복원
+  useEffect(() => {
+    const savedStoryData = localStorage.getItem('storyData');
+    if (savedStoryData) {
+      try {
+        const storyData = JSON.parse(savedStoryData);
+        console.log('저장된 스토리 데이터 복원:', storyData);
+
+        // 요소 복원
+        if (storyData.elements && storyData.elements.length > 0) {
+          console.log('요소들 복원:', storyData.elements);
+          setElements(storyData.elements);
+        }
+
+        // 템플릿 복원
+        if (storyData.selectedTemplate) {
+          setSelectedTemplate(storyData.selectedTemplate);
+        }
+
+        // 이미지 복원
+        if (storyData.image) {
+          setImage(storyData.image);
+        }
+
+        console.log('복원 완료');
+      } catch (error) {
+        console.error('스토리 데이터 복원 실패:', error);
+      }
+    }
+  }, []);
 
   const calculateTagSize = (content: string, fontSize = 14) => {
     const canvas = document.createElement('canvas');
@@ -158,8 +190,8 @@ const StoryEditorPage = () => {
         color: option.color,
         backgroundColor: option.backgroundColor,
         fontSize: 14,
-        originalWidth: 120,
-        originalHeight: 40,
+        originalWidth: option.width,
+        originalHeight: option.height,
       };
     } else if (option.type === 'tag') {
       const tagSize = calculateTagSize(option.content, 14);
@@ -197,39 +229,19 @@ const StoryEditorPage = () => {
     }
   };
 
-  // 템플릿 선택 시 요소 상태 초기화
-  useEffect(() => {
-    if (selectedTemplate) {
-      setElements(
-        selectedTemplate.elements.map((el) => ({
-          ...el,
-          fontSize: el.fontSize || 14,
-          originalWidth: el.width,
-          originalHeight: el.height,
-        })),
-      );
-      setSelectedElementId(null);
-      setResizedElements(new Set());
-    }
-  }, [selectedTemplate]);
-
-  // 이미지 업로드 시 요소 초기화
-  useEffect(() => {
-    if (image && !selectedTemplate) {
-      setElements([]);
-      setSelectedElementId(null);
-      setResizedElements(new Set());
-    }
-  }, [image, selectedTemplate]);
-
-  // 컴포넌트 언마운트 시 메모리 해제
-  useEffect(() => {
-    return () => {
-      if (image && image.startsWith('blob:')) {
-        URL.revokeObjectURL(image);
-      }
-    };
-  }, [image]);
+  const handleTemplateSelect = (template: Template) => {
+    setSelectedTemplate(template);
+    setImage(template.background);
+    setElements(
+      template.elements.map((el) => ({
+        ...el,
+        fontSize: el.fontSize || 14,
+        originalWidth: el.width,
+        originalHeight: el.height,
+      })),
+    );
+    setSelectedElementId(null);
+  };
 
   const handleDeleteElement = (e?: React.MouseEvent) => {
     if (e) e.stopPropagation();
@@ -251,18 +263,11 @@ const StoryEditorPage = () => {
         id: newId,
         x: el.x + 20,
         y: el.y + 20,
-        // 현재 리사이즈된 크기를 새로운 원본 크기로 설정
         originalWidth: el.width,
         originalHeight: el.height,
         fontSize: el.fontSize || 14,
       };
 
-      // 리사이즈된 요소라면 resizedElements에도 추가
-      if (resizedElements.has(el.id)) {
-        setResizedElements((prev) => new Set(prev).add(newId));
-      }
-
-      // 복사 후 새 요소 선택
       setTimeout(() => setSelectedElementId(newId), 0);
       return [...prev, newEl];
     });
@@ -298,9 +303,7 @@ const StoryEditorPage = () => {
             el.id === editingElementId ? { ...el, content: newText } : el,
           ),
         );
-      }
-      // 빈 텍스트인 경우 원래 내용 유지
-      else {
+      } else {
         window.alert('빈 텍스트는 허용되지 않습니다.');
       }
     }
@@ -324,21 +327,18 @@ const StoryEditorPage = () => {
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file && file.type.startsWith('image/')) {
-      // 이전 이미지 URL이 있으면 메모리에서 해제
-      if (image && image.startsWith('blob:')) {
-        URL.revokeObjectURL(image);
-      }
-
-      const imageUrl = URL.createObjectURL(file);
-      setImage(imageUrl);
-      setSelectedTemplate(null);
-      setElements([]);
-      setSelectedElementId(null);
-      setResizedElements(new Set());
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        const dataUrl = e.target?.result as string;
+        setImage(dataUrl);
+        setSelectedTemplate(null);
+        setElements([]);
+        setSelectedElementId(null);
+      };
+      reader.readAsDataURL(file);
     }
   };
 
-  // 캔버스 클릭 시 선택 해제
   const handleCanvasClick = () => {
     setSelectedElementId(null);
     if (editingElementId) {
@@ -378,7 +378,6 @@ const StoryEditorPage = () => {
             height: height / scale.y,
           };
 
-          // 텍스트나 태그인 경우 fontSize도 조정
           if (el.type === 'text' || el.type === 'tag') {
             const originalFontSize = 14;
             const originalWidth = el.originalWidth || el.width;
@@ -386,7 +385,7 @@ const StoryEditorPage = () => {
             const widthRatio = width / scale.x / originalWidth;
             const heightRatio = height / scale.y / originalHeight;
             const scaleRatio = Math.min(widthRatio, heightRatio);
-            newElement.fontSize = Math.max(originalFontSize * scaleRatio, 8); // 최소 8px
+            newElement.fontSize = Math.max(originalFontSize * scaleRatio, 8);
           }
 
           return newElement;
@@ -472,9 +471,56 @@ const StoryEditorPage = () => {
     },
   };
 
+  const handleSaveStory = async () => {
+    if (!canvasRef.current) return;
+
+    // 모든 선택 및 편집 상태 초기화
+    setSelectedElementId(null);
+    if (editingElementId) {
+      handleTextSubmit();
+    }
+    setEditingElementId(null);
+
+    // DOM 업데이트 대기
+    await new Promise((resolve) => setTimeout(resolve, 150));
+
+    try {
+      // 스토리 JSON 데이터 준비
+      const storyData = {
+        selectedTemplate,
+        image,
+        elements,
+        timestamp: Date.now(),
+      };
+
+      // 캔버스를 이미지로 변환
+      const canvas = await html2canvas(canvasRef.current, {
+        backgroundColor: '#ffffff',
+        scale: 2,
+        useCORS: true,
+        allowTaint: true,
+      });
+
+      // Canvas를 base64 데이터 URL로 변환 (미리보기용)
+      const dataUrl = canvas.toDataURL('image/png');
+
+      localStorage.setItem('storyData', JSON.stringify(storyData));
+      localStorage.setItem('storyImage', dataUrl);
+
+      console.log('스토리 저장 완료');
+      router.back();
+    } catch (error) {
+      console.error('이미지 저장 실패:', error);
+      alert('이미지 저장에 실패했습니다.');
+    }
+  };
+
   return (
     <>
-      <EditorHeader onImageUpload={handleImageUpload} />
+      <EditorHeader
+        onImageUpload={handleImageUpload}
+        onSave={handleSaveStory}
+      />
       <input
         ref={fileInputRef}
         type="file"
@@ -511,13 +557,7 @@ const StoryEditorPage = () => {
                     width={160}
                     height={220}
                     className="cursor-pointer rounded-lg object-cover shadow-md"
-                    onClick={() => {
-                      if (image && image.startsWith('blob:')) {
-                        URL.revokeObjectURL(image);
-                      }
-                      setSelectedTemplate(tpl);
-                      setImage(tpl.background);
-                    }}
+                    onClick={() => handleTemplateSelect(tpl)}
                   />
                 ))}
               </div>
@@ -631,6 +671,7 @@ const StoryEditorPage = () => {
           {/* canvas */}
           <main className="ml-[384px] flex h-[calc(100vh-65px)] flex-1 items-center justify-center bg-[#F5F5F5] py-10 pl-5">
             <div
+              ref={canvasRef}
               className="relative overflow-visible rounded bg-white shadow-inner"
               style={{ width: canvasW, height: canvasH, aspectRatio: '9 / 16' }}
               onClick={handleCanvasClick}
@@ -765,10 +806,7 @@ const StoryEditorPage = () => {
                     <Rnd
                       key={el.id}
                       position={{ x, y }}
-                      size={{
-                        width,
-                        height,
-                      }}
+                      size={{ width, height }}
                       enableResizing={isSelected && !isEditing}
                       disableDragging={!isSelected || isEditing}
                       onDragStop={(e, data) => {
@@ -839,21 +877,8 @@ const StoryEditorPage = () => {
 
                 if (el.type === 'tag') {
                   const isEditing = editingElementId === el.id;
-                  const isResized = resizedElements.has(el.id);
-                  let tagWidth, tagHeight;
-
-                  if (isResized) {
-                    tagWidth = width;
-                    tagHeight = height;
-                  } else {
-                    const calculatedSize = calculateTagSize(
-                      el.content,
-                      (el.fontSize || 14) *
-                        Math.pow(Math.min(scale.x, scale.y), 1.2),
-                    );
-                    tagWidth = calculatedSize.width * scale.x;
-                    tagHeight = calculatedSize.height * scale.y;
-                  }
+                  const tagWidth = width;
+                  const tagHeight = height;
 
                   return (
                     <Rnd
@@ -865,10 +890,7 @@ const StoryEditorPage = () => {
                       }}
                       key={el.id}
                       position={{ x, y }}
-                      size={{
-                        width: tagWidth,
-                        height: tagHeight,
-                      }}
+                      size={{ width: tagWidth, height: tagHeight }}
                       enableResizing={isSelected && !isEditing}
                       disableDragging={!isSelected || isEditing}
                       onDragStop={(e, data) => {
@@ -882,7 +904,6 @@ const StoryEditorPage = () => {
                           parseInt(ref.style.width),
                           parseInt(ref.style.height),
                         );
-                        setResizedElements((prev) => new Set(prev).add(el.id));
                       }}
                       onResize={(e, direction, ref, delta, position) => {
                         updateElementSizeAndPosition(
@@ -892,7 +913,6 @@ const StoryEditorPage = () => {
                           parseInt(ref.style.width),
                           parseInt(ref.style.height),
                         );
-                        setResizedElements((prev) => new Set(prev).add(el.id));
                       }}
                       bounds="parent"
                       resizeHandleStyles={resizeHandleStyles}
