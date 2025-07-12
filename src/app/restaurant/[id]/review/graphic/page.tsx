@@ -19,8 +19,9 @@ const GraphicReviewForm = ({ params }: GraphicReviewPageProps) => {
   const restaurantId = params.id;
   const [rating, setRating] = useState<number>(0);
   const [keywords, setKeywords] = useState<string[]>([]);
-  const [receiptImage, setReceiptImage] = useState<string | File | null>(null);
-  const [storyImage, setStoryImage] = useState<string | File | null>(null);
+  const [receiptImage, setReceiptImage] = useState<string | null>(null);
+  const [storyImage, setStoryImage] = useState<string | null>(null);
+  const [storyData, setStoryData] = useState<any>(null);
 
   const { user, clearUser } = useAuthStore();
   const router = useRouter();
@@ -41,12 +42,35 @@ const GraphicReviewForm = ({ params }: GraphicReviewPageProps) => {
     );
   };
 
-  const handleReceiptAdd = (file: File | null) => {
-    setReceiptImage(file);
+  const handleReceiptAdd = (file: File | string | null) => {
+    if (file instanceof File) {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        const dataUrl = e.target?.result as string;
+        setReceiptImage(dataUrl);
+      };
+      reader.readAsDataURL(file);
+    } else {
+      setReceiptImage(null);
+    }
   };
 
-  const handleStoryAdd = (file: File | null) => {
-    setStoryImage(file);
+  const handleStoryAdd = (file: File | string | null) => {
+    // localStorage에서 로드한 data URL인 경우
+    if (typeof file === 'string') {
+      setStoryImage(file);
+    }
+    // 새로 업로드한 File 객체인 경우
+    else if (file instanceof File) {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        const dataUrl = e.target?.result as string;
+        setStoryImage(dataUrl);
+      };
+      reader.readAsDataURL(file);
+    } else {
+      setStoryImage(null);
+    }
   };
 
   return (
@@ -74,6 +98,7 @@ const GraphicReviewForm = ({ params }: GraphicReviewPageProps) => {
           onImageAdd={handleStoryAdd}
           type="story"
           page="graphic"
+          onStoryDataChange={setStoryData}
         />
       </section>
 
