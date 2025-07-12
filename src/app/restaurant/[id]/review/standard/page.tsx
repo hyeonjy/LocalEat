@@ -116,7 +116,7 @@ const StandardReviewForm = ({ params }: StandardReviewPageProps) => {
     setPhotos(next);
   };
 
-  const handleReceiptAdd = (file: File | null) => {
+  const handleReceiptAdd = (file: File | string | null) => {
     setReceiptImage(file);
   };
 

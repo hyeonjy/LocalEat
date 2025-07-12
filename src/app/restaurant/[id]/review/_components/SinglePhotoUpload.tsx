@@ -4,7 +4,7 @@ import Link from 'next/link';
 import { useEffect, useRef } from 'react';
 
 type SinglePhotoUploadProps = {
-  image: string | null;
+  image: File | string | null;
   onImageAdd: (file: File | string | null) => void;
   type?: 'receipt' | 'story';
   page?: 'standard' | 'graphic';
