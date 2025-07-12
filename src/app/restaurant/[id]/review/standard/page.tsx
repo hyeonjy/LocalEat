@@ -117,7 +117,16 @@ const StandardReviewForm = ({ params }: StandardReviewPageProps) => {
   };
 
   const handleReceiptAdd = (file: File | string | null) => {
-    setReceiptImage(file);
+    if (file instanceof File) {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        const dataUrl = e.target?.result as string;
+        setReceiptImage(dataUrl);
+      };
+      reader.readAsDataURL(file);
+    } else {
+      setReceiptImage(null);
+    }
   };
 
   const handleKeywordToggle = (keyword: string) => {
