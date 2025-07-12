@@ -8,6 +8,7 @@ import {
   StandardReviewPayload,
   StandardReviewProps,
 } from '@/types/restaurant';
+import { revalidatePath } from 'next/cache';
 import { cookies } from 'next/headers';
 
 export const getRestaurantInfoAndMenus = async (id: string) => {
@@ -56,6 +57,9 @@ export const createStandardReview = async (
       `/restaurants/${reviewData.restaurantId}/review/standard`,
       reviewData,
     );
+
+    // 리뷰 등록 후 해당 레스토랑 페이지 캐시 무효화
+    revalidatePath(`/restaurant/${reviewData.restaurantId}`);
 
     return { success: true, data: res.data };
   } catch (error: any) {
