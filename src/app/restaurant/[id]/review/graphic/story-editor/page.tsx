@@ -472,7 +472,12 @@ const StoryEditorPage = () => {
   };
 
   const handleSaveStory = async () => {
-    if (!canvasRef.current) return;
+    if (!canvasRef.current) {
+      alert('canvasRef.current가 null입니다.');
+      return;
+    }
+
+    console.log('스토리 저장 시작...');
 
     // 모든 선택 및 편집 상태 초기화
     setSelectedElementId(null);
@@ -485,6 +490,12 @@ const StoryEditorPage = () => {
     await new Promise((resolve) => setTimeout(resolve, 150));
 
     try {
+      console.log('배경 이미지 추출 중...');
+      // 배경 이미지 추출
+      const bgImage = selectedTemplate ? selectedTemplate.background : image;
+      console.log('bgImage:', bgImage);
+
+      console.log('스토리 데이터 준비 중...');
       // 스토리 JSON 데이터 준비
       const storyData = {
         selectedTemplate,
@@ -492,22 +503,32 @@ const StoryEditorPage = () => {
         elements,
         timestamp: Date.now(),
       };
+      console.log('storyData:', storyData);
 
-      // 캔버스를 이미지로 변환
+      console.log('html2canvas 실행 중...');
+
+      // 캔버스를 이미지로 변환 (전체 미리보기용)
       const canvas = await html2canvas(canvasRef.current, {
         backgroundColor: '#ffffff',
-        scale: 2,
+        scale: 1,
         useCORS: true,
         allowTaint: true,
       });
+      console.log('html2canvas 완료');
 
-      // Canvas를 base64 데이터 URL로 변환 (미리보기용)
-      const dataUrl = canvas.toDataURL('image/png');
+      console.log('이미지 데이터 URL 생성 중...');
+      // Canvas를 base64 데이터 URL로 변환 (JPEG 포맷으로 압축)
+      const previewImage = canvas.toDataURL('image/jpeg', 0.8);
+      console.log('previewImage 길이:', previewImage.length);
 
+      console.log('localStorage 저장 중...');
       localStorage.setItem('storyData', JSON.stringify(storyData));
-      localStorage.setItem('storyImage', dataUrl);
+      localStorage.setItem('storyPreviewImage', previewImage); // 전체 캔버스 이미지
+      localStorage.setItem('storyBgImage', bgImage || ''); // 배경 이미지만
 
       console.log('스토리 저장 완료');
+      console.log('previewImage 저장:', previewImage ? '완료' : '실패');
+      console.log('bgImage 저장:', bgImage ? '완료' : '실패');
       router.back();
     } catch (error) {
       console.error('이미지 저장 실패:', error);

@@ -23,7 +23,7 @@ const SinglePhotoUpload = ({
   // localStorage에서 스토리 데이터 로드
   useEffect(() => {
     if (type === 'story') {
-      const savedStoryImage = localStorage.getItem('storyImage');
+      const savedStoryImage = localStorage.getItem('storyPreviewImage');
       const savedStoryData = localStorage.getItem('storyData');
 
       if (savedStoryImage) {
@@ -44,7 +44,8 @@ const SinglePhotoUpload = ({
   const handleImageDelete = () => {
     if (type === 'story') {
       localStorage.removeItem('storyData');
-      localStorage.removeItem('storyImage');
+      localStorage.removeItem('storyPreviewImage');
+      localStorage.removeItem('storyBgImage');
       if (onStoryDataChange) {
         onStoryDataChange(null);
       }
