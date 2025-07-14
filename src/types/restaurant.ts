@@ -89,6 +89,19 @@ export type StandardReviewPayload = {
   }[];
 };
 
+export type GraphicReviewPayload = {
+  restaurantId: string;
+  userId: number;
+  keywords: string[];
+  rating: number;
+  photos: {
+    type: 'receipt' | 'story';
+    imageUrl: string;
+  }[];
+  storyImage: string;
+  storyData: any;
+};
+
 export type keywordSummaryProps = {
   keyword: string;
   count: number;

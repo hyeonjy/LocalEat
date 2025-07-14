@@ -1,7 +1,11 @@
 'use client';
 
-import { getRestaurantInfoAndMenus } from '@/app/actions/restaurant';
+import {
+  createGraphicReview,
+  getRestaurantInfoAndMenus,
+} from '@/app/actions/restaurant';
 import { useAuthStore } from '@/store/authStore';
+import { GraphicReviewPayload } from '@/types/restaurant';
 import { useQuery } from '@tanstack/react-query';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
@@ -22,7 +26,6 @@ const GraphicReviewForm = ({ params }: GraphicReviewPageProps) => {
   const [receiptImage, setReceiptImage] = useState<string | null>(null);
   const [storyImage, setStoryImage] = useState<string | null>(null);
   const [storyData, setStoryData] = useState<any>(null);
-
   const { user, clearUser } = useAuthStore();
   const router = useRouter();
 
@@ -33,6 +36,72 @@ const GraphicReviewForm = ({ params }: GraphicReviewPageProps) => {
 
   if (isPending) return <div>Loading...</div>;
   if (error) return <div>Error: {error.message}</div>;
+
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+
+    const formData = new FormData(e.currentTarget);
+
+    // localStorage에서 스토리 이미지들 가져오기
+    const storyPreviewImage = localStorage.getItem('storyPreviewImage');
+    const storyBgImage = localStorage.getItem('storyBgImage');
+
+    if (receiptImage) {
+      formData.append('photos', receiptImage);
+      formData.append('photoTypes', 'receipt');
+    }
+
+    if (storyPreviewImage) {
+      formData.append('photos', storyPreviewImage);
+      formData.append('photoTypes', 'storyPreview');
+    }
+
+    if (storyBgImage) {
+      formData.append('photos', storyBgImage);
+      formData.append('photoTypes', 'storyBg');
+    }
+
+    const res = await fetch('/api/upload', {
+      method: 'POST',
+      body: formData,
+    });
+
+    const result = await res.json();
+
+    console.log('result: ', result);
+
+    const review = {
+      restaurantId,
+      userId: user?.id,
+      keywords,
+      rating,
+      photos: result.uploadedPhotos,
+      elements: storyData?.elements,
+    };
+
+    console.log('review: ', review);
+
+    try {
+      const result = await createGraphicReview(review as GraphicReviewPayload);
+
+      if (!result.success) {
+        if (result.reason === 'UNAUTHORIZED') {
+          alert('로그인 세션이 만료되었습니다. 다시 로그인해주세요.');
+          clearUser();
+          router.push('/signin');
+          return;
+        }
+
+        alert('리뷰 등록 실패');
+        return;
+      }
+
+      alert('리뷰 등록 성공');
+      router.push(`/restaurant/${restaurantId}`);
+    } catch (error: any) {
+      alert('리뷰 등록 실패');
+    }
+  };
 
   const handleKeywordToggle = (keyword: string) => {
     setKeywords((prev) =>
@@ -74,7 +143,10 @@ const GraphicReviewForm = ({ params }: GraphicReviewPageProps) => {
   };
 
   return (
-    <form className="mt-[64px] flex flex-col items-center">
+    <form
+      onSubmit={handleSubmit}
+      className="mt-[64px] flex flex-col items-center"
+    >
       <RestaurantInfo
         restaurant={data.restaurant}
         rating={rating}
