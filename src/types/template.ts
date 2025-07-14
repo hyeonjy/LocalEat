@@ -21,3 +21,19 @@ export interface TemplateElement {
   color?: string;
   flipX?: boolean;
 }
+
+export interface TemplateElementAPI {
+  id: string;
+  type: 'text' | 'sticker' | 'tag';
+  src?: string;
+  content?: string;
+  x: number;
+  y: number;
+  width: number;
+  height: number;
+  rotation?: number;
+  font_size?: number;
+  background_color?: string;
+  color?: string;
+  flip_x?: boolean;
+}

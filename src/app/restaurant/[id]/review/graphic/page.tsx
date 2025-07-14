@@ -96,6 +96,10 @@ const GraphicReviewForm = ({ params }: GraphicReviewPageProps) => {
         return;
       }
 
+      localStorage.removeItem('storyPreviewImage');
+      localStorage.removeItem('storyBgImage');
+      localStorage.removeItem('storyData');
+
       alert('리뷰 등록 성공');
       router.push(`/restaurant/${restaurantId}`);
     } catch (error: any) {

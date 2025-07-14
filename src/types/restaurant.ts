@@ -1,3 +1,5 @@
+import { TemplateElement, TemplateElementAPI } from './template';
+
 export type OpeningHourProps = {
   open?: string;
   close?: string;
@@ -89,17 +91,34 @@ export type StandardReviewPayload = {
   }[];
 };
 
+export type GraphicReviewProps = {
+  id: number;
+  user_id: number;
+  restaurant_id: number;
+  type: 'graphic';
+  rating: number;
+  created_at: string;
+  updated_at: string;
+  keywords: string[];
+  visit_count: number;
+  nickname: string;
+  profile_image: string;
+  elements: TemplateElementAPI[];
+  background_image_url: string;
+  receipt_image_url?: string;
+  story_preview_url: string;
+};
+
 export type GraphicReviewPayload = {
   restaurantId: string;
   userId: number;
   keywords: string[];
   rating: number;
   photos: {
-    type: 'receipt' | 'story';
+    type: 'receipt' | 'storyBg' | 'storyPreview';
     imageUrl: string;
   }[];
-  storyImage: string;
-  storyData: any;
+  elements: TemplateElement[];
 };
 
 export type keywordSummaryProps = {
