@@ -5,6 +5,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { cn } from '@/lib/utils';
 import { useAuthStore } from '@/store/authStore';
 import {
+  GraphicReviewProps,
   keywordSummaryProps,
   ReactionProps,
   StandardReviewProps,
@@ -14,18 +15,24 @@ import { useCallback, useEffect, useState } from 'react';
 
 type ReviewTabsProps = {
   standardReviews: StandardReviewProps[];
-  graphicReviews: [];
-  keywordSummary: keywordSummaryProps[];
+  graphicReviews: GraphicReviewProps[];
+  keywords: {
+    standard: keywordSummaryProps[];
+    graphic: keywordSummaryProps[];
+  };
   restaurantId: string;
 };
 
 const ReviewTabs = ({
   standardReviews,
   graphicReviews,
-  keywordSummary,
+  keywords,
   restaurantId,
 }: ReviewTabsProps) => {
   const [myReactions, setMyReactions] = useState<ReactionProps[]>([]);
+
+  console.log('graphicReviews: ', graphicReviews);
+  console.log('keywords: ', keywords);
 
   const isReacted = useCallback(
     (reviewId: number, type: string) =>
@@ -93,7 +100,7 @@ const ReviewTabs = ({
                     alt={standardReview.nickname}
                     width={40}
                     height={40}
-                    className="mr-[10px] h-[40px] w-[40ox] rounded-[50%] bg-white"
+                    className="mr-[10px] h-[40px] w-[40px] rounded-[50%] bg-white"
                   />
                   <p className="text-lm mr-[12px] font-semibold">
                     {standardReview.nickname}
@@ -147,9 +154,52 @@ const ReviewTabs = ({
           </p>
         )}
       </TabsContent>
-      <TabsContent value="graphic" className="mx-auto w-full max-w-[1120px]">
+      <TabsContent
+        value="graphic"
+        className="mx-auto flex w-full max-w-[1120px] gap-[24px]"
+      >
         {graphicReviews.length > 0 ? (
-          <p className="my-[10px]">리얼 스토리 리뷰들</p>
+          graphicReviews.map((graphicReview) => {
+            const created_at = new Date(graphicReview.created_at);
+            const isThisYear =
+              created_at.getFullYear() === new Date().getFullYear();
+
+            const formattedDate = isThisYear
+              ? `${String(created_at.getMonth() + 1).padStart(2, '0')}.${String(created_at.getDate()).padStart(2, '0')}`
+              : `${created_at.getFullYear()}.${String(created_at.getMonth() + 1).padStart(2, '0')}.${String(created_at.getDate()).padStart(2, '0')}`;
+
+            return (
+              <div
+                key={graphicReview.id}
+                className="relative h-[494px] w-[290px] overflow-hidden rounded-[16px]"
+              >
+                <Image
+                  src={graphicReview.story_preview_url}
+                  alt="photo"
+                  width="290"
+                  height="440"
+                  className="h-[440px] w-[290px]"
+                />
+                <div className="absolute bottom-0 left-0 flex w-full items-center justify-between bg-[#2E2E32] px-[16px] py-[12px]">
+                  <div className="flex items-center">
+                    <Image
+                      src={graphicReview.profile_image}
+                      alt={graphicReview.nickname}
+                      width={30}
+                      height={30}
+                      className="mr-[4px] h-[30px] w-[30px] rounded-[50%] bg-white"
+                    />
+                    <p className="text-[14px] font-semibold leading-[130%] text-white">
+                      {graphicReview.nickname}
+                    </p>
+                  </div>
+                  <p className="text-[14px] font-normal leading-[100%] text-white">
+                    {formattedDate} • {graphicReview.visit_count}번째 방문
+                  </p>
+                </div>
+              </div>
+            );
+          })
         ) : (
           <p className="my-[50px] ml-[10px] text-lg text-gray-500">
             리얼 스토리가 없습니다. 첫 리뷰를 남겨주세요.

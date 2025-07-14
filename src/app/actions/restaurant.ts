@@ -3,6 +3,7 @@
 import { createServerApi } from '@/lib/serverApi';
 import {
   GraphicReviewPayload,
+  GraphicReviewProps,
   keywordSummaryProps,
   MenuProps,
   RestaurantProps,
@@ -30,8 +31,8 @@ export const getRestaurantById = async (
 ): Promise<{
   restaurant: RestaurantProps;
   menus: MenuProps[];
-  reviews: { standard: StandardReviewProps[]; graphic: [] };
-  keywordSummary: keywordSummaryProps[];
+  reviews: { standard: StandardReviewProps[]; graphic: GraphicReviewProps[] };
+  keywords: { standard: keywordSummaryProps[]; graphic: keywordSummaryProps[] };
 }> => {
   const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
 
