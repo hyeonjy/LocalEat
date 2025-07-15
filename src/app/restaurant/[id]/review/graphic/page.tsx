@@ -43,17 +43,11 @@ const GraphicReviewForm = ({ params }: GraphicReviewPageProps) => {
     const formData = new FormData(e.currentTarget);
 
     // localStorage에서 스토리 이미지들 가져오기
-    const storyPreviewImage = localStorage.getItem('storyPreviewImage');
     const storyBgImage = localStorage.getItem('storyBgImage');
 
     if (receiptImage) {
       formData.append('photos', receiptImage);
       formData.append('photoTypes', 'receipt');
-    }
-
-    if (storyPreviewImage) {
-      formData.append('photos', storyPreviewImage);
-      formData.append('photoTypes', 'storyPreview');
     }
 
     if (storyBgImage) {
@@ -96,7 +90,6 @@ const GraphicReviewForm = ({ params }: GraphicReviewPageProps) => {
         return;
       }
 
-      localStorage.removeItem('storyPreviewImage');
       localStorage.removeItem('storyBgImage');
       localStorage.removeItem('storyData');
 
