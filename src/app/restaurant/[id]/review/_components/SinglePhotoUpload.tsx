@@ -1,7 +1,8 @@
 import { cn } from '@/lib/utils';
 import Image from 'next/image';
 import Link from 'next/link';
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
+import StoryPreview from './StoryPreview';
 
 type SinglePhotoUploadProps = {
   image: File | string | null;
@@ -19,24 +20,27 @@ const SinglePhotoUpload = ({
   onStoryDataChange,
 }: SinglePhotoUploadProps) => {
   const inputRef = useRef<HTMLInputElement>(null);
+  const [storyData, setStoryData] = useState<any>(null);
+  const [storyBgImage, setStoryBgImage] = useState<string>('');
 
   // localStorage에서 스토리 데이터 로드
   useEffect(() => {
     if (type === 'story') {
-      const savedStoryImage = localStorage.getItem('storyPreviewImage');
       const savedStoryData = localStorage.getItem('storyData');
-
-      if (savedStoryImage) {
-        onImageAdd(savedStoryImage);
-      }
+      const savedStoryBgImage = localStorage.getItem('storyBgImage');
 
       if (savedStoryData) {
         try {
           const parsedData = JSON.parse(savedStoryData);
+          setStoryData(parsedData);
           onStoryDataChange?.(parsedData);
         } catch (error) {
           console.error('스토리 데이터 파싱 실패:', error);
         }
+      }
+
+      if (savedStoryBgImage) {
+        setStoryBgImage(savedStoryBgImage);
       }
     }
   }, [type]);
@@ -44,8 +48,9 @@ const SinglePhotoUpload = ({
   const handleImageDelete = () => {
     if (type === 'story') {
       localStorage.removeItem('storyData');
-      localStorage.removeItem('storyPreviewImage');
       localStorage.removeItem('storyBgImage');
+      setStoryData(null);
+      setStoryBgImage('');
       if (onStoryDataChange) {
         onStoryDataChange(null);
       }
@@ -118,37 +123,64 @@ const SinglePhotoUpload = ({
         </label>
 
         <div className="relative h-[178px] w-[120px] overflow-hidden rounded-[20px] border">
-          <div
-            className={cn(
-              'absolute inset-0 bg-cover bg-center bg-no-repeat',
-              image ? '' : 'bg-gray-200',
-            )}
-            style={{
-              backgroundImage: image
-                ? `linear-gradient(0deg, rgba(56, 56, 56, 0.5), rgba(56, 56, 56, 0.5)), url(${image})`
-                : undefined,
-            }}
-          />
-          {type === 'story' && image ? (
-            <Link
-              href="./graphic/story-editor"
-              className="absolute inset-0 z-10 flex items-center justify-center text-[14px] font-semibold leading-[100%] text-white"
-            >
-              예시 확인하기
-            </Link>
+          {type === 'story' && storyData ? (
+            <>
+              <StoryPreview
+                backgroundImage={storyBgImage}
+                elements={storyData.elements}
+                previewW={120}
+                previewH={178}
+              />
+              <div className="absolute inset-0 z-10 bg-black/50" />
+              <Link
+                href="./graphic/story-editor"
+                className="absolute inset-0 z-20 flex items-center justify-center text-[14px] font-semibold leading-[100%] text-white"
+              >
+                예시 확인하기
+              </Link>
+              <button
+                type="button"
+                onClick={handleImageDelete}
+                className="absolute right-2 top-2 z-30 cursor-pointer rounded bg-black/50 px-2 py-0.5 text-xs text-white"
+              >
+                삭제
+              </button>
+            </>
           ) : (
-            <span className="absolute inset-0 z-10 flex items-center justify-center text-[14px] font-semibold leading-[100%] text-white">
-              예시 확인하기
-            </span>
-          )}
-          {image && (
-            <button
-              type="button"
-              onClick={handleImageDelete}
-              className="absolute right-2 top-2 z-20 cursor-pointer rounded bg-black/50 px-2 py-0.5 text-xs text-white"
-            >
-              삭제
-            </button>
+            <>
+              <div
+                className={cn(
+                  'absolute inset-0 bg-cover bg-center bg-no-repeat',
+                  image ? '' : 'bg-gray-200',
+                )}
+                style={{
+                  backgroundImage: image
+                    ? `linear-gradient(0deg, rgba(56, 56, 56, 0.5), rgba(56, 56, 56, 0.5)), url(${image})`
+                    : undefined,
+                }}
+              />
+              {type === 'story' && image ? (
+                <Link
+                  href="./graphic/story-editor"
+                  className="absolute inset-0 z-10 flex items-center justify-center text-[14px] font-semibold leading-[100%] text-white"
+                >
+                  예시 확인하기
+                </Link>
+              ) : (
+                <span className="absolute inset-0 z-10 flex items-center justify-center text-[14px] font-semibold leading-[100%] text-white">
+                  예시 확인하기
+                </span>
+              )}
+              {image && (
+                <button
+                  type="button"
+                  onClick={handleImageDelete}
+                  className="absolute right-2 top-2 z-20 cursor-pointer rounded bg-black/50 px-2 py-0.5 text-xs text-white"
+                >
+                  삭제
+                </button>
+              )}
+            </>
           )}
         </div>
       </div>

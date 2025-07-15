@@ -12,6 +12,7 @@ import {
 } from '@/types/restaurant';
 import Image from 'next/image';
 import { useCallback, useEffect, useState } from 'react';
+import StoryPreview from '../[id]/review/_components/StoryPreview';
 
 type ReviewTabsProps = {
   standardReviews: StandardReviewProps[];
@@ -168,18 +169,27 @@ const ReviewTabs = ({
               ? `${String(created_at.getMonth() + 1).padStart(2, '0')}.${String(created_at.getDate()).padStart(2, '0')}`
               : `${created_at.getFullYear()}.${String(created_at.getMonth() + 1).padStart(2, '0')}.${String(created_at.getDate()).padStart(2, '0')}`;
 
+            console.log('elements: ', graphicReview.elements);
             return (
               <div
                 key={graphicReview.id}
                 className="relative h-[494px] w-[290px] overflow-hidden rounded-[16px]"
               >
-                <Image
+                {/* <Image
                   src={graphicReview.story_preview_url}
                   alt="photo"
                   width="290"
                   height="440"
                   className="h-[440px] w-[290px]"
-                />
+                /> */}
+                <div className="relative h-[440px] w-[290px]">
+                  <StoryPreview
+                    backgroundImage={graphicReview.background_image_url}
+                    elements={graphicReview.elements}
+                    previewW={290}
+                    previewH={440}
+                  />
+                </div>
                 <div className="absolute bottom-0 left-0 flex w-full items-center justify-between bg-[#2E2E32] px-[16px] py-[12px]">
                   <div className="flex items-center">
                     <Image
