@@ -42,9 +42,9 @@ const page = () => {
   }
   return (
     <div>
-      <div className="mx-auto mt-[113px] flex w-[1920px] min-w-[1200px] gap-[126px]">
+      <div className="mx-auto mt-[113px] flex w-[1200px] gap-[126px]">
         <aside className="flex w-[282px] flex-col items-start gap-[20px]">
-          <div className="flex gap-[49px]">
+          <div className="flex w-[282px] gap-[49px]">
             <div className="flex items-center gap-[17px]">
               <div className="aspect-square h-[80px] w-[80px] rounded-full bg-[#ccc]">
                 {/* 이미지 */}
