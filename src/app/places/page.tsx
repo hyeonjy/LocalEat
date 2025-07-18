@@ -17,20 +17,39 @@ const page = () => {
           <p className="mt-[8px] font-[Pretendard] text-[20px] font-semibold leading-[130%] tracking-[-0.3px] text-white">
             방문 횟수, 리뷰를 바탕으로 검증된 로컬 맛집만 소개합니다.
           </p>
-          <input
-            className="mt-[32px] flex h-[60px] w-[524px] shrink-0 items-center gap-2 rounded-[12px] border border-[#92929B] bg-white px-[20px] py-[16px]"
-            type="search"
-            placeholder="지역명을 입력하세요"
-          />
+          <div className="mt-[32px] flex gap-[4px]">
+            <button
+              type="button"
+              className="flex h-[64px] w-[138px] items-center gap-[10px] rounded-[13px] bg-[#FFF] p-[10px_16px] text-[16px] font-normal leading-[130%] text-[#171719]"
+            >
+              <img alt="위치탐색_아이콘" src="assets/icons/mylocation.svg" />
+              서울 전체
+            </button>
+            <div className="relative">
+              <input
+                className="flex h-[64px] w-[524px] shrink-0 items-center gap-2 rounded-[12px] border border-[#92929B] bg-white px-[20px] py-[16px]"
+                type="search"
+                placeholder="지역명을 입력하세요"
+              />
+              <img
+                className="absolute right-[20px] top-1/2 -translate-y-1/2"
+                alt="검색_아이콘"
+                src="assets/icons/search.svg"
+              />
+            </div>
+          </div>
         </div>
       </section>
       <section className="w-full">
-        <span className="mx-auto mt-[35px] block w-[1200px] font-[Pretendard] text-[14px] font-semibold leading-[130%] text-[#92929B]">
+        <div className="mx-auto mt-[35px] block flex w-[1200px] items-center gap-[4px] font-[Pretendard] text-[14px] font-semibold leading-[130%] text-[#92929B]">
+          <img alt="중요알림_아이콘" src="assets/icons/error_outline.svg" />
           매주 수요일 업데이트 · 현재 기준일: 5.28
-        </span>
-        <ul className="mx-auto mt-[15px] w-[1200px] flex-col gap-[64px]">
+        </div>
+        <ul className="mx-auto mt-[15px] flex w-[1200px] flex-col gap-[64px]">
           <li className="flex h-[426px] gap-[46px]">
-            <div className="w-[519px] rounded-[20px] bg-[#ccc]">이미지</div>
+            <div className="w-[519px] rounded-[20px] bg-[#ccc]">
+              {/*이미지 영역*/}
+            </div>
             <div className="w-[635px]">
               <div className="flex items-center gap-[10px]">
                 <span className="font-pretendard flex items-center justify-center gap-[10px] rounded-[4px] bg-[#FEEDE6] px-[6px] py-[4px] text-[16px] font-normal leading-[130%] text-[#FA4D09]">
@@ -40,7 +59,7 @@ const page = () => {
                   신당역
                 </span>
               </div>
-              <h3 className="font-pretendard flex items-center gap-[10px] pt-[10px] text-[34px] font-semibold leading-[140%] tracking-[-0.85px] text-[#171719]">
+              <h3 className="font-pretendard flex items-end gap-[10px] pt-[10px] text-[34px] font-semibold leading-[140%] tracking-[-0.85px] text-[#171719]">
                 1. 원조 남원 닭발
                 <span className="font-[Pretendard] text-[14px] font-normal leading-[100%] text-[#787882]">
                   리뷰 287
@@ -92,7 +111,9 @@ const page = () => {
             </div>
           </li>
           <li className="flex h-[426px] gap-[46px]">
-            <div className="w-[519px] rounded-[20px] bg-[#ccc]">이미지</div>
+            <div className="w-[519px] rounded-[20px] bg-[#ccc]">
+              {/*이미지 영역*/}
+            </div>
             <div className="w-[635px]">
               <div className="flex items-center gap-[10px]">
                 <span className="font-pretendard flex items-center justify-center gap-[10px] rounded-[4px] bg-[#FEEDE6] px-[6px] py-[4px] text-[16px] font-normal leading-[130%] text-[#FA4D09]">
@@ -102,7 +123,7 @@ const page = () => {
                   신당역
                 </span>
               </div>
-              <h3 className="font-pretendard flex items-center gap-[10px] pt-[10px] text-[34px] font-semibold leading-[140%] tracking-[-0.85px] text-[#171719]">
+              <h3 className="font-pretendard flex items-end gap-[10px] pt-[10px] text-[34px] font-semibold leading-[140%] tracking-[-0.85px] text-[#171719]">
                 1. 원조 남원 닭발
                 <span className="font-[Pretendard] text-[14px] font-normal leading-[100%] text-[#787882]">
                   리뷰 287
