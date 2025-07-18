@@ -16,11 +16,8 @@ const RestaurantDetail = async ({ params }: RestaurantDetailProps) => {
 
   return (
     <div className="mt-[64px] flex w-full flex-col items-center">
-      <RestaurantHeader
-        restaurant={restaurant}
-        reviewCount={reviews.standard.length + reviews.graphic.length}
-      />
-      <MenuSection menus={menus} />
+      <RestaurantHeader restaurant={restaurant} />
+      <MenuSection name={restaurant.name} menus={menus} />
       <ReviewTabs
         standardReviews={reviews.standard}
         graphicReviews={reviews.graphic}

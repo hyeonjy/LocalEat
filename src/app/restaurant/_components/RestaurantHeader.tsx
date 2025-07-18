@@ -1,57 +1,38 @@
 import { getRestaurantStatus } from '@/lib/getRestaurantStatus';
 import { RestaurantProps } from '@/types/restaurant';
 import Image from 'next/image';
-import ReviewWriteButton from './ReviewWriteButton';
+import RestaurantHeaderButton from './RestaurantHeaderButton';
 
 type RestaurantHeaderProps = {
   restaurant: RestaurantProps;
-  reviewCount: number;
 };
 
-const RestaurantHeader = ({
-  restaurant,
-  reviewCount,
-}: RestaurantHeaderProps) => {
+const RestaurantHeader = ({ restaurant }: RestaurantHeaderProps) => {
   const openingState = getRestaurantStatus(restaurant.opening_hours);
 
   return (
-    <div className="flex h-[524px] w-full items-center justify-between gap-[65px] px-5 xl:w-[1200px] xl:px-0">
+    <div className="mb-[64px] mt-[32px] flex h-[342px] w-full items-center justify-between gap-[24px] xl:w-[1200px] xl:px-0">
       <Image
         alt={`${restaurant.name} 대표 이미지`}
         src={restaurant.image_url}
-        width="546"
-        height="423"
-        className="h-[423px] rounded-[16px]"
+        width="588"
+        height="342"
+        className="h-[342px] w-[588px] rounded-[12px]"
       />
 
-      <div className="w-[589px]">
-        <p className="mb-2 flex items-center gap-2 text-title-mm text-[#7F7F7F]">
+      <div className="w-[588px]">
+        <p className="mb-[4px] flex items-center gap-2 text-[16px] font-normal leading-[130%] text-[#787882]">
           <span>{restaurant.address.split(' ')[0]}</span>
           <span>|</span>
           <span>{restaurant.category}</span>
         </p>
 
-        <div className="flex w-full justify-between">
-          <h1 className="text-title-2xl">{restaurant.name}</h1>
-          <div className="flex">
-            <Image
-              src="/assets/icons/favorite.svg"
-              alt="좋아요 버튼"
-              width={24}
-              height={24}
-              className="mr-[16px]"
-            />
-            <Image
-              src="/assets/icons/share.svg"
-              alt="공유 버튼"
-              width={24}
-              height={24}
-            />
-          </div>
-        </div>
+        <h1 className="mb-[8px] text-[32px] font-bold leading-[130%]">
+          {restaurant.name}
+        </h1>
 
-        <p className="mb-[24px] flex h-[22px] items-center gap-1 text-title-mb">
-          <span className="flex gap-[2px]">
+        <div className="mb-[20px] flex h-[41px] items-center gap-[6px] border-b border-[#E2E2E4] pb-[20px] text-[16px] font-medium leading-[130%]">
+          <div className="flex gap-[2px]">
             <Image
               src="/assets/icons/star2.svg"
               alt="별점 아이콘"
@@ -59,13 +40,12 @@ const RestaurantHeader = ({
               height={20}
               className="h-[20px]"
             />
-            0.0
-          </span>
-          <span>|</span>
-          <span>리뷰 {reviewCount}개</span>
-        </p>
+            {restaurant.averageRating}
+          </div>
+          <p>리뷰 {restaurant.reviewCount}</p>
+        </div>
 
-        <p className="mb-[12px] flex h-[24px] items-center gap-2 text-body-mm text-[#646464]">
+        <p className="mb-[10px] flex h-[24px] items-center gap-2 text-[16px] font-normal leading-[130%] text-[#171719]">
           <Image
             src="/assets/icons/distance.svg"
             alt="위치 아이콘"
@@ -75,7 +55,7 @@ const RestaurantHeader = ({
           {restaurant.address}
         </p>
 
-        <p className="mb-[12px] flex h-[24px] items-center gap-2 text-body-mm text-[#646464]">
+        <p className="mb-[10px] flex h-[24px] items-center gap-2 text-[16px] font-normal leading-[130%] text-[#171719]">
           <Image
             src="/assets/icons/alarm.svg"
             alt="시계 아이콘"
@@ -85,7 +65,7 @@ const RestaurantHeader = ({
           {openingState}
         </p>
 
-        <p className="mb-[12px] flex h-[24px] items-center gap-2 text-body-mm text-[#646464]">
+        <p className="mb-[10px] flex h-[24px] items-center gap-2 text-[16px] font-normal leading-[130%] text-[#171719]">
           <Image
             src="/assets/icons/call.svg"
             alt="전화 아이콘"
@@ -95,9 +75,9 @@ const RestaurantHeader = ({
           {restaurant.phone}
         </p>
 
-        <p className="mb-[32px] flex h-[24px] items-center gap-2 text-body-mm text-[#646464]">
+        <p className="mb-[30px] flex h-[24px] items-center gap-2 text-[16px] font-normal leading-[130%] text-[#171719]">
           <Image
-            src="/assets/icons/chat_info.svg"
+            src="/assets/icons/info.svg"
             alt="정보 아이콘"
             width={24}
             height={24}
@@ -105,7 +85,7 @@ const RestaurantHeader = ({
           {restaurant.parking ? '주차 가능' : '주차 불가'} |{' '}
           {restaurant.pet_allowed ? '반려동물 출입 가능' : '반려동물 출입 제한'}
         </p>
-        <ReviewWriteButton restaurantId={restaurant.id} />
+        <RestaurantHeaderButton restaurantId={restaurant.id} />
       </div>
     </div>
   );
