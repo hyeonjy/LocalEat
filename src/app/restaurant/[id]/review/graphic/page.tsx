@@ -91,7 +91,7 @@ const GraphicReviewForm = ({ params }: GraphicReviewPageProps) => {
 
     // 업로드된 이미지들과 기존 템플릿 이미지를 합침
     const allPhotos = [
-      ...result.uploadedPhotos,
+      ...result?.uploadedPhotos,
       isPresetTemplate && {
         type: 'storyBg',
         imageUrl: storyBgImage,
