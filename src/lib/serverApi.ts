@@ -31,7 +31,11 @@ export const createServerApi = (
         }
 
         try {
-          const { data } = await api.post('/users/refresh', null, {
+          const refreshApi = axios.create({
+            baseURL: process.env.NEXT_PUBLIC_BACKEND_URL,
+          });
+
+          const { data } = await refreshApi.post('/users/refresh', null, {
             headers: { Authorization: `Bearer ${refreshToken}` },
           });
 
