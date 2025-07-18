@@ -31,6 +31,8 @@ export type RestaurantProps = {
   pet_allowed?: boolean;
   image_url: string;
   created_at: string;
+  reviewCount: number;
+  averageRating: number;
 };
 
 export type MenuProps = {
