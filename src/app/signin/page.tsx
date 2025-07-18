@@ -1,8 +1,11 @@
 'use client';
 
 import { useAuthStore } from '@/store/authStore';
+import { KAKAO_AUTH_URL } from '@/types/auth';
 import { zodResolver } from '@hookform/resolvers/zod';
+import Link from 'next/link';
 import { useRouter } from 'next/navigation';
+import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 
@@ -21,6 +24,9 @@ const Signin = () => {
   } = useForm<FormData>({
     resolver: zodResolver(schema),
   });
+
+  // 간편 로그인 , 로그인 네비게이션
+  const [step, setStep] = useState<'select' | 'signin'>('select');
 
   const router = useRouter();
 
@@ -51,42 +57,119 @@ const Signin = () => {
     }
   };
 
+  // 로그아웃 로직 다른 곳으로 이전 예정
+  // const handleLogout = async () => {
+  //   console.log(1);
+  //   await fetch('http://localhost:4000/auth/logout', {
+  //     method: 'POST',
+  //     credentials: 'include', // 쿠키를 함께 보내려면 꼭 필요함
+  //   });
+  //   router.push('/signin');
+  // };
+
   return (
-    <div className="flex min-h-screen items-center justify-center bg-gray-50">
-      <form
-        onSubmit={handleSubmit(onSubmit)}
-        className="w-full max-w-md rounded-lg bg-white p-8 shadow-md"
-      >
-        <h2 className="mb-6 text-center text-2xl font-bold text-gray-800">
-          로그인
-        </h2>
+    <div className="mx-auto mt-[154px] w-[364px] text-center">
+      {step == 'select' && (
+        <div className="mx-auto mt-[154px] w-[364px] text-center">
+          <h2 className="w-full text-center text-[32px] font-bold leading-[130%] tracking-[-0.48px] text-[#171719]">
+            쉽고 간편하게
+            <br />
+            로그인할 수 있어요.
+          </h2>
+          <p className="pt-[8px] text-[#787882]">
+            숨은 로컬 식당의 발견, 로컬잇
+          </p>
+          <div className="mt-[70px] flex flex-col items-center gap-3">
+            <a
+              href={KAKAO_AUTH_URL}
+              className="flex w-[324px] items-center justify-center gap-[10px] rounded-[10px] bg-[#FEE502] p-[14px_20px] text-[16px] font-semibold leading-[150%]"
+            >
+              카카오로 계속하기
+            </a>
+            <button className="flex w-[324px] items-center justify-center gap-[10px] rounded-[10px] bg-[#04C75B] p-[14px_20px] text-[16px] font-semibold leading-[150%] text-[#fff]">
+              네이버로 계속하기
+            </button>
+            <button className="flex w-[324px] items-center justify-center gap-[10px] rounded-[10px] border border-[#E2E2E4] p-[14px_20px] text-[16px] font-semibold leading-[150%]">
+              구글로 계속하기
+            </button>
+            <button
+              onClick={() => setStep('signin')}
+              className="flex w-[324px] items-center justify-center gap-[10px] rounded-[10px] border border-[#E2E2E4] p-[14px_20px] text-[16px] font-semibold leading-[150%]"
+            >
+              이메일로 계속하기
+            </button>
+          </div>
+        </div>
+      )}
 
-        <input
-          className="mb-4 w-full rounded-md border border-gray-300 px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-          placeholder="이메일"
-          {...register('email')}
-        />
-        {errors.email && (
-          <p className="mb-4 text-sm text-red-600">{errors.email.message}</p>
-        )}
+      {step === 'signin' && (
+        <div className="flex items-center justify-center bg-gray-50">
+          <form
+            onSubmit={handleSubmit(onSubmit)}
+            className="w-full max-w-md rounded-lg bg-white"
+          >
+            <h2 className="font-pretendard text-center text-[32px] font-bold leading-[130%] tracking-[-0.48px] text-[#171719]">
+              이메일로 로그인
+            </h2>
+            <div className="flex flex-col items-start gap-2 pt-[70px]">
+              <label
+                htmlFor="email"
+                className="font-pretendard text-[14px] font-semibold leading-[130%] text-[#5F5F68]"
+              >
+                이메일
+              </label>
+              <input
+                id="email"
+                className="flex items-start justify-between self-stretch rounded-[10px] border border-[#E2E2E4] px-4 py-[14px]"
+                placeholder="이메일"
+                {...register('email')}
+              />
+              {errors.email && (
+                <p className="mb-4 text-sm text-red-600">
+                  {errors.email.message}
+                </p>
+              )}
+            </div>
+            <div className="flex flex-col items-start gap-2 py-[24px]">
+              <label
+                htmlFor="password"
+                className="font-pretendard text-[14px] font-semibold leading-[130%] text-[#5F5F68]"
+              >
+                비밀번호
+              </label>
+              <input
+                id="password"
+                className="flex items-start justify-between self-stretch rounded-[10px] border border-[#E2E2E4] px-4 py-[14px]"
+                type="password"
+                placeholder="비밀번호"
+                {...register('password')}
+              />
+            </div>
+            {errors.password && (
+              <p className="mb-4 text-sm text-red-600">
+                {errors.password.message}
+              </p>
+            )}
 
-        <input
-          className="mb-4 w-full rounded-md border border-gray-300 px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-          type="password"
-          placeholder="비밀번호"
-          {...register('password')}
-        />
-        {errors.password && (
-          <p className="mb-4 text-sm text-red-600">{errors.password.message}</p>
-        )}
-
-        <button
-          type="submit"
-          className="w-full rounded-md bg-blue-600 px-4 py-2 font-medium text-white transition duration-200 hover:bg-blue-700"
-        >
-          로그인
-        </button>
-      </form>
+            <button
+              type="submit"
+              className="w-full rounded-[10px] bg-[#F4F4F5] px-[20px] py-[14px] text-[#ADADB3]"
+            >
+              로그인
+            </button>
+            <Link
+              href="signup"
+              className="mt-[12px] block w-full rounded-[10px] border border-[#C7C7CC] px-[20px] py-[14px] text-[#171719]"
+            >
+              회원가입
+            </Link>
+            {/* 로그아웃 로직 다른곳으로 이전 예정 */}
+            {/* <button type="button" onClick={handleLogout}>
+              <p>로그아웃</p>
+            </button> */}
+          </form>
+        </div>
+      )}
     </div>
   );
 };
