@@ -129,11 +129,9 @@ const StoryEditorPage = () => {
     if (savedStoryData) {
       try {
         const storyData = JSON.parse(savedStoryData);
-        console.log('저장된 스토리 데이터 복원:', storyData);
 
         // 요소 복원
         if (storyData.elements && storyData.elements.length > 0) {
-          console.log('요소들 복원:', storyData.elements);
           setElements(storyData.elements);
         }
 
@@ -146,8 +144,6 @@ const StoryEditorPage = () => {
         if (storyData.image) {
           setImage(storyData.image);
         }
-
-        console.log('복원 완료');
       } catch (error) {
         console.error('스토리 데이터 복원 실패:', error);
       }
@@ -477,8 +473,6 @@ const StoryEditorPage = () => {
       return;
     }
 
-    console.log('스토리 저장 시작...');
-
     // 모든 선택 및 편집 상태 초기화
     setSelectedElementId(null);
     if (editingElementId) {
@@ -490,12 +484,9 @@ const StoryEditorPage = () => {
     await new Promise((resolve) => setTimeout(resolve, 150));
 
     try {
-      console.log('배경 이미지 추출 중...');
       // 배경 이미지 추출
       const bgImage = selectedTemplate ? selectedTemplate.background : image;
-      console.log('bgImage:', bgImage);
 
-      console.log('스토리 데이터 준비 중...');
       // 스토리 JSON 데이터 준비
       const storyData = {
         selectedTemplate,
@@ -503,9 +494,6 @@ const StoryEditorPage = () => {
         elements,
         timestamp: Date.now(),
       };
-      console.log('storyData:', storyData);
-
-      console.log('html2canvas 실행 중...');
 
       // 캔버스를 이미지로 변환 (전체 미리보기용)
       const canvas = await html2canvas(canvasRef.current, {
@@ -514,21 +502,13 @@ const StoryEditorPage = () => {
         useCORS: true,
         allowTaint: true,
       });
-      console.log('html2canvas 완료');
 
-      console.log('이미지 데이터 URL 생성 중...');
       // Canvas를 base64 데이터 URL로 변환 (JPEG 포맷으로 압축)
       const previewImage = canvas.toDataURL('image/jpeg', 0.8);
-      console.log('previewImage 길이:', previewImage.length);
 
-      console.log('localStorage 저장 중...');
       localStorage.setItem('storyData', JSON.stringify(storyData));
       localStorage.setItem('storyPreviewImage', previewImage); // 전체 캔버스 이미지
       localStorage.setItem('storyBgImage', bgImage || ''); // 배경 이미지만
-
-      console.log('스토리 저장 완료');
-      console.log('previewImage 저장:', previewImage ? '완료' : '실패');
-      console.log('bgImage 저장:', bgImage ? '완료' : '실패');
       router.back();
     } catch (error) {
       console.error('이미지 저장 실패:', error);
