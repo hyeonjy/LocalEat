@@ -11,9 +11,9 @@ import { useQuery } from '@tanstack/react-query';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import KeywordSelection from '../_components/KeywordSelection';
-import PhotoUpload from '../_components/PhotoUpload';
-import ReceiptUpload from '../_components/ReceiptUpload';
+import MultiPhotoUpload from '../_components/MultiPhotoUpload';
 import RestaurantInfo from '../_components/RestaurantInfo';
+import SinglePhotoUpload from '../_components/SinglePhotoUpload';
 import TimeSelection from '../_components/TimeSelection';
 
 const MAX_PHOTOS = 4;
@@ -34,7 +34,7 @@ const StandardReviewForm = ({ params }: StandardReviewPageProps) => {
   const [keywords, setKeywords] = useState<string[]>([]);
   const [content, setContent] = useState('');
   const [rating, setRating] = useState<number>(0);
-  const { user } = useAuthStore();
+  const { user, clearUser } = useAuthStore();
   const router = useRouter();
 
   const { data, isPending, error } = useQuery({
@@ -78,9 +78,28 @@ const StandardReviewForm = ({ params }: StandardReviewPageProps) => {
       photos: result.uploadedPhotos,
     };
 
-    await createStandardReview(review as StandardReviewPayload);
+    try {
+      const result = await createStandardReview(
+        review as StandardReviewPayload,
+      );
 
-    router.push(`/restaurant/${restaurantId}`);
+      if (!result.success) {
+        if (result.reason === 'UNAUTHORIZED') {
+          alert('로그인 세션이 만료되었습니다. 다시 로그인해주세요.');
+          clearUser();
+          router.push('/signin');
+          return;
+        }
+
+        alert('리뷰 등록 실패');
+        return;
+      }
+
+      alert('리뷰 등록 성공');
+      router.push(`/restaurant/${restaurantId}`);
+    } catch (error: any) {
+      alert('리뷰 등록 실패');
+    }
   };
 
   const handlePhotoDelete = (index: number) => {
@@ -97,8 +116,17 @@ const StandardReviewForm = ({ params }: StandardReviewPageProps) => {
     setPhotos(next);
   };
 
-  const handleReceiptAdd = (file: File | null) => {
-    setReceiptImage(file);
+  const handleReceiptAdd = (file: File | string | null) => {
+    if (file instanceof File) {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        const dataUrl = e.target?.result as string;
+        setReceiptImage(dataUrl);
+      };
+      reader.readAsDataURL(file);
+    } else {
+      setReceiptImage(null);
+    }
   };
 
   const handleKeywordToggle = (keyword: string) => {
@@ -143,11 +171,8 @@ const StandardReviewForm = ({ params }: StandardReviewPageProps) => {
       </section>
 
       <section className="mt-[32px] flex gap-[20px]">
-        <ReceiptUpload
-          receiptImage={receiptImage}
-          onReceiptAdd={handleReceiptAdd}
-        />
-        <PhotoUpload
+        <SinglePhotoUpload image={receiptImage} onImageAdd={handleReceiptAdd} />
+        <MultiPhotoUpload
           photos={photos}
           onPhotoAdd={handlePhotoAdd}
           onPhotoDelete={handlePhotoDelete}

@@ -10,17 +10,19 @@ type RestaurantDetailProps = {
 };
 
 const RestaurantDetail = async ({ params }: RestaurantDetailProps) => {
-  const { restaurant, menus, reviews, keywordSummary } =
-    await getRestaurantById(params.id);
+  const { restaurant, menus, reviews, keywords } = await getRestaurantById(
+    params.id,
+  );
 
   return (
     <div className="mt-[64px] flex w-full flex-col items-center">
       <RestaurantHeader restaurant={restaurant} />
-      <MenuSection menus={menus} />
+      <MenuSection name={restaurant.name} menus={menus} />
       <ReviewTabs
         standardReviews={reviews.standard}
         graphicReviews={reviews.graphic}
-        keywordSummary={keywordSummary}
+        keywords={keywords}
+        restaurantId={params.id}
       />
     </div>
   );

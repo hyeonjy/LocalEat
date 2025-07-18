@@ -1,8 +1,20 @@
+import { TemplateElement, TemplateElementAPI } from './template';
+
 export type OpeningHourProps = {
   open?: string;
   close?: string;
   last_order?: string;
   closed?: boolean;
+};
+
+export type OpeningHours = {
+  mon: OpeningHourProps;
+  tue: OpeningHourProps;
+  wed: OpeningHourProps;
+  thu: OpeningHourProps;
+  fri: OpeningHourProps;
+  sat: OpeningHourProps;
+  sun: OpeningHourProps;
 };
 
 export type RestaurantProps = {
@@ -13,20 +25,14 @@ export type RestaurantProps = {
   lng: number;
   phone: string;
   category: string;
-  opening_hours: {
-    mon: OpeningHourProps;
-    tue: OpeningHourProps;
-    wed: OpeningHourProps;
-    thu: OpeningHourProps;
-    fri: OpeningHourProps;
-    sat: OpeningHourProps;
-    sun: OpeningHourProps;
-  };
+  opening_hours: OpeningHours;
   closed_days: string;
   parking?: boolean;
   pet_allowed?: boolean;
   image_url: string;
   created_at: string;
+  reviewCount: number;
+  averageRating: number;
 };
 
 export type MenuProps = {
@@ -87,7 +93,42 @@ export type StandardReviewPayload = {
   }[];
 };
 
+export type GraphicReviewProps = {
+  id: number;
+  user_id: number;
+  restaurant_id: number;
+  type: 'graphic';
+  rating: number;
+  created_at: string;
+  updated_at: string;
+  keywords: string[];
+  visit_count: number;
+  nickname: string;
+  profile_image: string;
+  elements: TemplateElementAPI[];
+  background_image_url: string;
+  receipt_image_url?: string;
+  story_preview_url: string;
+};
+
+export type GraphicReviewPayload = {
+  restaurantId: string;
+  userId: number;
+  keywords: string[];
+  rating: number;
+  photos: {
+    type: 'receipt' | 'storyBg' | 'storyPreview';
+    imageUrl: string;
+  }[];
+  elements: TemplateElement[];
+};
+
 export type keywordSummaryProps = {
   keyword: string;
   count: number;
+};
+
+export type ReactionProps = {
+  review_id: number;
+  type: string;
 };
