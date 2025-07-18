@@ -8,7 +8,7 @@ import { useAuthStore } from '@/store/authStore';
 import { GraphicReviewPayload } from '@/types/restaurant';
 import { useQuery } from '@tanstack/react-query';
 import { useRouter } from 'next/navigation';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import KeywordSelection from '../_components/KeywordSelection';
 import RestaurantInfo from '../_components/RestaurantInfo';
 import SinglePhotoUpload from '../_components/SinglePhotoUpload';
@@ -21,13 +21,40 @@ type GraphicReviewPageProps = {
 
 const GraphicReviewForm = ({ params }: GraphicReviewPageProps) => {
   const restaurantId = params.id;
-  const [rating, setRating] = useState<number>(0);
-  const [keywords, setKeywords] = useState<string[]>([]);
-  const [receiptImage, setReceiptImage] = useState<string | null>(null);
+  const [formData, setFormData] = useState({
+    rating: 0,
+    keywords: [] as string[],
+    receiptImage: null as string | null,
+  });
+  const [isMounted, setIsMounted] = useState(false);
   const [storyImage, setStoryImage] = useState<string | null>(null);
   const [storyData, setStoryData] = useState<any>(null);
   const { user, clearUser } = useAuthStore();
   const router = useRouter();
+
+  useEffect(() => {
+    if (isMounted) {
+      localStorage.setItem(
+        `graphicReview_${restaurantId}`,
+        JSON.stringify(formData),
+      );
+    }
+  }, [formData]);
+
+  useEffect(() => {
+    const storageKey = `graphicReview_${restaurantId}`;
+    const savedData = localStorage.getItem(storageKey);
+
+    if (savedData) {
+      try {
+        const parsed = JSON.parse(savedData);
+        setFormData(parsed);
+      } catch (error) {
+        console.error('데이터 파싱 실패:', error);
+      }
+    }
+    setIsMounted(true);
+  }, [restaurantId]);
 
   const { data, isPending, error } = useQuery({
     queryKey: ['restaurant-info', restaurantId],
@@ -40,40 +67,34 @@ const GraphicReviewForm = ({ params }: GraphicReviewPageProps) => {
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    const formData = new FormData(e.currentTarget);
-
-    // localStorage에서 스토리 이미지들 가져오기
+    const uploadFormData = new FormData(e.currentTarget);
     const storyBgImage = localStorage.getItem('storyBgImage');
 
-    if (receiptImage) {
-      formData.append('photos', receiptImage);
-      formData.append('photoTypes', 'receipt');
+    if (formData.receiptImage) {
+      uploadFormData.append('photos', formData.receiptImage);
+      uploadFormData.append('photoTypes', 'receipt');
     }
 
     if (storyBgImage) {
-      formData.append('photos', storyBgImage);
-      formData.append('photoTypes', 'storyBg');
+      uploadFormData.append('photos', storyBgImage);
+      uploadFormData.append('photoTypes', 'storyBg');
     }
 
     const res = await fetch('/api/upload', {
       method: 'POST',
-      body: formData,
+      body: uploadFormData,
     });
 
     const result = await res.json();
 
-    console.log('result: ', result);
-
     const review = {
       restaurantId,
       userId: user?.id,
-      keywords,
-      rating,
+      keywords: formData.keywords,
+      rating: formData.rating,
       photos: result.uploadedPhotos,
       elements: storyData?.elements,
     };
-
-    console.log('review: ', review);
 
     try {
       const result = await createGraphicReview(review as GraphicReviewPayload);
@@ -85,13 +106,14 @@ const GraphicReviewForm = ({ params }: GraphicReviewPageProps) => {
           router.push('/signin');
           return;
         }
-
         alert('리뷰 등록 실패');
         return;
       }
 
+      // 성공 시 localStorage 정리
       localStorage.removeItem('storyBgImage');
       localStorage.removeItem('storyData');
+      localStorage.removeItem(`graphicReview_${restaurantId}`);
 
       alert('리뷰 등록 성공');
       router.push(`/restaurant/${restaurantId}`);
@@ -100,12 +122,17 @@ const GraphicReviewForm = ({ params }: GraphicReviewPageProps) => {
     }
   };
 
+  const handleRatingChange = (rating: number) => {
+    setFormData((prev) => ({ ...prev, rating }));
+  };
+
   const handleKeywordToggle = (keyword: string) => {
-    setKeywords((prev) =>
-      prev.includes(keyword)
-        ? prev.filter((k) => k !== keyword)
-        : [...prev, keyword],
-    );
+    setFormData((prev) => {
+      const newKeywords = prev.keywords.includes(keyword)
+        ? prev.keywords.filter((k) => k !== keyword)
+        : [...prev.keywords, keyword];
+      return { ...prev, keywords: newKeywords };
+    });
   };
 
   const handleReceiptAdd = (file: File | string | null) => {
@@ -113,16 +140,21 @@ const GraphicReviewForm = ({ params }: GraphicReviewPageProps) => {
       const reader = new FileReader();
       reader.onload = (e) => {
         const dataUrl = e.target?.result as string;
-        setReceiptImage(dataUrl);
+        setFormData((prev) => ({
+          ...prev,
+          receiptImage: dataUrl,
+        }));
       };
       reader.readAsDataURL(file);
     } else {
-      setReceiptImage(null);
+      setFormData((prev) => ({
+        ...prev,
+        receiptImage: null,
+      }));
     }
   };
 
   const handleStoryAdd = (file: File | string | null) => {
-    // localStorage에서 로드한 data URL인 경우
     if (typeof file === 'string') {
       setStoryImage(file);
     }
@@ -146,19 +178,19 @@ const GraphicReviewForm = ({ params }: GraphicReviewPageProps) => {
     >
       <RestaurantInfo
         restaurant={data.restaurant}
-        rating={rating}
-        setRating={setRating}
+        rating={formData.rating}
+        setRating={handleRatingChange}
         type="graphic"
       />
 
       <KeywordSelection
-        keywords={keywords}
+        keywords={formData.keywords}
         onKeywordToggle={handleKeywordToggle}
       />
 
       <section className="mt-[32px] flex w-[791px] gap-[20px]">
         <SinglePhotoUpload
-          image={receiptImage}
+          image={formData.receiptImage}
           onImageAdd={handleReceiptAdd}
           page="graphic"
         />
