@@ -75,7 +75,9 @@ const GraphicReviewForm = ({ params }: GraphicReviewPageProps) => {
       uploadFormData.append('photoTypes', 'receipt');
     }
 
-    if (storyBgImage) {
+    // 새로 업로드한 이미지만 cloudinary에 업로드
+    const isPresetTemplate = storyBgImage && storyBgImage.includes('assets');
+    if (storyBgImage && !isPresetTemplate) {
       uploadFormData.append('photos', storyBgImage);
       uploadFormData.append('photoTypes', 'storyBg');
     }
@@ -87,12 +89,21 @@ const GraphicReviewForm = ({ params }: GraphicReviewPageProps) => {
 
     const result = await res.json();
 
+    // 업로드된 이미지들과 기존 템플릿 이미지를 합침
+    const allPhotos = [
+      ...result.uploadedPhotos,
+      isPresetTemplate && {
+        type: 'storyBg',
+        imageUrl: storyBgImage,
+      },
+    ];
+
     const review = {
       restaurantId,
       userId: user?.id,
       keywords: formData.keywords,
       rating: formData.rating,
-      photos: result.uploadedPhotos,
+      photos: allPhotos,
       elements: storyData?.elements,
     };
 
