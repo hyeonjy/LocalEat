@@ -1,12 +1,14 @@
 'use client';
 
+import { useAuthStore } from '@/store/authStore';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useEffect, useRef, useState } from 'react';
 
-const ReviewWriteButton = ({ restaurantId }: { restaurantId: number }) => {
+const RestaurantHeaderButton = ({ restaurantId }: { restaurantId: number }) => {
   const [open, setOpen] = useState(false);
   const modalRef = useRef<HTMLDivElement>(null);
+  const { user } = useAuthStore();
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -27,19 +29,45 @@ const ReviewWriteButton = ({ restaurantId }: { restaurantId: number }) => {
     };
   }, [open]);
 
+  const handleOpenClick = () => {
+    if (!user) {
+      alert('로그인 후 리뷰를 작성할 수 있어요!');
+      return;
+    }
+
+    setOpen(true);
+  };
+
   return (
-    <>
+    <div className="flex h-[50px] items-center justify-between">
+      <div className="flex gap-[8px]">
+        <div className="flex flex-col items-center gap-[2px] text-[#787882]">
+          <Image
+            src="/assets/icons/bookmark.svg"
+            alt="북마크 아이콘"
+            width={24}
+            height={24}
+            className="h-[24px]"
+          />
+          <p>12</p>
+        </div>
+        <div className="flex flex-col items-center gap-[2px] text-[#787882]">
+          <Image
+            src="/assets/icons/share.svg"
+            alt="공유 아이콘"
+            width={24}
+            height={24}
+            className="h-[24px]"
+          />
+          <p>12</p>
+        </div>
+      </div>
+
       <button
-        onClick={() => setOpen(true)}
-        className="flex w-full items-center justify-center rounded-[9px] border border-[#9E9D9D] px-[16px] py-[12px] text-label-lmb"
+        onClick={handleOpenClick}
+        className="flex h-[50px] w-[508px] items-center justify-center rounded-[10px] bg-[#FA4D09] px-[24px] py-[10px] text-[20px] font-semibold leading-[130%] text-white"
       >
-        <span className="mr-[7px]">리뷰 작성하기</span>
-        <Image
-          src="/assets/icons/arrow_back_ios_new.svg"
-          alt="오른쪽 화살표 아이콘"
-          width={20}
-          height={20}
-        />
+        리뷰 작성하기
       </button>
 
       {/* 모달 컴포넌트 */}
@@ -48,7 +76,7 @@ const ReviewWriteButton = ({ restaurantId }: { restaurantId: number }) => {
           <div ref={modalRef} className="flex gap-[30px]">
             <Link
               href={`/restaurant/${restaurantId}/review/standard`}
-              className="shadow-inset-lg flex h-[470px] w-[350px] flex-col items-center justify-center rounded-[40px] bg-white"
+              className="flex h-[470px] w-[350px] flex-col items-center justify-center rounded-[40px] bg-white shadow-inset-lg"
             >
               <Image
                 src={'/assets/icons/standard.svg'}
@@ -61,7 +89,7 @@ const ReviewWriteButton = ({ restaurantId }: { restaurantId: number }) => {
             </Link>
             <Link
               href={`/restaurant/${restaurantId}/review/graphic`}
-              className="shadow-inset-lg flex h-[470px] w-[350px] flex-col items-center justify-center rounded-[40px] bg-white"
+              className="flex h-[470px] w-[350px] flex-col items-center justify-center rounded-[40px] bg-white shadow-inset-lg"
             >
               <Image
                 src={'/assets/icons/graphic.svg'}
@@ -75,8 +103,8 @@ const ReviewWriteButton = ({ restaurantId }: { restaurantId: number }) => {
           </div>
         </div>
       )}
-    </>
+    </div>
   );
 };
 
-export default ReviewWriteButton;
+export default RestaurantHeaderButton;
