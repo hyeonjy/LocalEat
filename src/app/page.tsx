@@ -11,17 +11,15 @@ export default function Home() {
   return (
     <div>
       <section className="mt-[64px]">
-        <div className="mx-auto flex min-w-[1200px] gap-[10px] self-stretch rounded-[12px] bg-[#F7F7F8] px-[360px] py-[32px]">
-          <div>
+        <div className="mx-auto flex w-[1280px] self-stretch rounded-[12px] bg-[#F7F7F8] px-[40px] py-[32px]">
+          <div className="w-[343px]">
             <p className="pt-[30px] text-[24px] font-semibold leading-[130%] text-[#FA4D09]">
               리워드가 2배!
               <br />
               매주 찾아오는 지역 미션
             </p>
-            <h2 className="mt-[12px] whitespace-nowrap text-[60px] font-bold leading-[130%] tracking-[0.6px] text-[#171719]">
-              로컬 식당 탐방
-              <br />
-              신림동 편
+            <h2 className="mt-[12px] text-[60px] font-bold leading-[130%] tracking-[0.6px] text-[#171719]">
+              로컬 식당 탐방 신림동 편
             </h2>
             <Link
               href="none"
@@ -30,7 +28,7 @@ export default function Home() {
               자세히 보기
             </Link>
           </div>
-          <ul className="ml-[65px] flex gap-[20px]">
+          <ul className="ml-[64px] flex gap-[20px]">
             <li className="flex h-[386px] w-[386px] max-w-[386px] flex-col items-center justify-end gap-[10px] rounded-[20px] bg-[#ccc] p-[26px]">
               <div className="flex flex-col items-center justify-center self-stretch rounded-[8px] bg-white/95 px-[24px] py-[20px] shadow-[0px_0px_12px_0px_rgba(0,0,0,0.25)]">
                 <div className="flex w-full items-end gap-[6px]">
@@ -61,7 +59,7 @@ export default function Home() {
         </div>
       </section>
       <section className="mt-[32px]">
-        <div className="mx-auto min-w-[1200px] gap-[10px] self-stretch rounded-[12px] px-[360px] py-[32px]">
+        <div className="mx-auto w-[1280px] gap-[10px] self-stretch rounded-[12px] px-[40px] py-[32px]">
           <div className="flex w-full items-end justify-between">
             <div className="w-full">
               <p className="pt-[30px] text-[24px] font-semibold leading-[130%] text-[#FA4D09]">
@@ -114,7 +112,7 @@ export default function Home() {
         </div>
       </section>
       <section className="mt-[32px]">
-        <div className="mx-auto min-w-[1200px] gap-[10px] self-stretch rounded-[12px] px-[360px] py-[32px]">
+        <div className="mx-auto w-[1280px] gap-[10px] self-stretch rounded-[12px] px-[40px] py-[32px]">
           <div className="flex w-full items-end justify-between">
             <div className="w-full">
               <p className="pt-[30px] text-[24px] font-semibold leading-[130%] text-[#FA4D09]">
@@ -132,7 +130,7 @@ export default function Home() {
               전체보기
             </Link>
           </div>
-          <div className="mx-auto mt-[24px] grid max-w-[1200px] grid-cols-[486px_384px_282px] grid-rows-[231px_231px] gap-[24px]">
+          <div className="mx-auto mt-[24px] grid max-w-[1280px] grid-cols-[486px_384px_282px] grid-rows-[231px_231px] gap-[24px]">
             {/* 왼쪽 큰 카드: 2행 차지 */}
             <div className="row-span-2 h-[486px] w-[486px] rounded-xl bg-[#ccc] p-4">
               <p className="text-lg font-semibold text-white">
@@ -176,7 +174,7 @@ export default function Home() {
         </div>
       </section>
       <section>
-        <div className="mx-auto min-w-[1200px] gap-[10px] self-stretch rounded-[12px] px-[360px] py-[32px]">
+        <div className="mx-auto w-[1280px] gap-[10px] self-stretch rounded-[12px] px-[40px] py-[32px]">
           <div className="flex w-full items-end justify-between">
             <div className="w-full">
               <p className="pt-[30px] text-[24px] font-semibold leading-[130%] text-[#FA4D09]">
@@ -202,7 +200,7 @@ export default function Home() {
         </div>
       </section>
       <section>
-        <div className="mx-auto min-w-[1200px] gap-[10px] self-stretch rounded-[12px] px-[360px] py-[32px]">
+        <div className="mx-auto w-[1280px] gap-[10px] self-stretch rounded-[12px] px-[40px] py-[32px]">
           <div className="flex w-full items-end justify-between">
             <div className="w-full">
               <p className="pt-[30px] text-[24px] font-semibold leading-[130%] text-[#FA4D09]">
