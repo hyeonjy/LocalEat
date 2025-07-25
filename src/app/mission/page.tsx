@@ -99,7 +99,7 @@ const page = () => {
           <h2 className="text-center text-[40px] font-bold leading-[130%] tracking-[0.4px] text-[#171719]">
             이번 주 신림동 미션 대상 식당
           </h2>
-          <ul className="ml-[64px] grid w-full grid-cols-3 gap-[20px]">
+          <ul className="grid w-full grid-cols-3 gap-[20px]">
             <li className="flex h-[386px] w-[386px] max-w-[386px] flex-col items-center justify-end gap-[10px] rounded-[20px] bg-[#ccc] p-[26px]">
               <div className="flex flex-col items-center justify-center self-stretch rounded-[8px] bg-white/95 px-[24px] py-[20px] shadow-[0px_0px_12px_0px_rgba(0,0,0,0.25)]">
                 <div className="flex w-full items-end gap-[6px]">
