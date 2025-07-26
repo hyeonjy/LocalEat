@@ -114,3 +114,29 @@ export const getRestaurantReaction = async (id: string) => {
     return { success: false, reason: 'UNKNOWN', message: error.message };
   }
 };
+
+export const getTopRatedRestaurants = async () => {
+  const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
+
+  const res = await fetch(`${backendUrl}/restaurants/top-rated`);
+  const data = await res.json();
+
+  if (!res.ok) {
+    throw new Error(data.message || '에러 발생');
+  }
+
+  return data;
+};
+
+export const getTopRecentRestaurants = async () => {
+  const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
+
+  const res = await fetch(`${backendUrl}/restaurants/top-recent`);
+  const data = await res.json();
+
+  if (!res.ok) {
+    throw new Error(data.message || '에러 발생');
+  }
+
+  return data;
+};

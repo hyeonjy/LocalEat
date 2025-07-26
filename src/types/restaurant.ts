@@ -35,6 +35,20 @@ export type RestaurantProps = {
   averageRating: number;
 };
 
+export type TopRestaurantProps = {
+  id: number;
+  name: string;
+  address: string;
+  lat: number;
+  lng: number;
+  image_url: string;
+  category: string;
+  averageRating: number;
+  review_count: number;
+  reviews: ReviewSummaryProps[];
+  menus: string[];
+};
+
 export type MenuProps = {
   id: number;
   restaurant_id: number;
@@ -44,7 +58,6 @@ export type MenuProps = {
   created_at: string;
   badge: string;
 };
-
 export type ReactionType = '공감해요' | '도움이 됐어요';
 
 export type StandardReviewPhoto = {
@@ -55,8 +68,37 @@ export type StandardReviewPhoto = {
   uploaded_at: string;
 };
 
+export type ReviewPhoto = {
+  review_id: number;
+  image_url: string;
+  type: 'food' | 'receipt';
+};
+
+export type ReviewSummaryProps = {
+  id: number;
+  user_id: number;
+  restaurant_id: number;
+  type: 'standard';
+  rating: number;
+  visited_at: string;
+  created_at: string;
+  updated_at: string;
+  visited_date: string;
+  visited_time_slot: 'morning' | 'lunch' | 'afternoon' | 'dinner';
+  nickname: string;
+  profile_image: string;
+  visit_count: number;
+  photo: ReviewPhoto;
+};
+
 export type StandardReviewReactions = {
-  [key in ReactionType]?: number;
+  visited_date: string;
+  visit_count: number;
+  visited_time_slot: 'morning' | 'lunch' | 'afternoon' | 'dinner';
+  nickname: string;
+  profile_image: string;
+  photos: StandardReviewPhoto[];
+  reactions: StandardReviewReactions;
 };
 
 export type StandardReviewProps = {
