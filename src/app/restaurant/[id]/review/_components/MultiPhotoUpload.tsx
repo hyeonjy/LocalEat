@@ -3,7 +3,7 @@ import { useEffect, useRef, useState } from 'react';
 
 const MAX_PHOTOS = 4;
 
-const PhotoUpload = ({
+const MultiPhotoUpload = ({
   photos,
   onPhotoAdd,
   onPhotoDelete,
@@ -114,4 +114,4 @@ const PhotoUpload = ({
   );
 };
 
-export default PhotoUpload;
+export default MultiPhotoUpload;

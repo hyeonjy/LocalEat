@@ -9,10 +9,11 @@ import { Navigation } from 'swiper/modules';
 import { Swiper, SwiperSlide } from 'swiper/react';
 
 type MenuSectionProps = {
+  name: string;
   menus: MenuProps[];
 };
 
-const MenuSection = ({ menus }: MenuSectionProps) => {
+const MenuSection = ({ name, menus }: MenuSectionProps) => {
   const [isMounted, setIsMounted] = useState(false);
 
   useEffect(() => {
@@ -20,13 +21,14 @@ const MenuSection = ({ menus }: MenuSectionProps) => {
   }, []);
 
   return (
-    <section className="relative h-[557px] w-full bg-[#FFEFE8] px-5 py-10 xl:px-0">
-      <h2 className="mx-auto mb-6 w-full max-w-[1120px] px-[60px] text-title-xl">
-        대표 메뉴
-      </h2>
+    <section className="relative mb-[64px] h-[336px] w-full px-5 xl:px-0">
+      <div className="mx-auto mb-6 flex w-full max-w-[1200px] text-[24px] font-semibold leading-[130%]">
+        <h2 className="text-[#FA4D09]">{name}</h2>
+        <p className="text-[#171719]">의 대표 메뉴</p>
+      </div>
 
       {/* 카드 + 버튼 wrapper */}
-      <div className="relative mx-auto w-full max-w-[1120px] px-[60px]">
+      <div className="relative mx-auto flex w-full max-w-[1200px]">
         <Swiper
           modules={[Navigation]}
           navigation={{
@@ -34,32 +36,44 @@ const MenuSection = ({ menus }: MenuSectionProps) => {
             nextEl: '#custom-next',
           }}
           slidesPerView="auto"
-          spaceBetween={isMounted ? 20 : 0}
+          spaceBetween={isMounted ? 24 : 0}
           loop={true}
         >
           {menus.map((menu) => (
             <SwiperSlide
               key={menu.id}
-              className={`!h-[353px] !w-[320px] rounded-[12px] border bg-white p-6 ${
-                !isMounted ? 'mr-5' : ''
+              className={`!h-[281px] !w-[282px] rounded-[20px] bg-white ${
+                !isMounted ? 'mr-6' : ''
               }`}
+              style={{
+                boxShadow: '0px 0px 4px 0px rgba(0, 0, 0, 0.15)',
+              }}
             >
-              <Image
-                src={menu.image_url}
-                alt={menu.name}
-                className="mb-4 h-[221px] w-full rounded-md object-cover"
-                width={273}
-                height={221}
-              />
-              {menu.badge && (
-                <p className="mb-[11px] inline-block rounded-[4px] bg-[#FEEDE6] px-[6px] py-[4px] text-label-mb font-medium text-[#FA4D09]">
-                  {menu.badge}
-                </p>
-              )}
-              <h3 className="mb-1 text-title-lm font-semibold">{menu.name}</h3>
-              <p className="line-clamp-3 text-xs text-gray-500">
-                {menu.description || ''}
-              </p>
+              <div className="relative h-[281px] w-full overflow-hidden rounded-t-[20px] p-[12px] pb-[16px]">
+                <Image
+                  src={menu.image_url}
+                  alt={menu.name}
+                  className="h-[220px] w-[258px] object-cover"
+                  width={258}
+                  height={220}
+                />
+                {menu.badge && (
+                  <div
+                    className="absolute right-6 top-6 flex h-[26px] w-[68px] items-center justify-center text-[14px] font-medium text-white"
+                    style={{
+                      padding: '4px 8px',
+                      borderRadius: '12px 0px',
+                      background: '#FA4D09',
+                      boxShadow: '0px 2px 4px 0px rgba(0, 0, 0, 0.25)',
+                    }}
+                  >
+                    {menu.badge}
+                  </div>
+                )}
+                <h3 className="mt-[12px] text-[16px] font-medium leading-[130%] text-[#171719]">
+                  {menu.name}
+                </h3>
+              </div>
             </SwiperSlide>
           ))}
         </Swiper>
