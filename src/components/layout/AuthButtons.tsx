@@ -10,13 +10,13 @@ const AuthButtons = () => {
   return (
     <div className="flex items-center space-x-4">
       {user ? (
-        <button className="rounded-[8px] border px-3 py-1 text-sm font-medium">
+        <button className="rounded-full border px-3 py-1 text-sm font-medium">
           로그아웃
         </button>
       ) : (
         <Link
           href="/signin"
-          className="rounded-[8px] border px-3 py-1 text-sm font-medium"
+          className="rounded-full border px-3 py-1 text-sm font-medium"
         >
           로그인
         </Link>

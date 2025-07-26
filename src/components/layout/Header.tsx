@@ -4,8 +4,8 @@ import AuthButtons from './AuthButtons';
 
 const Header = () => {
   return (
-    <header className="fixed left-0 top-0 flex w-full justify-center border-b border-[#cecece] bg-white">
-      <div className="flex h-16 w-full items-center justify-between px-5 xl:w-[1200px]">
+    <header className="fixed left-0 top-0 w-full border-b border-[#cecece] bg-white">
+      <div className="flex h-16 w-full max-w-[1200px] items-center justify-between px-5 md:px-10 xl:mx-auto xl:px-0">
         <div className="flex items-center">
           <Link href="/">
             <Image
