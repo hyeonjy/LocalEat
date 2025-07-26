@@ -82,21 +82,33 @@ const GraphicReviewForm = ({ params }: GraphicReviewPageProps) => {
       uploadFormData.append('photoTypes', 'storyBg');
     }
 
-    const res = await fetch('/api/upload', {
-      method: 'POST',
-      body: uploadFormData,
-    });
+    // cloudinary에 업로드할 사진이 있는지 확인
+    const hasPhotosToUpload =
+      formData.receiptImage || (storyBgImage && !isPresetTemplate);
 
-    const result = await res.json();
+    // 사진 데이터 준비
+    const allPhotos = await (async () => {
+      const basePhotos = [];
 
-    // 업로드된 이미지들과 기존 템플릿 이미지를 합침
-    const allPhotos = [
-      ...result?.uploadedPhotos,
-      isPresetTemplate && {
-        type: 'storyBg',
-        imageUrl: storyBgImage,
-      },
-    ];
+      if (hasPhotosToUpload) {
+        const res = await fetch('/api/upload', {
+          method: 'POST',
+          body: uploadFormData,
+        });
+        const result = await res.json();
+        basePhotos.push(...(result?.uploadedPhotos || []));
+      }
+
+      // 기존 템플릿인 경우 별도로 추가
+      if (isPresetTemplate) {
+        basePhotos.push({
+          type: 'storyBg',
+          imageUrl: storyBgImage,
+        });
+      }
+
+      return basePhotos;
+    })();
 
     const review = {
       restaurantId,
