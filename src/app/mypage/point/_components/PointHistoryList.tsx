@@ -1,0 +1,167 @@
+import { useUserPointHistories } from '@/hooks/usePoint';
+import Image from 'next/image';
+import { useState } from 'react';
+
+type PointHistory = {
+  id: number;
+  created_at: string;
+  source: string;
+  amount: number;
+  type: string;
+  restaurant_id: number;
+  restaurant_name: string;
+  user_id: number;
+};
+
+type PointHistoryListProps = {
+  userId: string;
+};
+
+const FILTERS = ['전체', '적립', '사용'];
+const PERIODS = [
+  { name: '전체', value: '전체' },
+  { name: '최근 1개월', value: '1' },
+  { name: '최근 3개월', value: '3' },
+  { name: '최근 6개월', value: '6' },
+];
+
+const PointHistoryList = ({ userId }: PointHistoryListProps) => {
+  const [selectedFilter, setSelectedFilter] = useState('전체');
+  const [selectedPeriod, setSelectedPeriod] = useState('전체');
+
+  const { data: historiesData, isPending } = useUserPointHistories(
+    userId,
+    selectedPeriod,
+    selectedFilter === '전체' ? '' : selectedFilter,
+  );
+
+  const pointHistories = historiesData?.histories || [];
+
+  const filteredHistories =
+    selectedFilter === '전체'
+      ? pointHistories
+      : pointHistories.filter(
+          (history: PointHistory) => history.type === selectedFilter,
+        );
+
+  // 날짜별 그룹핑
+  const groupByDate = () => {
+    const groups = new Map<string, PointHistory[]>();
+
+    filteredHistories.forEach((history: PointHistory) => {
+      const dateObj = new Date(history.created_at);
+      const month = String(dateObj.getMonth() + 1).padStart(2, '0');
+      const day = String(dateObj.getDate()).padStart(2, '0');
+      const dateKey = `${month}.${day}`;
+
+      if (!groups.has(dateKey)) {
+        groups.set(dateKey, []);
+      }
+      groups.get(dateKey)!.push(history);
+    });
+
+    return Array.from(groups.entries());
+  };
+
+  return (
+    <>
+      {/* 필터 탭과 기간 선택 */}
+      <div className="mb-4 mt-[20px] flex justify-between">
+        {/* 필터 탭 */}
+        <div className="flex space-x-[6px]">
+          {FILTERS.map((filter) => (
+            <button
+              key={filter}
+              onClick={() => setSelectedFilter(filter)}
+              className={`h-[28px] w-[45px] whitespace-nowrap rounded-[100px] border border-[#C7C7CC] px-[10px] py-[6px] text-[14px] font-normal leading-[100%] text-[#2E2E32] ${
+                selectedFilter === filter
+                  ? 'border-[#FA4D09] bg-[#FEEDE6] text-[#FA4D09]'
+                  : 'bg-white'
+              }`}
+              disabled={isPending}
+            >
+              {filter}
+            </button>
+          ))}
+        </div>
+
+        {/* 기간 선택 드롭다운 */}
+        <div className="relative w-[179px]">
+          <select
+            value={selectedPeriod}
+            onChange={(e) => setSelectedPeriod(e.target.value)}
+            className="w-full cursor-pointer appearance-none rounded-[4px] border border-[#E2E2E4] bg-white px-3 py-2 pr-10 focus:outline-none disabled:opacity-50"
+            disabled={isPending}
+          >
+            {PERIODS.map((period) => (
+              <option key={period.value} value={period.value}>
+                {period.name}
+              </option>
+            ))}
+          </select>
+          <Image
+            src="/assets/icons/arrow_dropdown.svg"
+            alt="arrow_down"
+            width={24}
+            height={24}
+            className="pointer-events-none absolute right-2 top-1/2 -translate-y-1/2"
+          />
+        </div>
+      </div>
+
+      {/* 포인트 내역 리스트 */}
+      <div>
+        {isPending ? (
+          <div className="flex items-center justify-center py-12">
+            <div className="text-gray-600">포인트 내역을 불러오는 중...</div>
+          </div>
+        ) : filteredHistories.length === 0 ? (
+          <div className="rounded-lg bg-white p-6 text-center text-gray-500 sm:p-8">
+            해당 기간에 포인트 내역이 없습니다.
+          </div>
+        ) : (
+          groupByDate().map(([date, items]) => (
+            <div key={date} className="mb-4 flex items-start">
+              {/* 왼쪽 날짜 */}
+              <div className="w-[52px] pr-3 pt-3 font-normal text-[#171719]">
+                {date}
+              </div>
+
+              {/* 오른쪽 리스트 */}
+              <div className="w-full">
+                {items.map((history: PointHistory) => {
+                  const time = history.created_at.slice(11, 16);
+                  return (
+                    <div
+                      key={history.id}
+                      className="flex items-center justify-between border-b border-[#E2E2E4] py-3"
+                    >
+                      <div>
+                        <div className="mb-1 text-[16px] font-bold text-[#171719]">
+                          {history.restaurant_name}
+                        </div>
+                        <div className="text-[14px] font-normal text-[#92929B]">
+                          {time} | {history.source}
+                        </div>
+                      </div>
+                      <p
+                        className={`text-[16px] font-bold ${
+                          history.amount > 0 ? 'text-[#3177E8]' : 'text-red-500'
+                        }`}
+                      >
+                        {history.amount > 0 ? '+' : ''}
+                        {Math.abs(history.amount)}P
+                      </p>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          ))
+        )}
+      </div>
+    </>
+  );
+};
+
+export default PointHistoryList;
