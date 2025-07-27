@@ -174,3 +174,11 @@ export type ReactionProps = {
   review_id: number;
   type: string;
 };
+
+export type MissionRestaurantProps = {
+  id: number;
+  title: string;
+  image_url: string;
+  review_count: number;
+  menus: string[];
+};

@@ -202,6 +202,11 @@ const config: Config = {
         sm: 'calc(var(--radius) - 4px)',
       },
     },
+    screens: {
+      sm: '320px', // Mobile
+      md: '722px', // Tablet
+      lg: '1025px', // Desktop
+    },
   },
   plugins: [require('tailwindcss-animate')],
 };
