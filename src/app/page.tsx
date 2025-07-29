@@ -66,7 +66,7 @@ export default function Home() {
                 요즘 인기 있는 식당
               </p>
               <h2 className="text-[40px] font-bold leading-[130%] tracking-[0.4px] text-[#171719]">
-                로컬잇 랭킹
+                로컬잇 TOP 10
               </h2>
             </div>
 
@@ -119,7 +119,7 @@ export default function Home() {
                 로컬잇에 새로 등록된 식당
               </p>
               <h2 className="text-[40px] font-bold leading-[130%] tracking-[0.4px] text-[#171719]">
-                NEW EATS
+                NEW EAT 10
               </h2>
             </div>
 
