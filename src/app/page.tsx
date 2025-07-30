@@ -19,7 +19,7 @@ export default function Home() {
               매주 찾아오는 지역 미션
             </p>
             <h2 className="mt-[12px] text-[60px] font-bold leading-[130%] tracking-[0.6px] text-[#171719]">
-              로컬 식당 탐방 신림동 편
+              이번 주 미션 신림동 편
             </h2>
             <Link
               href="none"
