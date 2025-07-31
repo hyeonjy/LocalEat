@@ -140,22 +140,3 @@ export const getTopRecentRestaurants = async () => {
 
   return data;
 };
-
-export const getMissionRestaurants = async (ids?: string[]) => {
-  const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
-
-  let url = `${backendUrl}/restaurants/mission`;
-
-  if (ids && ids.length > 0) {
-    url += `?ids=${ids.join(',')}`;
-  }
-
-  const res = await fetch(url);
-  const data = await res.json();
-
-  if (!res.ok) {
-    throw new Error(data.message || '에러 발생');
-  }
-
-  return data;
-};

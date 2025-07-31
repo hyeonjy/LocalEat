@@ -1,21 +1,58 @@
 'use client';
 
+import { useAuthStore } from '@/store/authStore';
 import { MissionRestaurantProps } from '@/types/restaurant';
 import { useQuery } from '@tanstack/react-query';
 import { useRouter } from 'next/navigation';
-import { getMissionRestaurants } from '../actions/restaurant';
+import { getMissionRestaurants, getUserMissionCount } from '../actions/mission';
+import { getUserPoints } from '../actions/point';
 
 const page = () => {
-  const { data: missionRestaurants, isPending } = useQuery({
+  const { user } = useAuthStore();
+  const {
+    data: missionRestaurants,
+    isPending,
+    error,
+  } = useQuery({
     queryKey: ['mission'],
-    queryFn: () => getMissionRestaurants(['2', '4', '5', '6', '7', '8']),
+    queryFn: () => getMissionRestaurants(),
   });
+
+  const {
+    data: userMissionCountData,
+    isPending: userMissionCountPending,
+    error: userMissionCountError,
+  } = useQuery({
+    queryKey: ['userMissionCount'],
+    queryFn: () => getUserMissionCount(user?.id.toString() || ''),
+  });
+
+  const {
+    data: userPointsData,
+    isPending: userPointsPending,
+    error: userPointsError,
+  } = useQuery({
+    queryKey: ['userPoints'],
+    queryFn: () => getUserPoints(user?.id.toString() || ''),
+  });
+
   const router = useRouter();
 
   console.log(missionRestaurants);
+  console.log(userMissionCountData);
+
+  console.log(userPointsData);
 
   if (isPending) {
     return <div>Loading...</div>;
+  }
+
+  if (error) {
+    return (
+      <div className="mt-[64px] flex min-h-[calc(100vh-64px)] items-center justify-center text-[25px] text-[#CECECE]">
+        <p className="mt-[20px]">{error.message}</p>
+      </div>
+    );
   }
 
   return (
@@ -53,7 +90,7 @@ const page = () => {
 
           <div className="mt-[20px] flex flex-col items-center text-[16px] font-bold leading-[130%]">
             <p>✅참여 방법: 영수증 인증 후 리뷰 카드 작성</p>
-            <p>⏰미션 기간: 2025.08.01 ~ 2025.08.31</p>
+            <p>⏰미션 기간: 2025.07.27 ~ 2025.08.31</p>
             <p>🎁미션 보상: 기간 내 미션 수행시 리워드 두배</p>
           </div>
         </div>
@@ -67,47 +104,30 @@ const page = () => {
                 내 미션 현황
               </h2>
               <p className="font-pretendard text-center text-[40px] font-bold not-italic leading-[130%] tracking-[0.4px] text-[#171719]">
-                4/6
+                {userMissionCountData?.completedCount || 0} /{' '}
+                {missionRestaurants?.data?.length || 0}
               </p>
             </div>
             <ul className="flex gap-[16px]">
-              <li>
-                <img
-                  src="assets/icons/checked_stamp.svg"
-                  alt="체크된_스템프_이미지"
-                />
-              </li>
-              <li>
-                <img
-                  src="assets/icons/checked_stamp.svg"
-                  alt="체크된_스템프_이미지"
-                />
-              </li>
-              <li>
-                <img
-                  src="assets/icons/checked_stamp.svg"
-                  alt="체크된_스템프_이미지"
-                />
-              </li>
-              <li>
-                <img
-                  src="assets/icons/checked_stamp.svg"
-                  alt="체크된_스템프_이미지"
-                />
-              </li>
-
-              <li>
-                <img
-                  src="assets/icons/unchecked_stamp.svg"
-                  alt="기본_스템프_이미지"
-                />
-              </li>
-              <li>
-                <img
-                  src="assets/icons/unchecked_stamp.svg"
-                  alt="기본_스템프_이미지"
-                />
-              </li>
+              {Array.from(
+                { length: missionRestaurants?.data?.length || 0 },
+                (_, index) => {
+                  const isCompleted =
+                    index < (userMissionCountData?.completedCount || 0);
+                  return (
+                    <li key={index}>
+                      <img
+                        src={`assets/icons/${isCompleted ? 'checked_stamp' : 'unchecked_stamp'}.svg`}
+                        alt={
+                          isCompleted
+                            ? '체크된_스템프_이미지'
+                            : '기본_스템프_이미지'
+                        }
+                      />
+                    </li>
+                  );
+                },
+              )}
             </ul>
           </div>
 
@@ -122,14 +142,14 @@ const page = () => {
               <p className="h-[21px]">현재</p>
               <p className="mb-2 mt-[10px] flex items-baseline">
                 <span className="text-[40px] font-extrabold leading-none">
-                  김잇터님
+                  {user?.nickname}님
                 </span>
                 <span className="ml-1 text-[16px] font-semibold">의</span>
               </p>
               <p className="mt-[16px] h-[21px]">포인트 잔액은</p>
               <p className="mb-2 mt-[10px] flex items-baseline">
                 <span className="text-[40px] font-extrabold leading-none">
-                  1000
+                  {userPointsData?.totalPoints || 0}
                 </span>
                 <span className="ml-1 text-[16px] font-semibold">
                   포인트 입니다.
