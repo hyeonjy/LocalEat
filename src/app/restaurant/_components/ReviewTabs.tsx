@@ -91,84 +91,86 @@ const ReviewTabs = ({
           {displayedStandardReviews.length > 0 ? (
             <>
               <div className="grid grid-cols-2 gap-[24px]">
-                {displayedStandardReviews.map((standardReview) => {
-                  const visited_at = new Date(standardReview.visited_at);
-                  const isThisYear =
-                    visited_at.getFullYear() === new Date().getFullYear();
+                {displayedStandardReviews.map(
+                  (standardReview: StandardReviewProps) => {
+                    const visited_at = new Date(standardReview.visited_at);
+                    const isThisYear =
+                      visited_at.getFullYear() === new Date().getFullYear();
 
-                  const formattedDate = isThisYear
-                    ? `${String(visited_at.getMonth() + 1).padStart(2, '0')}.${String(visited_at.getDate()).padStart(2, '0')}`
-                    : `${visited_at.getFullYear()}.${String(visited_at.getMonth() + 1).padStart(2, '0')}.${String(visited_at.getDate()).padStart(2, '0')}`;
+                    const formattedDate = isThisYear
+                      ? `${String(visited_at.getMonth() + 1).padStart(2, '0')}.${String(visited_at.getDate()).padStart(2, '0')}`
+                      : `${visited_at.getFullYear()}.${String(visited_at.getMonth() + 1).padStart(2, '0')}.${String(visited_at.getDate()).padStart(2, '0')}`;
 
-                  return (
-                    <div
-                      className="flex flex-col rounded-[12px] border border-[#E2E2E4] bg-[#FCFCFD] p-[24px]"
-                      key={standardReview.id}
-                    >
-                      <div className="mb-[16px] flex justify-between">
-                        <div className="flex items-center">
+                    return (
+                      <div
+                        className="flex flex-col rounded-[12px] border border-[#E2E2E4] bg-[#FCFCFD] p-[24px]"
+                        key={standardReview.id}
+                      >
+                        <div className="mb-[16px] flex justify-between">
+                          <div className="flex items-center">
+                            <Image
+                              src={standardReview.profile_image}
+                              alt={standardReview.nickname}
+                              width={40}
+                              height={40}
+                              className="mr-[10px] h-[40px] w-[40px] rounded-[50%] bg-white"
+                            />
+                            <p className="mr-[12px] text-[16px] font-semibold leading-[130%] text-[#2E2E32]">
+                              {standardReview.nickname}
+                            </p>
+                            <p className="text-[14px] font-medium leading-[130%] text-[#5F5F68]">
+                              {formattedDate} • {standardReview.visit_count}번째
+                              방문 • 로컬인증
+                            </p>
+                          </div>
                           <Image
-                            src={standardReview.profile_image}
-                            alt={standardReview.nickname}
-                            width={40}
-                            height={40}
-                            className="mr-[10px] h-[40px] w-[40px] rounded-[50%] bg-white"
+                            src={'/assets/icons/more.svg'}
+                            alt="더보기 아이콘"
+                            width={24}
+                            height={24}
+                            className="h-[24px] w-[24px]"
                           />
-                          <p className="mr-[12px] text-[16px] font-semibold leading-[130%] text-[#2E2E32]">
-                            {standardReview.nickname}
-                          </p>
-                          <p className="text-[14px] font-medium leading-[130%] text-[#5F5F68]">
-                            {formattedDate} • {standardReview.visit_count}번째
-                            방문 • 로컬인증
-                          </p>
                         </div>
-                        <Image
-                          src={'/assets/icons/more.svg'}
-                          alt="더보기 아이콘"
-                          width={24}
-                          height={24}
-                          className="h-[24px] w-[24px]"
-                        />
+                        <p className="mb-[12px] w-full text-lg">
+                          {standardReview.content}
+                        </p>
+                        <div className="mb-[20px] flex items-center gap-[10px]">
+                          {standardReview.photos.map((photo) => (
+                            <Image
+                              key={photo.id}
+                              src={photo.image_url}
+                              alt="photo"
+                              width={180}
+                              height={226}
+                              className="h-[226px] w-[180px] rounded-[20px]"
+                            />
+                          ))}
+                        </div>
+                        <div className="flex items-center gap-[10px]">
+                          <button
+                            className={cn(
+                              'flex h-[32px] items-center justify-center rounded-full border border-[#C7C7CC] px-[12px] py-[8px] text-[#5F5F68]',
+                              isReacted(standardReview.id, '공감해요') &&
+                                'bg-orange-400 text-white',
+                            )}
+                          >
+                            공감해요 {standardReview.reactions['공감해요']}
+                          </button>
+                          <button
+                            className={cn(
+                              'flex h-[32px] items-center justify-center rounded-full border border-[#C7C7CC] px-[12px] py-[8px] text-[#5F5F68]',
+                              isReacted(standardReview.id, '도움이 됐어요') &&
+                                'bg-orange-400 text-white',
+                            )}
+                          >
+                            도움이 됐어요{' '}
+                            {standardReview.reactions['도움이 됐어요']}
+                          </button>
+                        </div>
                       </div>
-                      <p className="mb-[12px] w-full text-lg">
-                        {standardReview.content}
-                      </p>
-                      <div className="mb-[20px] flex items-center gap-[10px]">
-                        {standardReview.photos.map((photo) => (
-                          <Image
-                            key={photo.id}
-                            src={photo.image_url}
-                            alt="photo"
-                            width={180}
-                            height={226}
-                            className="h-[226px] w-[180px] rounded-[20px]"
-                          />
-                        ))}
-                      </div>
-                      <div className="flex items-center gap-[10px]">
-                        <button
-                          className={cn(
-                            'flex h-[32px] items-center justify-center rounded-full border border-[#C7C7CC] px-[12px] py-[8px] text-[#5F5F68]',
-                            isReacted(standardReview.id, '공감해요') &&
-                              'bg-orange-400 text-white',
-                          )}
-                        >
-                          공감해요 {standardReview.reactions['공감해요']}
-                        </button>
-                        <button
-                          className={cn(
-                            'flex h-[32px] items-center justify-center rounded-full border border-[#C7C7CC] px-[12px] py-[8px] text-[#5F5F68]',
-                            isReacted(standardReview.id, '도움이 됐어요') &&
-                              'bg-orange-400 text-white',
-                          )}
-                        >
-                          도움이 됐어요{' '}
-                          {standardReview.reactions['도움이 됐어요']}
-                        </button>
-                      </div>
-                    </div>
-                  );
-                })}
+                    );
+                  },
+                )}
               </div>
 
               {!showAllStandardReviews && standardReviews.length > 6 && (

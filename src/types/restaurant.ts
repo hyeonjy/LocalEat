@@ -118,7 +118,10 @@ export type StandardReviewProps = {
   nickname: string;
   profile_image: string;
   photos: StandardReviewPhoto[];
-  reactions: StandardReviewReactions;
+  reactions: {
+    공감해요: number;
+    '도움이 됐어요': number;
+  };
 };
 
 export type StandardReviewPayload = {
