@@ -7,9 +7,9 @@ import Image from 'next/image';
 import PointHistoryList from './_components/PointHistoryList';
 
 const COUPONS = [
-  '/assets/images/point/coupon1.png',
-  '/assets/images/point/coupon2.png',
-  '/assets/images/point/coupon3.png',
+  '/assets/images/point/naver.png',
+  '/assets/images/point/baemin.png',
+  '/assets/images/point/google.png',
 ];
 
 const PointPage = () => {

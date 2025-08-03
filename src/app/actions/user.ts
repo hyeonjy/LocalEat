@@ -42,3 +42,16 @@ export const getUserReceipts = async ({
 
   return data;
 };
+
+export const getUserReviewsCount = async (userId: string) => {
+  const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
+
+  const res = await fetch(`${backendUrl}/users/${userId}/reviews/count`);
+  const data = await res.json();
+
+  if (!res.ok) {
+    throw new Error(data.message || '에러 발생');
+  }
+
+  return data;
+};
