@@ -1,6 +1,7 @@
 'use client';
 
 import { getUserReviewsCount } from '@/app/actions/user';
+import PointUseModal from '@/components/ui/PointUseModal';
 import { couponCategories } from '@/constants/couponCategories';
 import { useUserPoints } from '@/hooks/usePoint';
 import { useAuthStore } from '@/store/authStore';
@@ -17,6 +18,14 @@ const Store = () => {
   const [swiperStates, setSwiperStates] = useState<{
     [key: number]: { isBeginning: boolean; isEnd: boolean };
   }>({});
+  const [modalState, setModalState] = useState<{
+    isOpen: boolean;
+    selectedCoupon: any;
+  }>({
+    isOpen: false,
+    selectedCoupon: null,
+  });
+
   const { user } = useAuthStore();
 
   const { data: pointsData, isPending: pointsLoading } = useUserPoints(
@@ -39,6 +48,20 @@ const Store = () => {
         },
       }),
     );
+  };
+
+  const handleOpenModal = (coupon: any) => {
+    setModalState({
+      isOpen: true,
+      selectedCoupon: coupon,
+    });
+  };
+
+  const handleCloseModal = () => {
+    setModalState({
+      isOpen: false,
+      selectedCoupon: null,
+    });
   };
 
   if (pointsLoading || reviewsCountLoading) return <div>Loading...</div>;
@@ -201,7 +224,10 @@ const Store = () => {
                                 </p>
                               </div>
 
-                              <button className="text-start text-[12px] font-normal leading-[130%] text-[#787882]">
+                              <button
+                                onClick={() => handleOpenModal(item)}
+                                className="text-start text-[12px] font-normal leading-[130%] text-[#787882] transition-colors hover:text-[#FA4D09]"
+                              >
                                 지금 바꾸러 가기 →
                               </button>
                             </div>
@@ -242,6 +268,19 @@ const Store = () => {
           </section>
         </div>
       </div>
+
+      {/* 포인트 사용 모달 */}
+      {modalState.selectedCoupon && (
+        <PointUseModal
+          isOpen={modalState.isOpen}
+          onClose={handleCloseModal}
+          currentPoints={currentPoints}
+          requiredPoints={modalState.selectedCoupon.amount}
+          couponName={modalState.selectedCoupon.name}
+          couponImage={modalState.selectedCoupon.image}
+          couponContent={modalState.selectedCoupon.content}
+        />
+      )}
     </div>
   );
 };
