@@ -44,20 +44,23 @@ const PointHistoryList = ({ userId }: PointHistoryListProps) => {
           (history: PointHistory) => history.type === selectedFilter,
         );
 
-  // 날짜별 그룹핑
+  // 날짜별 그룹핑 (한국 시간 기준)
   const groupByDate = () => {
-    const groups = new Map<string, PointHistory[]>();
+    const groups = new Map<string, Array<PointHistory & { koreaTime: Date }>>();
 
     filteredHistories.forEach((history: PointHistory) => {
-      const dateObj = new Date(history.created_at);
-      const month = String(dateObj.getMonth() + 1).padStart(2, '0');
-      const day = String(dateObj.getDate()).padStart(2, '0');
+      // UTC 시간을 한국 시간으로 변환
+      const utcDate = new Date(history.created_at);
+      const koreaTime = new Date(utcDate.getTime() + 9 * 60 * 60 * 1000); // UTC+9
+
+      const month = String(koreaTime.getMonth() + 1).padStart(2, '0');
+      const day = String(koreaTime.getDate()).padStart(2, '0');
       const dateKey = `${month}.${day}`;
 
       if (!groups.has(dateKey)) {
         groups.set(dateKey, []);
       }
-      groups.get(dateKey)!.push(history);
+      groups.get(dateKey)!.push({ ...history, koreaTime });
     });
 
     return Array.from(groups.entries());
@@ -129,8 +132,9 @@ const PointHistoryList = ({ userId }: PointHistoryListProps) => {
 
               {/* 오른쪽 리스트 */}
               <div className="w-full">
-                {items.map((history: PointHistory) => {
-                  const time = history.created_at.slice(11, 16);
+                {items.map((history: PointHistory & { koreaTime: Date }) => {
+                  const time = history.koreaTime.toISOString().slice(11, 16);
+
                   return (
                     <div
                       key={history.id}

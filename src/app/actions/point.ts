@@ -1,3 +1,5 @@
+'use server';
+
 export const getUserPoints = async (id: string) => {
   const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
 

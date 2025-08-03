@@ -1,6 +1,6 @@
 'use client';
 
-import { getUserReviews } from '@/app/actions/user';
+import { getUserReceipts, getUserReviews } from '@/app/actions/user';
 import { Star } from '@/app/restaurant/[id]/review/_components/RatingInput';
 import StoryPreview from '@/app/restaurant/[id]/review/_components/StoryPreview';
 import { useAuthStore } from '@/store/authStore';
@@ -9,10 +9,20 @@ import { useQuery } from '@tanstack/react-query';
 import Image from 'next/image';
 import { useState } from 'react';
 
+const FILTERS = ['전체', '승인완료', '승인대기', '승인거절'];
+const PERIODS = [
+  { name: '전체', value: '전체' },
+  { name: '최근 1개월', value: '1' },
+  { name: '최근 3개월', value: '3' },
+  { name: '최근 6개월', value: '6' },
+];
+
 const page = () => {
   const [reviewFilter, setReviewFilter] = useState<
     'all' | 'graphic' | 'standard'
   >('all');
+  const [receiptFilter, setReceiptFilter] = useState<string>('전체');
+  const [period, setPeriod] = useState<string>('전체');
   const { user } = useAuthStore();
 
   const { data: reviewData, isPending } = useQuery({
@@ -22,7 +32,38 @@ const page = () => {
     enabled: !!user?.id,
   });
 
-  console.log(reviewData);
+  const { data: receiptData, isPending: receiptPending } = useQuery({
+    queryKey: ['receipts', receiptFilter, period],
+    queryFn: () =>
+      getUserReceipts({
+        userId: user?.id.toString() || '',
+        status: receiptFilter,
+        month: period,
+      }),
+    enabled: !!user?.id,
+  });
+
+  // 영수증 데이터를 날짜별로 그룹핑하는 함수 (한국 시간 기준)
+  const groupByDate = () => {
+    const groups = new Map<string, Array<any & { koreaTime: Date }>>();
+
+    receiptData?.receipts?.forEach((receipt: any) => {
+      // UTC 시간을 한국 시간으로 변환
+      const utcDate = new Date(receipt.submitted_at);
+      const koreaTime = new Date(utcDate.getTime() + 9 * 60 * 60 * 1000);
+
+      const month = String(koreaTime.getMonth() + 1).padStart(2, '0');
+      const day = String(koreaTime.getDate()).padStart(2, '0');
+      const dateKey = `${month}.${day}`;
+
+      if (!groups.has(dateKey)) {
+        groups.set(dateKey, []);
+      }
+      groups.get(dateKey)!.push({ ...receipt, koreaTime });
+    });
+
+    return Array.from(groups.entries());
+  };
 
   if (isPending) return <div>Loading...</div>;
 
@@ -94,7 +135,7 @@ const page = () => {
           </div>
 
           {/* 리뷰 카드들 */}
-          <div className="flex gap-4 overflow-x-auto pb-4">
+          <div className="grid grid-cols-3 gap-4 overflow-x-auto pb-4">
             {filteredReviews?.map((review: any, index: number) => (
               <div
                 key={review.id || index}
@@ -173,8 +214,120 @@ const page = () => {
           </div>
         </TabsContent>
         <TabsContent value="receipt">
+          {/* 필터 탭과 기간 선택 */}
+          <div className="mb-4 mt-[20px] flex justify-between">
+            {/* 필터 탭 */}
+            <div className="flex space-x-[6px]">
+              {FILTERS.map((filter) => (
+                <button
+                  key={filter}
+                  onClick={() => setReceiptFilter(filter)}
+                  className={`rounded-[100px] border border-[#C7C7CC] px-[10px] py-[7px] text-[14px] font-normal leading-[100%] text-[#2E2E32] ${
+                    receiptFilter === filter
+                      ? 'border-[#FA4D09] bg-[#FEEDE6] text-[#FA4D09]'
+                      : 'bg-white'
+                  }`}
+                  disabled={receiptPending}
+                >
+                  {filter}
+                </button>
+              ))}
+            </div>
+
+            {/* 기간 선택 드롭다운 */}
+            <div className="relative w-[179px]">
+              <select
+                value={period}
+                onChange={(e) => setPeriod(e.target.value)}
+                className="w-full cursor-pointer appearance-none rounded-[4px] border border-[#E2E2E4] bg-white px-3 py-2 pr-10 focus:outline-none disabled:opacity-50"
+                disabled={receiptPending}
+              >
+                {PERIODS.map((periodOption) => (
+                  <option key={periodOption.value} value={periodOption.value}>
+                    {periodOption.name}
+                  </option>
+                ))}
+              </select>
+              <Image
+                src="/assets/icons/arrow_dropdown.svg"
+                alt="arrow_down"
+                width={24}
+                height={24}
+                className="pointer-events-none absolute right-2 top-1/2 -translate-y-1/2"
+              />
+            </div>
+          </div>
+
+          <div className="flex items-center gap-[6px] rounded-[12px] border border-[#E2E2E4] bg-[#FCFCFD] p-[12px] text-[16px] text-[#787882]">
+            <Image
+              src="/assets/icons/error_outline.svg"
+              alt="alarm"
+              width={24}
+              height={24}
+            />
+            <p>
+              영수증 인증은 최대 24시간 이내 검토되며, 승인 결과는 아래 화면에서
+              확인할 수 있습니다.
+            </p>
+          </div>
+
+          {/* 영수증 내역 리스트 */}
           <div>
-            <h1>영수증 인증</h1>
+            {receiptPending ? (
+              <div className="flex items-center justify-center py-12">
+                <div className="text-gray-600">
+                  영수증 내역을 불러오는 중...
+                </div>
+              </div>
+            ) : receiptData?.receipts?.length === 0 ? (
+              <div className="rounded-lg bg-white p-6 text-center text-gray-500 sm:p-8">
+                해당 기간에 영수증 내역이 없습니다.
+              </div>
+            ) : (
+              groupByDate().map(([date, items]) => (
+                <div key={date} className="mb-4 flex items-start">
+                  {/* 왼쪽 날짜 */}
+                  <div className="w-[52px] pr-3 pt-3 font-normal text-[#171719]">
+                    {date}
+                  </div>
+
+                  {/* 오른쪽 리스트 */}
+                  <div className="w-full">
+                    {items.map((receipt: any & { koreaTime: Date }) => {
+                      const time = receipt.koreaTime
+                        .toISOString()
+                        .slice(11, 16);
+                      return (
+                        <div
+                          key={receipt.id}
+                          className="flex items-center justify-between border-b border-[#E2E2E4] py-3"
+                        >
+                          <div>
+                            <div className="mb-1 text-[16px] font-bold text-[#171719]">
+                              {receipt.restaurant_name}
+                            </div>
+                            <div className="text-[14px] font-normal text-[#92929B]">
+                              {time}
+                            </div>
+                          </div>
+                          <div
+                            className={`rounded-[20px] px-[12px] py-[6px] text-[14px] font-medium leading-[130%] text-[#47474D] ${
+                              receipt.status === '승인완료'
+                                ? 'bg-[#E9FBEB]'
+                                : receipt.status === '승인대기'
+                                  ? 'bg-[#E2E2E4]'
+                                  : 'bg-[#FFDBDB]'
+                            }`}
+                          >
+                            <p>{receipt.status}</p>
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+              ))
+            )}
           </div>
         </TabsContent>
       </Tabs>
