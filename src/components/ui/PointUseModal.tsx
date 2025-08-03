@@ -1,4 +1,6 @@
+import { exchangeRequest } from '@/app/actions/exchangeRequest';
 import { useAuthStore } from '@/store/authStore';
+import { CouponItem } from '@/types/coupon';
 import Image from 'next/image';
 import { useState } from 'react';
 import Modal from './Modal';
@@ -6,49 +8,56 @@ import Modal from './Modal';
 type PointUseModalProps = {
   isOpen: boolean;
   onClose: () => void;
-  currentPoints: number;
-  requiredPoints: number;
-  couponName: string;
-  couponImage: string;
-  couponContent: string;
+  coupon: CouponItem;
+  userPoints: number;
 };
 
 const PointUseModal = ({
   isOpen,
   onClose,
-  currentPoints,
-  requiredPoints,
-  couponName,
-  couponImage,
-  couponContent,
+  coupon,
+  userPoints,
 }: PointUseModalProps) => {
   const { user } = useAuthStore();
   const [email, setEmail] = useState(user?.email || '');
 
-  const hasEnoughPoints = currentPoints >= requiredPoints;
-  const progressPercentage = Math.min(
-    (currentPoints / requiredPoints) * 100,
-    100,
-  );
+  const hasEnoughPoints = userPoints >= coupon.amount;
+  const progressPercentage = Math.min((userPoints / coupon.amount) * 100, 100);
+
+  const handleExchange = async () => {
+    try {
+      await exchangeRequest(user?.id, coupon.value, coupon.amount, email);
+      alert('포인트 교환이 완료되었습니다.');
+      onClose();
+    } catch (error: any) {
+      console.error(error);
+      alert(error.message);
+    }
+  };
 
   return (
     <Modal isOpen={isOpen} onClose={onClose}>
       <div className="flex h-[486px] w-[810px] gap-[24px] rounded-[20px] bg-white p-[40px]">
         {/* 왼쪽 섹션 - 기프트카드 시각 */}
         <div className="flex h-[406px] w-[406px] items-center justify-center rounded-[20px] border border-[#E2E2E4] shadow-[0px_5px_20px_0px_rgba(0,0,0,0.04)]">
-          <Image src={couponImage} alt={couponName} width={338} height={214} />
+          <Image
+            src={coupon.image}
+            alt={coupon.name}
+            width={338}
+            height={214}
+          />
         </div>
 
-        {/* 오른쪽 섹션 - 정보 및 상호작용 */}
+        {/* 오른쪽 섹션 - 정보 및 포인트 사용하기 버튼 */}
         <div className="flex h-[406px] flex-col">
           {/* 제목 */}
           <h2 className="mb-[12px] mt-[21px] text-[20px] font-semibold leading-[130%] text-[#171719]">
-            {couponName}
+            {coupon.name}
           </h2>
 
           {/* 설명 */}
           <p className="mb-[16px] h-[30px] w-[273px] text-[12px] font-normal leading-[130%] text-[#787882]">
-            {couponContent}
+            {coupon.content}
           </p>
 
           {/* 주문 발송자 */}
@@ -58,7 +67,7 @@ const PointUseModal = ({
             </label>
             <input
               type="email"
-              value={user?.email || ''}
+              value={email}
               onChange={(e) => setEmail(e.target.value)}
               className="w-full rounded-[5.18px] border border-[#ADADB3] p-3 text-[14px] focus:border-[#FA4D09] focus:outline-none"
               placeholder="이메일을 입력하세요"
@@ -68,7 +77,7 @@ const PointUseModal = ({
           {/* 포인트 정보 */}
           <div className="mb-[16px]">
             <span className="mb-1 text-[12px] font-normal leading-[130%] text-[#787882]">
-              내 보유 포인트 {currentPoints}P
+              내 보유 포인트 {userPoints}P
             </span>
 
             {/* 진행률 바 */}
@@ -82,14 +91,13 @@ const PointUseModal = ({
                 />
               </div>
               <p className="text-[16px] font-bold leading-[130%] text-[#171719]">
-                {requiredPoints}P
+                {coupon.amount}P
               </p>
             </div>
           </div>
 
-          {/* 포인트 사용하기 버튼 */}
           <button
-            onClick={onClose}
+            onClick={handleExchange}
             disabled={!hasEnoughPoints}
             className={`h-[107px] w-full rounded-[8px] px-[20px] py-[8px] text-[16px] font-medium ${
               hasEnoughPoints

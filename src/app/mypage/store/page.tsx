@@ -210,7 +210,7 @@ const Store = () => {
                                 {item.name}
                               </p>
 
-                              <div className="flex items-center gap-3">
+                              <div className="flex items-center justify-between">
                                 <div className="h-[14px] w-[193px] rounded-[7px] bg-[#E2E2E4]">
                                   <div
                                     className="h-full rounded-[7px] bg-[#3CDD4C]"
@@ -220,7 +220,10 @@ const Store = () => {
                                   />
                                 </div>
                                 <p className="text-[16px] font-bold leading-[130%] text-[#171719]">
-                                  {currentPoints} P
+                                  {currentPoints < item.amount
+                                    ? currentPoints
+                                    : item.amount}{' '}
+                                  P
                                 </p>
                               </div>
 
@@ -274,11 +277,8 @@ const Store = () => {
         <PointUseModal
           isOpen={modalState.isOpen}
           onClose={handleCloseModal}
-          currentPoints={currentPoints}
-          requiredPoints={modalState.selectedCoupon.amount}
-          couponName={modalState.selectedCoupon.name}
-          couponImage={modalState.selectedCoupon.image}
-          couponContent={modalState.selectedCoupon.content}
+          userPoints={currentPoints}
+          coupon={modalState.selectedCoupon}
         />
       )}
     </div>
