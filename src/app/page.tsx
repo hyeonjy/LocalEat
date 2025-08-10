@@ -1,4 +1,8 @@
+'use client';
+
+import { useAuthStore } from '@/store/authStore';
 import Link from 'next/link';
+import { useEffect } from 'react';
 
 const cornerClasses = [
   'rounded-tl-[20px]', // index 0 → 왼쪽 상단
@@ -8,6 +12,12 @@ const cornerClasses = [
 ];
 
 export default function Home() {
+  const user = useAuthStore((state) => state.user);
+
+  useEffect(() => {
+    console.log('✅ Zustand에 저장된 유저:', user);
+  }, [user]);
+
   return (
     <div>
       <section className="mt-[64px]">
@@ -66,7 +76,7 @@ export default function Home() {
                 요즘 인기 있는 식당
               </p>
               <h2 className="text-[40px] font-bold leading-[130%] tracking-[0.4px] text-[#171719]">
-                로컬잇 TOP 10
+                로컬잇픽 TOP 10
               </h2>
             </div>
 

@@ -5,7 +5,7 @@ import { KAKAO_AUTH_URL } from '@/types/auth';
 import { zodResolver } from '@hookform/resolvers/zod';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 
@@ -56,21 +56,12 @@ const Signin = () => {
       alert('서버 오류');
     }
   };
-
-  // 로그아웃 로직 다른 곳으로 이전 예정
-  // const handleLogout = async () => {
-  //   console.log(1);
-  //   await fetch('http://localhost:4000/auth/logout', {
-  //     method: 'POST',
-  //     credentials: 'include', // 쿠키를 함께 보내려면 꼭 필요함
-  //   });
-  //   router.push('/signin');
-  // };
+  console.log();
 
   return (
-    <div className="mx-auto mt-[154px] w-[364px] text-center">
+    <div className="mx-auto mt-[64px] w-[364px] py-[100px] text-center">
       {step == 'select' && (
-        <div className="mx-auto mt-[154px] w-[364px] text-center">
+        <div className="mx-auto w-[364px] text-center">
           <h2 className="w-full text-center text-[32px] font-bold leading-[130%] tracking-[-0.48px] text-[#171719]">
             쉽고 간편하게
             <br />

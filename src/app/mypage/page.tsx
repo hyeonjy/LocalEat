@@ -1,3 +1,6 @@
+'use client';
+
+import { useAuthStore } from '@/store/authStore';
 import Link from 'next/link';
 const cornerClasses = [
   'rounded-tl-[20px]', // index 0 → 왼쪽 상단
@@ -40,18 +43,24 @@ const page = () => {
       </div>,
     );
   }
+  const user = useAuthStore((state) => state.user);
+
   return (
     <div>
       <div className="mx-auto mt-[113px] flex w-[1200px] gap-[126px]">
         <aside className="flex w-[282px] flex-col items-start gap-[20px]">
           <div className="flex w-[282px] gap-[49px]">
             <div className="flex items-center gap-[17px]">
-              <div className="aspect-square h-[80px] w-[80px] rounded-full bg-[#ccc]">
-                {/* 이미지 */}
+              <div className="aspect-square h-[80px] w-[80px] overflow-hidden rounded-full bg-[#ccc]">
+                {user?.profileImage ? (
+                  <img src={user.profileImage} />
+                ) : (
+                  <div className="h-full w-full rounded-full bg-gray-300" />
+                )}
               </div>
               <div>
                 <p className="self-stretch text-[20px] font-bold leading-[100%] text-[#171719]">
-                  장군쪼만
+                  {user?.nickname}
                 </p>
                 <span className="text-[14px] font-normal leading-[100%] text-[#171719]">
                   팔로워 0

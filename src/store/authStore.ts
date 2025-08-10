@@ -1,9 +1,9 @@
-import { UserType } from '@/types/auth';
+import { UserSocialType, UserType } from '@/types/auth';
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 
 type AuthState = {
-  user: UserType | null;
+  user: UserType | UserSocialType | null;
   setUser: (user: UserType | null) => void;
   clearUser: () => void;
 };
