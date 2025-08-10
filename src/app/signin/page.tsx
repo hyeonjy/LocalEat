@@ -5,7 +5,7 @@ import { KAKAO_AUTH_URL } from '@/types/auth';
 import { zodResolver } from '@hookform/resolvers/zod';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 
@@ -20,9 +20,10 @@ const Signin = () => {
   const {
     register,
     handleSubmit,
-    formState: { errors },
+    formState: { errors, isSubmitting, isValid },
   } = useForm<FormData>({
     resolver: zodResolver(schema),
+    mode: 'onChange',
   });
 
   // 간편 로그인 , 로그인 네비게이션
@@ -144,7 +145,8 @@ const Signin = () => {
 
             <button
               type="submit"
-              className="w-full rounded-[10px] bg-[#F4F4F5] px-[20px] py-[14px] text-[#ADADB3]"
+              disabled={isSubmitting}
+              className={`w-full rounded-[10px] px-[20px] py-[14px] ${isValid ? 'bg-[#FA4D09] text-white' : 'bg-[#F4F4F5] text-[#ADADB3]'}`}
             >
               로그인
             </button>

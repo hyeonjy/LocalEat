@@ -45,7 +45,7 @@ export const createServerApi = (
             httpOnly: true,
             secure: true,
             sameSite: 'lax',
-            maxAge: 1000 * 60 * 60, // 1시간
+            maxAge: 60 * 60, // 1시간
           });
 
           /* 헤더 교체 후 재시도 */
