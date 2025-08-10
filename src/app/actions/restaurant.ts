@@ -6,6 +6,7 @@ import {
   GraphicReviewProps,
   keywordSummaryProps,
   MenuProps,
+  ReactionType,
   RestaurantProps,
   StandardReviewPayload,
   StandardReviewProps,
@@ -36,7 +37,9 @@ export const getRestaurantById = async (
 }> => {
   const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
 
-  const res = await fetch(`${backendUrl}/restaurants/${id}`);
+  const res = await fetch(`${backendUrl}/restaurants/${id}`, {
+    cache: 'no-store',
+  });
   const data = await res.json();
 
   if (!res.ok) {
@@ -96,25 +99,6 @@ export const createGraphicReview = async (reviewData: GraphicReviewPayload) => {
   }
 };
 
-export const getRestaurantReaction = async (id: string) => {
-  const accessToken = cookies().get('accessToken')?.value;
-  const refreshToken = cookies().get('refreshToken')?.value;
-
-  const serverApi = createServerApi(accessToken, refreshToken);
-
-  try {
-    const res = await serverApi.get(`/restaurants/${id}/review/reactions`);
-
-    return { success: true, data: res.data };
-  } catch (error: any) {
-    if (error.name === 'RefreshTokenExpired') {
-      return { success: false, reason: 'UNAUTHORIZED' };
-    }
-
-    return { success: false, reason: 'UNKNOWN', message: error.message };
-  }
-};
-
 export const getTopRatedRestaurants = async () => {
   const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
 
@@ -139,4 +123,57 @@ export const getTopRecentRestaurants = async () => {
   }
 
   return data;
+};
+
+export const addRestaurantReaction = async (
+  reviewId: number,
+  type: ReactionType,
+  userId: number | undefined,
+) => {
+  const accessToken = cookies().get('accessToken')?.value;
+  const refreshToken = cookies().get('refreshToken')?.value;
+
+  const serverApi = createServerApi(accessToken, refreshToken);
+
+  try {
+    const res = await serverApi.post(
+      `/restaurants/review/${reviewId}/reactions`,
+      { type, userId },
+    );
+
+    return { success: true, data: res.data };
+  } catch (error: any) {
+    if (error.name === 'RefreshTokenExpired') {
+      return { success: false, reason: 'UNAUTHORIZED' };
+    }
+  }
+};
+
+export const deleteRestaurantReaction = async (
+  reviewId: number,
+  type: ReactionType,
+  userId: number,
+) => {
+  const accessToken = cookies().get('accessToken')?.value;
+  const refreshToken = cookies().get('refreshToken')?.value;
+
+  const serverApi = createServerApi(accessToken, refreshToken);
+
+  try {
+    const res = await serverApi.delete(
+      `/restaurants/review/${reviewId}/reactions`,
+      {
+        data: {
+          type,
+          userId,
+        },
+      },
+    );
+
+    return { success: true, data: res.data };
+  } catch (error: any) {
+    if (error.name === 'RefreshTokenExpired') {
+      return { success: false, reason: 'UNAUTHORIZED' };
+    }
+  }
 };

@@ -6,7 +6,7 @@ import {
 } from '@/app/actions/restaurant';
 import { useAuthStore } from '@/store/authStore';
 import { GraphicReviewPayload } from '@/types/restaurant';
-import { useQuery } from '@tanstack/react-query';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import KeywordSelection from '../_components/KeywordSelection';
@@ -30,6 +30,7 @@ const GraphicReviewForm = ({ params }: GraphicReviewPageProps) => {
   const [storyImage, setStoryImage] = useState<string | null>(null);
   const [storyData, setStoryData] = useState<any>(null);
   const { user, clearUser } = useAuthStore();
+  const queryClient = useQueryClient();
   const router = useRouter();
 
   useEffect(() => {
@@ -59,6 +60,41 @@ const GraphicReviewForm = ({ params }: GraphicReviewPageProps) => {
   const { data, isPending, error } = useQuery({
     queryKey: ['restaurant-info', restaurantId],
     queryFn: () => getRestaurantInfoAndMenus(restaurantId),
+  });
+
+  const { mutateAsync: submitGraphic, isPending: isSubmitting } = useMutation({
+    mutationFn: (payload: GraphicReviewPayload) => createGraphicReview(payload),
+    onSuccess: async (result) => {
+      if (!result.success) {
+        if (result.reason === 'UNAUTHORIZED') {
+          alert('로그인 세션이 만료되었습니다. 다시 로그인해주세요.');
+          clearUser();
+          router.push('/signin');
+          return;
+        }
+        alert('리뷰 등록 실패');
+        return;
+      }
+
+      await Promise.all([
+        queryClient.invalidateQueries({
+          queryKey: ['restaurant-info', restaurantId],
+        }),
+        queryClient.invalidateQueries({
+          queryKey: ['restaurant', restaurantId],
+        }),
+      ]);
+
+      localStorage.removeItem('storyBgImage');
+      localStorage.removeItem('storyData');
+      localStorage.removeItem(`graphicReview_${restaurantId}`);
+
+      alert('리뷰 등록 성공');
+      router.push(`/restaurant/${restaurantId}`);
+    },
+    onError: () => {
+      alert('리뷰 등록 실패');
+    },
   });
 
   if (isPending) return <div>Loading...</div>;
@@ -119,30 +155,7 @@ const GraphicReviewForm = ({ params }: GraphicReviewPageProps) => {
       elements: storyData?.elements,
     };
 
-    try {
-      const result = await createGraphicReview(review as GraphicReviewPayload);
-
-      if (!result.success) {
-        if (result.reason === 'UNAUTHORIZED') {
-          alert('로그인 세션이 만료되었습니다. 다시 로그인해주세요.');
-          clearUser();
-          router.push('/signin');
-          return;
-        }
-        alert('리뷰 등록 실패');
-        return;
-      }
-
-      // 성공 시 localStorage 정리
-      localStorage.removeItem('storyBgImage');
-      localStorage.removeItem('storyData');
-      localStorage.removeItem(`graphicReview_${restaurantId}`);
-
-      alert('리뷰 등록 성공');
-      router.push(`/restaurant/${restaurantId}`);
-    } catch (error: any) {
-      alert('리뷰 등록 실패');
-    }
+    await submitGraphic(review as GraphicReviewPayload);
   };
 
   const handleRatingChange = (rating: number) => {
@@ -227,7 +240,10 @@ const GraphicReviewForm = ({ params }: GraphicReviewPageProps) => {
       </section>
 
       <div className="mt-[32px] flex w-[791px] justify-end">
-        <button className="flex h-[50px] w-[100px] items-center justify-center rounded-[8px] bg-[#FA4D09] px-[20px] py-[16px] text-white">
+        <button
+          disabled={isSubmitting}
+          className="flex h-[50px] w-[100px] items-center justify-center rounded-[8px] bg-[#FA4D09] px-[20px] py-[16px] text-white disabled:opacity-60"
+        >
           등록
         </button>
       </div>

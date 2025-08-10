@@ -119,9 +119,9 @@ export type StandardReviewProps = {
   profile_image: string;
   photos: StandardReviewPhoto[];
   reactions: {
-    공감해요: number;
-    '도움이 됐어요': number;
-  };
+    type: ReactionType;
+    user_id: number[];
+  }[];
 };
 
 export type StandardReviewPayload = {
@@ -184,4 +184,11 @@ export type MissionRestaurantProps = {
   image_url: string;
   review_count: number;
   menus: string[];
+};
+
+export type RestaurantDetailResponse = {
+  restaurant: RestaurantProps;
+  menus: MenuProps[];
+  reviews: { standard: StandardReviewProps[]; graphic: GraphicReviewProps[] };
+  keywords: { standard: keywordSummaryProps[]; graphic: keywordSummaryProps[] };
 };
