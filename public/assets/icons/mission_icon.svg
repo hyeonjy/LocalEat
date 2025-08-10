@@ -1,23 +1,3 @@
-<<<<<<< HEAD
 <svg width="31" height="34" viewBox="0 0 31 34" fill="none" xmlns="http://www.w3.org/2000/svg">
 <path d="M28.9994 5.00055C26.5584 2.55953 23.431 0.921004 20.0345 0.303641C16.638 -0.313721 13.134 0.119441 9.99013 1.54532C6.84623 2.97121 4.21196 5.32199 2.43885 8.28397C0.66574 11.2459 -0.161872 14.6782 0.0664564 18.1228C0.294784 21.5674 1.56819 24.8604 3.71675 27.5624C5.8653 30.2645 8.78681 32.247 12.0914 33.2454C15.396 34.2439 18.9265 34.2107 22.2118 33.1505C25.4971 32.0902 28.3809 30.0532 30.4783 27.3113L16.9996 17.0004L28.9994 5.00055Z" fill="#00DBA4"/>
-=======
-<svg width="82" height="82" viewBox="0 0 82 82" fill="none" xmlns="http://www.w3.org/2000/svg">
-<g filter="url(#filter0_d_2882_50797)">
-<rect x="8" y="8" width="62" height="62" rx="31" fill="#00A87E" shape-rendering="crispEdges"/>
-<path d="M50.9999 27.0006C48.5589 24.5595 45.4315 22.921 42.035 22.3036C38.6385 21.6863 35.1345 22.1194 31.9906 23.5453C28.8467 24.9712 26.2124 27.322 24.4393 30.284C22.6662 33.2459 21.8386 36.6782 22.0669 40.1228C22.2953 43.5674 23.5687 46.8604 25.7172 49.5624C27.8658 52.2645 30.7873 54.247 34.0919 55.2454C37.3965 56.2439 40.927 56.2107 44.2123 55.1505C47.4976 54.0902 50.3814 52.0532 52.4788 49.3113L39.0001 39.0004L50.9999 27.0006Z" fill="#00DBA4"/>
-</g>
-<defs>
-<filter id="filter0_d_2882_50797" x="0" y="0" width="82" height="82" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
-<feFlood flood-opacity="0" result="BackgroundImageFix"/>
-<feColorMatrix in="SourceAlpha" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0" result="hardAlpha"/>
-<feOffset dx="2" dy="2"/>
-<feGaussianBlur stdDeviation="5"/>
-<feComposite in2="hardAlpha" operator="out"/>
-<feColorMatrix type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.25 0"/>
-<feBlend mode="normal" in2="BackgroundImageFix" result="effect1_dropShadow_2882_50797"/>
-<feBlend mode="normal" in="SourceGraphic" in2="effect1_dropShadow_2882_50797" result="shape"/>
-</filter>
-</defs>
->>>>>>> 75e8a57263cdd1f7be9836265002586365448579
 </svg>
