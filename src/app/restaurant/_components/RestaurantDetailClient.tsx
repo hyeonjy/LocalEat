@@ -2,14 +2,19 @@
 
 import { getRestaurantById } from '@/app/actions/restaurant';
 import { useQuery } from '@tanstack/react-query';
+import { useState } from 'react';
 import MenuSection from './MenuSection';
 import RestaurantHeader from './RestaurantHeader';
 import ReviewTabs from './ReviewTabs';
 
+type SortType = 'latest' | 'popular';
+
 const RestaurantDetailClient = ({ id }: { id: string }) => {
+  const [sort, setSort] = useState<SortType>('latest');
+
   const { data, isLoading, isError, error } = useQuery({
-    queryFn: () => getRestaurantById(id),
-    queryKey: ['restaurant', id],
+    queryFn: () => getRestaurantById(id, sort),
+    queryKey: ['restaurant', id, sort],
   });
 
   if (isLoading) {
@@ -38,6 +43,8 @@ const RestaurantDetailClient = ({ id }: { id: string }) => {
         graphicReviews={reviews.graphic}
         keywords={keywords}
         restaurantId={String(restaurant.id)}
+        sort={sort}
+        onSortChange={setSort}
       />
     </div>
   );

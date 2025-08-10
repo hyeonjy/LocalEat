@@ -26,6 +26,8 @@ type ReviewTabsProps = {
     graphic: keywordSummaryProps[];
   };
   restaurantId: string;
+  sort: 'latest' | 'popular';
+  onSortChange: (sort: 'latest' | 'popular') => void;
 };
 
 const ReviewTabs = ({
@@ -33,6 +35,8 @@ const ReviewTabs = ({
   graphicReviews,
   keywords,
   restaurantId,
+  sort,
+  onSortChange,
 }: ReviewTabsProps) => {
   const [showAllStandardReviews, setShowAllStandardReviews] = useState(false);
   const { user } = useAuthStore();
@@ -144,7 +148,11 @@ const ReviewTabs = ({
         </TabsTrigger>
       </TabsList>
       <TabsContent value="standard" className="mx-auto w-full max-w-[1200px]">
-        <KeywordSection keywords={keywords.standard} />
+        <KeywordSection
+          keywords={keywords.standard}
+          sort={sort}
+          onSortChange={onSortChange}
+        />
 
         {/* 일반리뷰 내용 */}
         <div className="w-[1200px]">
@@ -225,7 +233,7 @@ const ReviewTabs = ({
                             />
                           ))}
                         </div>
-                        <div className="flex items-center gap-[10px]">
+                        <div className="flex h-full items-end gap-[10px]">
                           <button
                             className={cn(
                               'flex h-[32px] items-center justify-center rounded-full border border-[#C7C7CC] px-[12px] py-[8px] text-[#5F5F68]',
@@ -286,7 +294,12 @@ const ReviewTabs = ({
       </TabsContent>
 
       <TabsContent value="graphic" className="mx-auto w-full max-w-[1200px]">
-        <KeywordSection keywords={keywords.graphic} />
+        <KeywordSection
+          keywords={keywords.graphic}
+          sort={sort}
+          onSortChange={onSortChange}
+          type="graphic"
+        />
 
         <div>
           {graphicReviews.length > 0 ? (

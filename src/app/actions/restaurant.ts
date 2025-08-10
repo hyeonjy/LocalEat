@@ -29,6 +29,7 @@ export const getRestaurantInfoAndMenus = async (id: string) => {
 
 export const getRestaurantById = async (
   id: string,
+  sort?: 'latest' | 'popular',
 ): Promise<{
   restaurant: RestaurantProps;
   menus: MenuProps[];
@@ -37,9 +38,12 @@ export const getRestaurantById = async (
 }> => {
   const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
 
-  const res = await fetch(`${backendUrl}/restaurants/${id}`, {
-    cache: 'no-store',
-  });
+  const res = await fetch(
+    `${backendUrl}/restaurants/${id}?type=standard&sort=${sort}`,
+    {
+      cache: 'no-store',
+    },
+  );
   const data = await res.json();
 
   if (!res.ok) {
