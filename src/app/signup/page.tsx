@@ -5,6 +5,11 @@ import { useRouter } from 'next/navigation';
 import { useForm } from 'react-hook-form';
 import * as z from 'zod';
 
+const profileImages = [
+  '/assets/icons/profile1.svg',
+  '/assets/icons/profile2.svg',
+];
+
 const schema = z
   .object({
     email: z.string().email('유효한 이메일을 입력해주세요'),
@@ -31,8 +36,10 @@ const SignUp = () => {
   const router = useRouter();
 
   const onSubmit = async (data: FormData) => {
-    console.log('data: ', data);
     try {
+      const randomIndex = Math.floor(Math.random() * profileImages.length);
+      const profileImage = profileImages[randomIndex];
+
       const res = await fetch('/api/auth/signup', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -41,7 +48,7 @@ const SignUp = () => {
           password: data.password,
           nickname: data.nickname,
           region: ['서울'],
-          profile_image: null,
+          profile_image: profileImage,
           provider: 'local',
           provider_id: data.email,
         }),

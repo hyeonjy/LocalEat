@@ -1,9 +1,9 @@
 import Footer from '@/components/layout/Footer';
 import Header from '@/components/layout/Header';
 import Providers from '@/providers/RQProvider';
+import '@/styles/globals.css';
 import type { Metadata } from 'next';
 import localFont from 'next/font/local';
-import './globals.css';
 
 const geistSans = localFont({
   src: './fonts/GeistVF.woff',
@@ -29,7 +29,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+        className={`${geistSans.variable} ${geistMono.variable} flex flex-col antialiased`}
       >
         <Header />
         <Providers>{children}</Providers>
