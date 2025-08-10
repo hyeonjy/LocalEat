@@ -32,7 +32,6 @@ const Header = () => {
           <AuthButtons />
         </div>
       </header>
-
       {isSearchOpen && <SearchOverlay />}
     </>
   );

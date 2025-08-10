@@ -7,7 +7,7 @@ import {
 import { Calendar } from '@/components/ui/calendar';
 import { useAuthStore } from '@/store/authStore';
 import { StandardReviewPayload } from '@/types/restaurant';
-import { useQuery } from '@tanstack/react-query';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import KeywordSelection from '../_components/KeywordSelection';
@@ -35,11 +35,44 @@ const StandardReviewForm = ({ params }: StandardReviewPageProps) => {
   const [content, setContent] = useState('');
   const [rating, setRating] = useState<number>(0);
   const { user, clearUser } = useAuthStore();
+  const queryClient = useQueryClient();
   const router = useRouter();
 
   const { data, isPending, error } = useQuery({
     queryKey: ['restaurant-info', restaurantId],
     queryFn: () => getRestaurantInfoAndMenus(restaurantId),
+  });
+
+  const { mutateAsync: submitReview, isPending: isSubmitting } = useMutation({
+    mutationFn: (payload: StandardReviewPayload) =>
+      createStandardReview(payload),
+    onSuccess: async (result, variables) => {
+      if (!result.success) {
+        if (result.reason === 'UNAUTHORIZED') {
+          alert('로그인 세션이 만료되었습니다. 다시 로그인해주세요.');
+          clearUser();
+          router.push('/signin');
+          return;
+        }
+        alert('리뷰 등록 실패');
+        return;
+      }
+
+      await Promise.all([
+        queryClient.invalidateQueries({
+          queryKey: ['restaurant-info', restaurantId],
+        }),
+        queryClient.invalidateQueries({
+          queryKey: ['restaurant', restaurantId],
+        }),
+      ]);
+
+      alert('리뷰 등록 성공');
+      router.push(`/restaurant/${restaurantId}`);
+    },
+    onError: () => {
+      alert('리뷰 등록 실패');
+    },
   });
 
   if (isPending) return <div>로딩 중…</div>;
@@ -78,28 +111,7 @@ const StandardReviewForm = ({ params }: StandardReviewPageProps) => {
       photos: result.uploadedPhotos,
     };
 
-    try {
-      const result = await createStandardReview(
-        review as StandardReviewPayload,
-      );
-
-      if (!result.success) {
-        if (result.reason === 'UNAUTHORIZED') {
-          alert('로그인 세션이 만료되었습니다. 다시 로그인해주세요.');
-          clearUser();
-          router.push('/signin');
-          return;
-        }
-
-        alert('리뷰 등록 실패');
-        return;
-      }
-
-      alert('리뷰 등록 성공');
-      router.push(`/restaurant/${restaurantId}`);
-    } catch (error: any) {
-      alert('리뷰 등록 실패');
-    }
+    await submitReview(review as StandardReviewPayload);
   };
 
   const handlePhotoDelete = (index: number) => {
@@ -206,7 +218,10 @@ const StandardReviewForm = ({ params }: StandardReviewPageProps) => {
       </section>
 
       <div className="flex w-[791px] justify-end">
-        <button className="flex h-[50px] w-[100px] items-center justify-center rounded-[8px] bg-[#FA4D09] px-[20px] py-[16px] text-white">
+        <button
+          disabled={isSubmitting}
+          className="flex h-[50px] w-[100px] items-center justify-center rounded-[8px] bg-[#FA4D09] px-[20px] py-[16px] text-white disabled:opacity-60"
+        >
           등록
         </button>
       </div>

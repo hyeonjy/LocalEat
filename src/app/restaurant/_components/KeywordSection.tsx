@@ -2,7 +2,21 @@ import { keywordSummaryProps } from '@/types/restaurant';
 import Image from 'next/image';
 import { useCallback, useEffect, useRef, useState } from 'react';
 
-const KeywordSection = ({ keywords }: { keywords: keywordSummaryProps[] }) => {
+type SortType = 'latest' | 'popular';
+
+interface KeywordSectionProps {
+  keywords: keywordSummaryProps[];
+  sort: SortType;
+  onSortChange: (sort: SortType) => void;
+  type?: 'standard' | 'graphic';
+}
+
+const KeywordSection = ({
+  keywords,
+  sort,
+  onSortChange,
+  type = 'standard',
+}: KeywordSectionProps) => {
   const scrollRef = useRef<HTMLDivElement>(null);
   const [canScrollRight, setCanScrollRight] = useState(true);
 
@@ -65,12 +79,28 @@ const KeywordSection = ({ keywords }: { keywords: keywordSummaryProps[] }) => {
         )}
       </div>
 
-      <div className="flex items-center text-sm text-[#5F5F68]">
-        <span className="mx-2">•</span>
-        <span>최신순</span>
-        <span className="mx-2">•</span>
-        <span>인기순</span>
-      </div>
+      {type === 'standard' && (
+        <div className="flex items-center text-sm text-[#5F5F68]">
+          <span className="mx-2">•</span>
+          <button
+            onClick={() => onSortChange('latest')}
+            className={`cursor-pointer hover:text-black ${
+              sort === 'latest' ? 'font-semibold text-black' : ''
+            }`}
+          >
+            최신순
+          </button>
+          <span className="mx-2">•</span>
+          <button
+            onClick={() => onSortChange('popular')}
+            className={`cursor-pointer hover:text-black ${
+              sort === 'popular' ? 'font-semibold text-black' : ''
+            }`}
+          >
+            인기순
+          </button>
+        </div>
+      )}
     </div>
   );
 };
