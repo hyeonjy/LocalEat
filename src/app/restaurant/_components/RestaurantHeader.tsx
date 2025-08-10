@@ -1,3 +1,4 @@
+'use client';
 import { getRestaurantStatus } from '@/lib/getRestaurantStatus';
 import { RestaurantProps } from '@/types/restaurant';
 import Image from 'next/image';
@@ -11,7 +12,7 @@ const RestaurantHeader = ({ restaurant }: RestaurantHeaderProps) => {
   const openingState = getRestaurantStatus(restaurant.opening_hours);
 
   return (
-    <div className="mb-[64px] mt-[32px] flex h-[342px] w-full items-center justify-between gap-[24px] xl:w-[1200px] xl:px-0">
+    <div className="mb-[64px] mt-[32px] flex h-[342px] w-full max-w-[1200px] items-center justify-between gap-[24px] xl:w-[1200px] xl:px-0">
       <Image
         alt={`${restaurant.name} 대표 이미지`}
         src={restaurant.image_url}

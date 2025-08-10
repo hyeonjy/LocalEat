@@ -5,6 +5,11 @@ import { useRouter } from 'next/navigation';
 import { useForm } from 'react-hook-form';
 import * as z from 'zod';
 
+const profileImages = [
+  '/assets/icons/profile1.svg',
+  '/assets/icons/profile2.svg',
+];
+
 const schema = z
   .object({
     email: z.string().email('유효한 이메일을 입력해주세요'),
@@ -32,6 +37,9 @@ const SignUp = () => {
 
   const onSubmit = async (data: FormData) => {
     try {
+      const randomIndex = Math.floor(Math.random() * profileImages.length);
+      const profileImage = profileImages[randomIndex];
+
       const res = await fetch('/api/auth/signup', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -40,7 +48,7 @@ const SignUp = () => {
           password: data.password,
           nickname: data.nickname,
           region: ['서울'],
-          profile_image: null,
+          profile_image: profileImage,
           provider: 'local',
           provider_id: data.email,
         }),
@@ -57,58 +65,86 @@ const SignUp = () => {
   };
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-gray-50">
-      <form
-        onSubmit={handleSubmit(onSubmit)}
-        className="w-full max-w-md rounded-lg bg-white p-8 shadow-md"
-      >
+    <div className="mx-auto mt-[154px] w-[364px] text-center">
+      <form onSubmit={handleSubmit(onSubmit)} className="w-full max-w-md">
         <h2 className="mb-6 text-center text-2xl font-bold text-gray-800">
           회원가입
         </h2>
-
-        <input
-          className="mb-4 w-full rounded-md border border-gray-300 px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-          placeholder="이메일"
-          {...register('email')}
-        />
-        {errors.email && (
-          <p className="mb-4 text-sm text-red-600">{errors.email.message}</p>
-        )}
-
-        <input
-          className="mb-4 w-full rounded-md border border-gray-300 px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-          placeholder="닉네임"
-          {...register('nickname')}
-        />
-        {errors.nickname && (
-          <p className="mb-4 text-sm text-red-600">{errors.nickname.message}</p>
-        )}
-
-        <input
-          className="mb-4 w-full rounded-md border border-gray-300 px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-          type="password"
-          placeholder="비밀번호"
-          {...register('password')}
-        />
-        {errors.password && (
-          <p className="mb-4 text-sm text-red-600">{errors.password.message}</p>
-        )}
-
-        <input
-          className="mb-4 w-full rounded-md border border-gray-300 px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-          type="password"
-          placeholder="비밀번호 확인"
-          {...register('passwordConfirm')}
-        />
-        {errors.passwordConfirm && (
-          <p className="mb-4 text-sm text-red-600">
-            {errors.passwordConfirm.message}
-          </p>
-        )}
-
+        <div className="flex flex-col items-start gap-2 pt-[70px]">
+          <label
+            htmlFor="email"
+            className="font-pretendard text-[14px] font-semibold leading-[130%] text-[#5F5F68]"
+          >
+            이메일<span className="text-[#FF4242]">*</span>
+          </label>
+          <input
+            className="w-full rounded-[10px] border border-[#E2E2E4] px-[16px] py-[14px]"
+            placeholder="이메일을 입력해 주세요."
+            {...register('email')}
+          />
+          {errors.email && (
+            <p className="mb-4 text-sm text-red-600">{errors.email.message}</p>
+          )}
+        </div>
+        <div className="flex flex-col items-start gap-2 pt-[24px]">
+          <label
+            htmlFor="nickname"
+            className="font-pretendard text-[14px] font-semibold leading-[130%] text-[#5F5F68]"
+          >
+            닉네임<span className="text-[#FF4242]">*</span>
+          </label>
+          <input
+            className="w-full rounded-[10px] border border-[#E2E2E4] px-[16px] py-[14px]"
+            placeholder="사용할 닉네임을 입력해 주세요."
+            {...register('nickname')}
+          />
+          {errors.nickname && (
+            <p className="mb-4 text-sm text-red-600">
+              {errors.nickname.message}
+            </p>
+          )}
+        </div>
+        <div className="flex flex-col items-start gap-2 pt-[24px]">
+          <label
+            htmlFor="password"
+            className="font-pretendard text-[14px] font-semibold leading-[130%] text-[#5F5F68]"
+          >
+            비밀번호<span className="text-[#FF4242]">*</span>
+          </label>
+          <input
+            className="w-full rounded-[10px] border border-[#E2E2E4] px-[16px] py-[14px]"
+            type="password"
+            placeholder="비밀번호를 입력해 주세요."
+            {...register('password')}
+          />
+          {errors.password && (
+            <p className="mb-4 text-sm text-red-600">
+              {errors.password.message}
+            </p>
+          )}
+        </div>
+        <div className="flex flex-col items-start gap-2 pt-[24px]">
+          <label
+            htmlFor="passwordCheck"
+            className="font-pretendard text-[14px] font-semibold leading-[130%] text-[#5F5F68]"
+          >
+            비밀번호<span className="text-[#FF4242]">*</span>
+          </label>
+          <input
+            className="w-full rounded-[10px] border border-[#E2E2E4] px-[16px] py-[14px]"
+            type="password"
+            placeholder="비밀번호를 한 번 더 입력해 주세요."
+            {...register('passwordConfirm')}
+          />
+          {errors.passwordConfirm && (
+            <p className="mb-4 text-sm text-red-600">
+              {errors.passwordConfirm.message}
+            </p>
+          )}
+        </div>
         <button
           type="submit"
-          className="w-full rounded-md bg-blue-600 px-4 py-2 font-medium text-white transition duration-200 hover:bg-blue-700"
+          className="mt-[70px] w-full rounded-[10px] bg-[#F4F4F5] px-[20px] py-[14px] text-[#ADADB3]"
         >
           가입하기
         </button>

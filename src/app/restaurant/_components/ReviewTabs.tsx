@@ -1,17 +1,20 @@
 'use client';
-
-import { getRestaurantReaction } from '@/app/actions/restaurant';
+import {
+  addRestaurantReaction,
+  deleteRestaurantReaction,
+} from '@/app/actions/restaurant';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { cn } from '@/lib/utils';
 import { useAuthStore } from '@/store/authStore';
 import {
   GraphicReviewProps,
   keywordSummaryProps,
-  ReactionProps,
+  ReactionType,
   StandardReviewProps,
 } from '@/types/restaurant';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 import Image from 'next/image';
-import { useCallback, useEffect, useState } from 'react';
+import { useState } from 'react';
 import KeywordSection from './KeywordSection';
 import StorySlider from './StorySlider';
 
@@ -23,6 +26,8 @@ type ReviewTabsProps = {
     graphic: keywordSummaryProps[];
   };
   restaurantId: string;
+  sort: 'latest' | 'popular';
+  onSortChange: (sort: 'latest' | 'popular') => void;
 };
 
 const ReviewTabs = ({
@@ -30,36 +35,95 @@ const ReviewTabs = ({
   graphicReviews,
   keywords,
   restaurantId,
+  sort,
+  onSortChange,
 }: ReviewTabsProps) => {
-  const [myReactions, setMyReactions] = useState<ReactionProps[]>([]);
   const [showAllStandardReviews, setShowAllStandardReviews] = useState(false);
+  const { user } = useAuthStore();
+  const queryClient = useQueryClient();
 
-  const isReacted = useCallback(
-    (reviewId: number, type: string) =>
-      myReactions.some(
-        (reaction) => reaction.review_id === reviewId && reaction.type === type,
-      ),
-    [myReactions],
-  );
+  console.log('standardReveiws:', standardReviews);
 
-  useEffect(() => {
-    const fetchReaction = async () => {
-      const result = await getRestaurantReaction(restaurantId);
-
-      if (!result.success) {
-        if (result.reason === 'UNAUTHORIZED' && useAuthStore.getState().user) {
-          useAuthStore.getState().clearUser();
-          alert('로그인 세션이 만료되었습니다. 다시 로그인해주세요.');
-        }
-
-        return setMyReactions([]);
+  const addReactionMutation = useMutation({
+    mutationFn: ({
+      reviewId,
+      type,
+      userId,
+    }: {
+      reviewId: number;
+      type: ReactionType;
+      userId: number;
+    }) => addRestaurantReaction(reviewId, type, userId),
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({
+        queryKey: ['restaurant', restaurantId],
+      });
+    },
+    onError: (error: any) => {
+      if (error?.name === 'UNAUTHORIZED' && useAuthStore.getState().user) {
+        useAuthStore.getState().clearUser();
+        alert('로그인 세션이 만료되었습니다. 다시 로그인해주세요.');
+      } else {
+        alert('처리 중 오류가 발생했습니다.');
       }
+    },
+  });
 
-      setMyReactions(result.data);
-    };
+  const deleteReactionMutation = useMutation({
+    mutationFn: ({
+      reviewId,
+      type,
+      userId,
+    }: {
+      reviewId: number;
+      type: ReactionType;
+      userId: number;
+    }) => deleteRestaurantReaction(reviewId, type, userId),
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({
+        queryKey: ['restaurant', restaurantId],
+      });
+    },
+    onError: (error: any) => {
+      if (error?.name === 'UNAUTHORIZED' && useAuthStore.getState().user) {
+        useAuthStore.getState().clearUser();
+        alert('로그인 세션이 만료되었습니다. 다시 로그인해주세요.');
+      } else {
+        alert('처리 중 오류가 발생했습니다.');
+      }
+    },
+  });
 
-    fetchReaction();
-  }, []);
+  const isMutatingReaction =
+    addReactionMutation.isPending || deleteReactionMutation.isPending;
+
+  const handleReaction = async (
+    reviewId: number,
+    type: ReactionType,
+    isReacted: boolean,
+  ) => {
+    if (!user) {
+      alert('로그인 후 공감 버튼을 누를 수 있어요!');
+      return;
+    }
+    const userId = user.id;
+    if (isReacted) {
+      deleteReactionMutation.mutate({ reviewId, type, userId });
+    } else {
+      addReactionMutation.mutate({ reviewId, type, userId });
+    }
+  };
+
+  const isReacted = (
+    reactions: { type: ReactionType; user_id: number[] }[],
+    type: ReactionType,
+  ) => {
+    if (!user) return false;
+    return reactions.some(
+      (reaction) =>
+        reaction.type === type && reaction.user_id.includes(user.id),
+    );
+  };
 
   // 표시할 리뷰 개수 결정 (일반리뷰만)
   const displayedStandardReviews = showAllStandardReviews
@@ -84,91 +148,129 @@ const ReviewTabs = ({
         </TabsTrigger>
       </TabsList>
       <TabsContent value="standard" className="mx-auto w-full max-w-[1200px]">
-        <KeywordSection keywords={keywords.standard} />
+        <KeywordSection
+          keywords={keywords.standard}
+          sort={sort}
+          onSortChange={onSortChange}
+        />
 
         {/* 일반리뷰 내용 */}
         <div className="w-[1200px]">
           {displayedStandardReviews.length > 0 ? (
             <>
               <div className="grid grid-cols-2 gap-[24px]">
-                {displayedStandardReviews.map((standardReview) => {
-                  const visited_at = new Date(standardReview.visited_at);
-                  const isThisYear =
-                    visited_at.getFullYear() === new Date().getFullYear();
+                {displayedStandardReviews.map(
+                  (standardReview: StandardReviewProps) => {
+                    const visited_at = new Date(standardReview.visited_at);
+                    const isThisYear =
+                      visited_at.getFullYear() === new Date().getFullYear();
 
-                  const formattedDate = isThisYear
-                    ? `${String(visited_at.getMonth() + 1).padStart(2, '0')}.${String(visited_at.getDate()).padStart(2, '0')}`
-                    : `${visited_at.getFullYear()}.${String(visited_at.getMonth() + 1).padStart(2, '0')}.${String(visited_at.getDate()).padStart(2, '0')}`;
+                    const formattedDate = isThisYear
+                      ? `${String(visited_at.getMonth() + 1).padStart(2, '0')}.${String(visited_at.getDate()).padStart(2, '0')}`
+                      : `${visited_at.getFullYear()}.${String(visited_at.getMonth() + 1).padStart(2, '0')}.${String(visited_at.getDate()).padStart(2, '0')}`;
 
-                  return (
-                    <div
-                      className="flex flex-col rounded-[12px] border border-[#E2E2E4] bg-[#FCFCFD] p-[24px]"
-                      key={standardReview.id}
-                    >
-                      <div className="mb-[16px] flex justify-between">
-                        <div className="flex items-center">
+                    // reactions 파생값 계산 (타입/키 불일치 대비 정상화)
+                    const likeCount =
+                      standardReview?.reactions?.find(
+                        (r) => r.type === '공감해요',
+                      )?.user_id.length || 0;
+                    const helpfulCount =
+                      standardReview?.reactions?.find(
+                        (r) => r.type === '도움이 됐어요',
+                      )?.user_id.length || 0;
+
+                    const likedByMe = isReacted(
+                      standardReview.reactions,
+                      '공감해요',
+                    );
+                    const helpfulByMe = isReacted(
+                      standardReview.reactions,
+                      '도움이 됐어요',
+                    );
+
+                    return (
+                      <div
+                        className="flex flex-col rounded-[12px] border border-[#E2E2E4] bg-[#FCFCFD] p-[24px]"
+                        key={standardReview.id}
+                      >
+                        <div className="mb-[16px] flex justify-between">
+                          <div className="flex items-center">
+                            <Image
+                              src={standardReview.profile_image}
+                              alt={standardReview.nickname}
+                              width={40}
+                              height={40}
+                              className="mr-[10px] h-[40px] w-[40px] rounded-[50%] bg-white"
+                            />
+                            <p className="mr-[12px] text-[16px] font-semibold leading-[130%] text-[#2E2E32]">
+                              {standardReview.nickname}
+                            </p>
+                            <p className="text-[14px] font-medium leading-[130%] text-[#5F5F68]">
+                              {formattedDate} • {standardReview.visit_count}번째
+                              방문 • 로컬인증
+                            </p>
+                          </div>
                           <Image
-                            src={standardReview.profile_image}
-                            alt={standardReview.nickname}
-                            width={40}
-                            height={40}
-                            className="mr-[10px] h-[40px] w-[40px] rounded-[50%] bg-white"
+                            src={'/assets/icons/more.svg'}
+                            alt="더보기 아이콘"
+                            width={24}
+                            height={24}
+                            className="h-[24px] w-[24px]"
                           />
-                          <p className="mr-[12px] text-[16px] font-semibold leading-[130%] text-[#2E2E32]">
-                            {standardReview.nickname}
-                          </p>
-                          <p className="text-[14px] font-medium leading-[130%] text-[#5F5F68]">
-                            {formattedDate} • {standardReview.visit_count}번째
-                            방문 • 로컬인증
-                          </p>
                         </div>
-                        <Image
-                          src={'/assets/icons/more.svg'}
-                          alt="더보기 아이콘"
-                          width={24}
-                          height={24}
-                          className="h-[24px] w-[24px]"
-                        />
+                        <p className="mb-[12px] w-full text-lg">
+                          {standardReview.content}
+                        </p>
+                        <div className="mb-[20px] flex items-center gap-[10px]">
+                          {standardReview.photos.map((photo) => (
+                            <Image
+                              key={photo.id}
+                              src={photo.image_url}
+                              alt="photo"
+                              width={180}
+                              height={226}
+                              className="h-[226px] w-[180px] rounded-[20px]"
+                            />
+                          ))}
+                        </div>
+                        <div className="flex h-full items-end gap-[10px]">
+                          <button
+                            className={cn(
+                              'flex h-[32px] items-center justify-center rounded-full border border-[#C7C7CC] px-[12px] py-[8px] text-[#5F5F68]',
+                              likedByMe && 'bg-orange-400 text-white',
+                            )}
+                            disabled={isMutatingReaction}
+                            onClick={() =>
+                              handleReaction(
+                                standardReview.id,
+                                '공감해요',
+                                likedByMe,
+                              )
+                            }
+                          >
+                            공감해요 {likeCount}
+                          </button>
+                          <button
+                            className={cn(
+                              'flex h-[32px] items-center justify-center rounded-full border border-[#C7C7CC] px-[12px] py-[8px] text-[#5F5F68]',
+                              helpfulByMe && 'bg-orange-400 text-white',
+                            )}
+                            disabled={isMutatingReaction}
+                            onClick={() =>
+                              handleReaction(
+                                standardReview.id,
+                                '도움이 됐어요',
+                                helpfulByMe,
+                              )
+                            }
+                          >
+                            도움이 됐어요 {helpfulCount}
+                          </button>
+                        </div>
                       </div>
-                      <p className="mb-[12px] w-full text-lg">
-                        {standardReview.content}
-                      </p>
-                      <div className="mb-[20px] flex items-center gap-[10px]">
-                        {standardReview.photos.map((photo) => (
-                          <Image
-                            key={photo.id}
-                            src={photo.image_url}
-                            alt="photo"
-                            width={180}
-                            height={226}
-                            className="h-[226px] w-[180px] rounded-[20px]"
-                          />
-                        ))}
-                      </div>
-                      <div className="flex items-center gap-[10px]">
-                        <button
-                          className={cn(
-                            'flex h-[32px] items-center justify-center rounded-full border border-[#C7C7CC] px-[12px] py-[8px] text-[#5F5F68]',
-                            isReacted(standardReview.id, '공감해요') &&
-                              'bg-orange-400 text-white',
-                          )}
-                        >
-                          공감해요 {standardReview.reactions['공감해요']}
-                        </button>
-                        <button
-                          className={cn(
-                            'flex h-[32px] items-center justify-center rounded-full border border-[#C7C7CC] px-[12px] py-[8px] text-[#5F5F68]',
-                            isReacted(standardReview.id, '도움이 됐어요') &&
-                              'bg-orange-400 text-white',
-                          )}
-                        >
-                          도움이 됐어요{' '}
-                          {standardReview.reactions['도움이 됐어요']}
-                        </button>
-                      </div>
-                    </div>
-                  );
-                })}
+                    );
+                  },
+                )}
               </div>
 
               {!showAllStandardReviews && standardReviews.length > 6 && (
@@ -192,7 +294,12 @@ const ReviewTabs = ({
       </TabsContent>
 
       <TabsContent value="graphic" className="mx-auto w-full max-w-[1200px]">
-        <KeywordSection keywords={keywords.graphic} />
+        <KeywordSection
+          keywords={keywords.graphic}
+          sort={sort}
+          onSortChange={onSortChange}
+          type="graphic"
+        />
 
         <div>
           {graphicReviews.length > 0 ? (
