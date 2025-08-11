@@ -106,7 +106,9 @@ const StandardReviewForm = ({ params }: StandardReviewPageProps) => {
       content,
       keywords,
       rating,
-      visitedAt: visitDate?.toISOString(),
+      visitedAt: visitDate?.toLocaleDateString('sv-SE', {
+        timeZone: 'Asia/Seoul',
+      }),
       visitedTimeSlot: visitTime,
       photos: result.uploadedPhotos,
     };

@@ -1,7 +1,12 @@
 'use client';
 
+import { useUserPoints } from '@/hooks/usePoint';
 import { useAuthStore } from '@/store/authStore';
+import { useQuery } from '@tanstack/react-query';
+import Image from 'next/image';
 import Link from 'next/link';
+import { getUserReviews, getUserReviewsCount } from '../actions/user';
+import FoodCalendar from './_components/FoodCalendar';
 const cornerClasses = [
   'rounded-tl-[20px]', // index 0 → 왼쪽 상단
   'rounded-tr-[20px]', // index 1 → 오른쪽 상단
@@ -10,47 +15,34 @@ const cornerClasses = [
 ];
 
 const page = () => {
-  const year = 2025;
-  const month = 6;
-  const daysInMonth = new Date(year, month + 1, 0).getDate();
-  const startDay = new Date(year, month, 1).getDay();
+  const { user } = useAuthStore();
+  const userId = user?.id?.toString() || '';
+  const { data: pointsData, isPending: pointsLoading } = useUserPoints(userId);
+  const { data: reviewsCountData, isPending: reviewsCountLoading } = useQuery({
+    queryKey: ['reviewsCount'],
+    queryFn: () => getUserReviewsCount(user?.id.toString() || ''),
+  });
 
-  const reviewDates = ['2025-07-05', '2025-07-11', '2025-07-23'];
+  const { data: reviewData, isPending } = useQuery({
+    queryKey: ['reviews', 'standard'],
+    queryFn: () =>
+      getUserReviews({
+        userId: user?.id.toString() || '',
+        type: 'standard',
+      }),
+    enabled: !!user?.id,
+  });
 
-  const dateCells = [];
-  for (let i = 0; i < startDay; i++) {
-    dateCells.push(<div key={`empty-${i}`} className="" />);
-  }
+  console.log(reviewData);
 
-  // 날짜 칸 생성
-  for (let i = 1; i <= daysInMonth; i++) {
-    const dateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(i).padStart(2, '0')}`;
-    const isReviewed = reviewDates.includes(dateStr);
-
-    dateCells.push(
-      <div
-        key={i}
-        className="flex h-[110px] w-[110px] flex-col items-center justify-center rounded-[12px] border border-[#E2E2E4] bg-[#F6F6F6]"
-      >
-        <span className="text-center text-[14px] font-semibold leading-[130%] text-[#ADADB3]">
-          {i}
-        </span>
-        {/* {isReviewed && (
-          <div className="mt-1 flex h-[40px] w-[40px] items-center justify-center rounded-md bg-gray-300">
-            <span className="text-xs text-white">사진</span>
-          </div>
-        )} */}
-      </div>,
-    );
-  }
-  const user = useAuthStore((state) => state.user);
+  const currentPoints = pointsData?.totalPoints || 0;
 
   return (
     <div>
       <div className="mx-auto mt-[113px] flex w-[1200px] gap-[126px]">
         <aside className="flex w-[282px] flex-col items-start gap-[20px]">
           <div className="flex w-[282px] gap-[49px]">
-            <div className="flex items-center gap-[17px]">
+            <div className="relative flex w-full items-center gap-[17px]">
               <div className="aspect-square h-[80px] w-[80px] overflow-hidden rounded-full bg-[#ccc]">
                 {user?.profileImage ? (
                   <img src={user.profileImage} />
@@ -69,32 +61,42 @@ const page = () => {
                   팔로잉 0
                 </span>
               </div>
-            </div>
-            <div className="h-[24px] w-[24px] rounded-full bg-[#ccc]">
-              {/* 스피너 */}
+              <Image
+                src="/assets/icons/setting.svg"
+                alt="setting"
+                width={24}
+                height={24}
+                className="absolute right-0 top-0"
+              />
             </div>
           </div>
 
           <div className="flex h-[54px] w-full justify-between self-stretch rounded-[12px] border border-[#C7C7CC]">
-            <div className="my-[9px] flex w-[50%] flex-col justify-center border-r border-r-[#ccc]">
+            <Link
+              href="/mypage/point"
+              className="my-[9px] flex w-[50%] flex-col justify-center border-r border-r-[#ccc]"
+            >
               <p className="text-center text-[16px] font-bold leading-[130%] tracking-[0.16px] text-[#171719]">
-                1000P
+                {currentPoints}P
               </p>
               <span className="text-center text-[12px] font-normal leading-[130%] tracking-[-0.24px] text-[#171719]">
                 내 포인트
               </span>
-            </div>
-            <div className="my-[9px] flex w-[50%] flex-col justify-center">
+            </Link>
+            <Link
+              href="/mypage/review"
+              className="my-[9px] flex w-[50%] flex-col justify-center"
+            >
               <p className="text-center text-[16px] font-bold leading-[130%] tracking-[0.16px] text-[#171719]">
-                10
+                {reviewsCountData?.count || 0}
               </p>
               <span className="text-center text-[12px] font-normal leading-[130%] tracking-[-0.24px] text-[#171719]">
                 내 기록
               </span>
-            </div>
+            </Link>
           </div>
           <Link
-            href=""
+            href="/mypage/store"
             className="flex h-[50px] items-center justify-center gap-[8px] self-stretch rounded-[10px] bg-[#FA4D09] px-[24px] py-[10px] text-center text-[20px] font-semibold leading-[150%] text-white"
           >
             포인트 상점 구경하기
@@ -102,30 +104,21 @@ const page = () => {
         </aside>
         <div>
           <section>
-            <h2 className="text-[32px] font-bold leading-[130%] tracking-[-0.48px] text-[#171719]">
-              맛집 캘린더
-            </h2>
-            <div>
-              <h3 className="text-center text-[24px] font-semibold leading-[130%] tracking-[-0.36px] text-[#171719]">
-                2025.5
-              </h3>
-              <div className="w-[770px]">
-                <div className="mb-2 grid grid-cols-7 gap-[2px]">
-                  {['일', '월', '화', '수', '목', '금', '토'].map(
-                    (day, index) => (
-                      <div
-                        key={index}
-                        className="flex h-[40px] w-[110px] items-center justify-center text-center text-[14px] font-semibold leading-[130%] text-[#ADADB3]"
-                      >
-                        {day}
-                      </div>
-                    ),
-                  )}
-                </div>
-                <div className="grid grid-cols-7 gap-[2px]">{dateCells}</div>
+            <h2 className="text-[32px] font-bold">맛집 캘린더</h2>
+            {isPending ? (
+              <div className="mt-4 grid w-[770px] grid-cols-7 gap-[2px]">
+                {Array.from({ length: 35 }).map((_, i) => (
+                  <div
+                    key={i}
+                    className="h-[110px] w-[110px] animate-pulse rounded-[12px] bg-[#eee]"
+                  />
+                ))}
               </div>
-            </div>
+            ) : (
+              <FoodCalendar reviews={reviewData?.reviews ?? []} />
+            )}
           </section>
+
           <section className="my-[20px]">
             <h2 className="text-[32px] font-bold leading-[130%] tracking-[-0.48px] text-[#171719]">
               찜한 식당
