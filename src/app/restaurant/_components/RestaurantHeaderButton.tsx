@@ -1,14 +1,18 @@
 'use client';
 
+import { LoginGuideModal } from '@/components/common/Modal';
 import { useAuthStore } from '@/store/authStore';
 import Image from 'next/image';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { useEffect, useRef, useState } from 'react';
 
 const RestaurantHeaderButton = ({ restaurantId }: { restaurantId: number }) => {
   const [open, setOpen] = useState(false);
+  const [isGuideOpen, setIsGuideOpen] = useState(false);
   const modalRef = useRef<HTMLDivElement>(null);
   const { user } = useAuthStore();
+  const router = useRouter();
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -31,7 +35,7 @@ const RestaurantHeaderButton = ({ restaurantId }: { restaurantId: number }) => {
 
   const handleOpenClick = () => {
     if (!user) {
-      alert('로그인 후 리뷰를 작성할 수 있어요!');
+      setIsGuideOpen(true);
       return;
     }
 
@@ -62,14 +66,12 @@ const RestaurantHeaderButton = ({ restaurantId }: { restaurantId: number }) => {
           <p>12</p>
         </div>
       </div>
-
       <button
         onClick={handleOpenClick}
         className="flex h-[50px] w-[508px] items-center justify-center rounded-[10px] bg-[#FA4D09] px-[24px] py-[10px] text-[20px] font-semibold leading-[130%] text-white"
       >
         리뷰 작성하기
       </button>
-
       {/* 모달 컴포넌트 */}
       {open && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-[rgba(52,52,52,0.8)]">
@@ -103,6 +105,15 @@ const RestaurantHeaderButton = ({ restaurantId }: { restaurantId: number }) => {
           </div>
         </div>
       )}
+      <LoginGuideModal
+        isOpen={isGuideOpen}
+        onClose={() => setIsGuideOpen(false)}
+        onGoBack={() => setIsGuideOpen(false)}
+        onGoToLogin={() => {
+          setIsGuideOpen(false);
+          router.push('/signin');
+        }}
+      />
     </div>
   );
 };

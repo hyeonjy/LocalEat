@@ -116,11 +116,9 @@ const SignUp = () => {
       });
 
       if (!res.ok) throw new Error('회원가입 실패');
-      alert('회원가입 성공');
       router.push('/signin');
     } catch (err) {
       console.error(err);
-      alert('회원가입 실패');
     }
   };
 
