@@ -18,7 +18,7 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const key = process.env.KAKAO_REST_KEY;
+    const key = process.env.NEXT_PUBLIC_KAKAO_REST_API_KEY;
     if (!key) {
       return new Response(
         JSON.stringify({ message: 'KAKAO_REST_KEY not set' }),
