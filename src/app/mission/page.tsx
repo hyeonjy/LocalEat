@@ -97,9 +97,9 @@ const page = () => {
         </div>
       </section>
 
-      <section>
+      <section className="relative">
         <div className="mx-auto flex h-[423px] w-[1280px] gap-[25px] px-[40px] pb-[32px] pt-[64px]">
-          <div className="flex flex-[1_0_0] flex-col justify-center gap-[46px] rounded-[20px] border border-[#E2E2E4] bg-[#FCFCFD] p-[80px_40px] shadow-[0_0_4px_0_rgba(0,0,0,0.15)]">
+          <div className="flex h-[343px] flex-[1_0_0] flex-col justify-center gap-[46px] rounded-[20px] border border-[#E2E2E4] bg-[#FCFCFD] p-[80px_40px] shadow-[0_0_4px_0_rgba(0,0,0,0.15)]">
             <div className="flex w-full items-center justify-between">
               <h2 className="font-pretendard text-[40px] font-bold not-italic leading-[130%] tracking-[0.4px] text-[#171719]">
                 내 미션 현황
@@ -135,7 +135,7 @@ const page = () => {
             </ul>
           </div>
 
-          <div className="flex w-[282px] flex-col items-start gap-[10px] self-stretch rounded-[20px] bg-[url('/assets/images/point_bg.png')] bg-cover bg-center bg-no-repeat p-[40px_24px]">
+          <div className="flex h-[343px] w-[282px] flex-col items-start gap-[10px] self-stretch rounded-[20px] bg-[url('/assets/images/point_bg.png')] bg-cover bg-center bg-no-repeat p-[40px_24px]">
             <div className="flex h-[68px] w-[68px] items-center justify-center rounded-[50%] py-[17px] shadow-[2px_2px_10px_0_rgba(0,0,0,0.25)]">
               <Image
                 src="/assets/icons/mission_icon.svg"
@@ -145,11 +145,12 @@ const page = () => {
                 className="h-[34px] w-[34px]"
               />
             </div>
+
             <div className="font-pretendard mt-[34px] self-stretch text-[16px] font-semibold not-italic leading-[130%] tracking-[0.16px] text-white">
               <p className="h-[21px]">현재</p>
               <p className="mb-2 mt-[10px] flex items-baseline">
                 <span className="text-[40px] font-extrabold leading-none">
-                  {user?.nickname}님
+                  {user?.nickname || '게스트'}님
                 </span>
                 <span className="ml-1 text-[16px] font-semibold">의</span>
               </p>
@@ -164,6 +165,20 @@ const page = () => {
               </p>
             </div>
           </div>
+
+          {!user && (
+            <div className="absolute inset-0 z-10 flex h-full w-full items-center justify-center bg-white/50 backdrop-blur-sm">
+              <div className="text-center">
+                <p className="text-[20px] font-bold">로그인하고</p>
+                <p className="mb-[10px] text-[20px] font-bold">
+                  첫 글을 작성해보세요!
+                </p>
+                <button className="rounded-[8px] bg-[#FA4D09] px-5 py-[10px] text-[16px] font-bold text-white">
+                  로그인 하러가기
+                </button>
+              </div>
+            </div>
+          )}
         </div>
       </section>
 

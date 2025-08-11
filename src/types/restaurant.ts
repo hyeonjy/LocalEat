@@ -130,7 +130,7 @@ export type StandardReviewPayload = {
   content: string;
   keywords: string[];
   rating: number;
-  visitedAt: string;
+  visitedAt: Date | undefined;
   visitedTimeSlot: 'morning' | 'lunch' | 'afternoon' | 'dinner';
   photos: {
     type: 'food' | 'receipt';

@@ -14,10 +14,7 @@ const AuthButtons = () => {
 
   const handleLogout = async () => {
     try {
-      await fetch('http://localhost:4000/auth/logout', {
-        method: 'POST',
-        credentials: 'include',
-      });
+      await fetch('/api/auth/logout', { method: 'POST' });
 
       // Zustand에 저장된 유저 정보 제거
       useAuthStore.getState().clearUser();

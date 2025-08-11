@@ -124,3 +124,47 @@
     display: none;
   }
 }
+
+/* --- FoodCalendar overrides --- */
+.food-cal .react-calendar__navigation {
+  display: none;
+} /* 기본 네비 숨김 (커스텀 헤더 사용) */
+
+.food-cal .react-calendar__month-view__weekdays {
+  text-align: center;
+  margin-bottom: 6px;
+}
+
+.food-cal .react-calendar__month-view__weekdays__weekday {
+  font-weight: 600;
+  padding: 8px 0;
+}
+
+.food-cal .react-calendar__month-view__days__day--weekend {
+  color: #adadb3 !important;
+}
+
+/* 날짜 셀 전체 그리드에 gap 적용 */
+.food-cal .react-calendar__month-view__days {
+  display: grid !important; /* 기본 flex → grid 변경 */
+  grid-template-columns: repeat(7, 1fr);
+  gap: 4px; /* 셀 사이 여백 */
+  color: #adadb3 !important;
+}
+
+/* 각 셀 스타일 */
+.food-cal .react-calendar__tile {
+  padding: 0 !important;
+  background: #f6f6f6;
+  border: 1px solid #e2e2e4;
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+/* hover, active, today 효과 제거 */
+.food-cal .react-calendar__tile:enabled:hover,
+.food-cal .react-calendar__tile--now,
+.food-cal .react-calendar__tile--active {
+  background: #f6f6f6;
+  box-shadow: none;
+}
