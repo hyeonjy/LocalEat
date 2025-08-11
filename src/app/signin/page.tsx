@@ -1,5 +1,6 @@
 'use client';
 
+import { LoginFailedModal, LoginSuccessModal } from '@/components/common/Modal';
 import { useAuthStore } from '@/store/authStore';
 import { KAKAO_AUTH_URL } from '@/types/auth';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -28,6 +29,8 @@ const Signin = () => {
 
   // 간편 로그인 , 로그인 네비게이션
   const [step, setStep] = useState<'select' | 'signin'>('select');
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [modalType, setModalType] = useState<'success' | 'error'>('success');
 
   const router = useRouter();
 
@@ -43,18 +46,21 @@ const Signin = () => {
       const responseData = await res.json();
 
       if (!res.ok) {
-        alert(responseData.message || '로그인 실패');
+        setIsModalOpen(true);
+        setModalType('error');
         return;
       }
 
       // Zustand에 저장
       useAuthStore.getState().setUser(responseData.user);
 
-      alert('로그인 성공!');
+      // setModalType('success');
+      // setIsModalOpen(true);
       router.push('/');
     } catch (err) {
       console.error('로그인 요청 실패:', err);
-      alert('서버 오류');
+      setModalType('error');
+      setIsModalOpen(true);
     }
   };
   console.log();
@@ -163,6 +169,20 @@ const Signin = () => {
           </form>
         </div>
       )}
+
+      <LoginSuccessModal
+        isOpen={isModalOpen && modalType === 'success'}
+        onClose={() => setIsModalOpen(false)}
+        onGoHome={() => router.push('/')}
+        onWriteReview={() => router.push('/localeat')}
+      />
+
+      <LoginFailedModal
+        isOpen={isModalOpen && modalType === 'error'}
+        onClose={() => setIsModalOpen(false)}
+        onGoBack={() => router.push('/signin')}
+        onRetryLogin={() => router.push('/signin')}
+      />
     </div>
   );
 };
