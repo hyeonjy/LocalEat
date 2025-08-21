@@ -196,13 +196,16 @@ const Store = () => {
                       {category.items.map((item, itemIndex) => (
                         <SwiperSlide key={item.id} className="!w-[285px]">
                           <div className="h-[395px] w-[284px] rounded-[20px] shadow-[0px_0px_4px_0px_rgba(0,0,0,0.15)]">
-                            <div className="flex h-[284px] w-[284px] rounded-t-[20px] bg-[#F5F5F8] px-[33px] py-[73px]">
+                            <div className="relative flex h-[284px] w-[284px] rounded-t-[20px] bg-[#F5F5F8] px-[33px] py-[73px]">
                               <Image
                                 src={item.image}
                                 alt={item.name}
                                 width={218}
                                 height={138}
                               />
+                              <p className="absolute right-[45px] top-[180px] text-[15px] font-bold text-white">
+                                {item.amount}원
+                              </p>
                             </div>
 
                             <div className="flex h-[111px] w-[284px] flex-col gap-3 rounded-b-[20px] p-3">
