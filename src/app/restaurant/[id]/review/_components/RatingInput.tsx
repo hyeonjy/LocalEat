@@ -7,7 +7,7 @@ export const RatingInput = ({
 }) => {
   return (
     <div className="flex h-[50px] items-center justify-center gap-2">
-      <span className="text-[#47474D text-[14px] font-medium leading-[130%]">
+      <span className="text-[#47474D hidden text-[14px] font-medium leading-[130%] md:block">
         한 번이면 충분해요
       </span>
 
@@ -26,7 +26,7 @@ export const RatingInput = ({
       </div>
       <input type="hidden" name="rating" value={ratings} />
 
-      <span className="text-[#47474D text-[14px] font-medium leading-[130%]">
+      <span className="text-[#47474D hidden text-[14px] font-medium leading-[130%] md:block">
         또 오고 싶어요
       </span>
     </div>
