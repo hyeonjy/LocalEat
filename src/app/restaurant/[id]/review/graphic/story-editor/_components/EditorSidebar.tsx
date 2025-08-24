@@ -19,7 +19,7 @@ const EditorSidebar = ({
   return (
     <Tabs
       defaultValue="template"
-      className="z-10 h-[calc(100vh-65px)] w-full overflow-y-auto border-r bg-white px-4 py-6 md:fixed md:top-[65px] md:w-[384px]"
+      className="z-10 h-[calc(100vh-65px)] w-full overflow-y-auto border-r bg-white px-4 py-6"
     >
       <TabsList className="flex border-none">
         {TABS.map((t) => (
@@ -42,7 +42,7 @@ const EditorSidebar = ({
               alt={tpl.name}
               width={160}
               height={220}
-              className="aspect-[3/4] h-auto w-full cursor-pointer rounded-lg object-cover shadow-md md:h-[220px] md:w-[160px]"
+              className="aspect-[3/4] h-auto w-full cursor-pointer rounded-lg object-cover shadow-md lg:h-[220px] lg:w-[160px]"
               onClick={() => onTemplateSelect(tpl)}
             />
           ))}

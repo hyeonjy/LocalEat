@@ -89,27 +89,39 @@ const StoryEditorPage = () => {
         className="hidden"
       />
       <div className="pt-[60px] md:pt-[82px]">
-        <div className="relative mx-auto flex w-full flex-col md:flex-row xl:w-[1200px]">
-          <div className="hidden md:block">
-            <EditorSidebar
-              onTemplateSelect={storyEditor.handleTemplateSelect}
-              addNewElement={storyEditor.addNewElement}
-            />
+        <div className="relative w-full bg-[#F5F5F5]">
+          {/* 데스크톱 레이아웃 */}
+          <div className="relative hidden lg:mx-auto lg:flex lg:max-w-[1200px]">
+            <div className="w-[384px] flex-shrink-0">
+              <EditorSidebar
+                onTemplateSelect={storyEditor.handleTemplateSelect}
+                addNewElement={storyEditor.addNewElement}
+              />
+            </div>
+            <div className="relative flex-1 overflow-hidden">
+              <StoryCanvas
+                storyEditor={storyEditor}
+                canvasProps={{ canvasW, canvasH, scale }}
+                selectedToolbarPos={selectedToolbarPos}
+              />
+            </div>
           </div>
 
-          <div className="w-full bg-[#F5F5F5]">
-            <StoryCanvas
-              storyEditor={storyEditor}
-              canvasProps={{ canvasW, canvasH, scale }}
-              selectedToolbarPos={selectedToolbarPos}
-            />
-          </div>
-
-          <div className="block md:hidden">
-            <EditorSidebar
-              onTemplateSelect={storyEditor.handleTemplateSelect}
-              addNewElement={storyEditor.addNewElement}
-            />
+          {/* 모바일 레이아웃 */}
+          <div className="block lg:hidden">
+            <div className="relative w-full">
+              <StoryCanvas
+                storyEditor={storyEditor}
+                canvasProps={{ canvasW, canvasH, scale }}
+                selectedToolbarPos={selectedToolbarPos}
+              />
+            </div>
+            <div className="w-full">
+              <EditorSidebar
+                onTemplateSelect={storyEditor.handleTemplateSelect}
+                addNewElement={storyEditor.addNewElement}
+              />
+            </div>
           </div>
         </div>
       </div>

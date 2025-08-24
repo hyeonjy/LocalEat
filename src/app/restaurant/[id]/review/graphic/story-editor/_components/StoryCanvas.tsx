@@ -20,22 +20,8 @@ const StoryCanvas = ({
 }: StoryCanvasProps) => {
   const { canvasW, canvasH, scale } = canvasProps;
 
-  // 부모(캔버스) 내부로 픽셀 좌표/사이즈를 클램프
-  const clampInCanvas = (
-    nextX: number,
-    nextY: number,
-    nextW: number,
-    nextH: number,
-  ) => {
-    const maxX = Math.max(0, canvasW - nextW);
-    const maxY = Math.max(0, canvasH - nextH);
-    const clampedX = Math.min(Math.max(nextX, 0), maxX);
-    const clampedY = Math.min(Math.max(nextY, 0), maxY);
-    return { x: clampedX, y: clampedY, w: nextW, h: nextH };
-  };
-
   return (
-    <main className="mx-auto flex h-[calc(100vh-65px)] w-[calc(100%-32px)] flex-1 items-center justify-center bg-[#F5F5F5] py-10 md:mx-0 md:ml-[384px] md:w-full md:pl-5">
+    <main className="flex h-[90vh] w-full items-center justify-center bg-[#F5F5F5] py-4 lg:h-[calc(100vh-65px)] lg:py-10">
       <div
         ref={storyEditor.canvasRef}
         className="relative overflow-visible rounded bg-white shadow-inner"
@@ -78,6 +64,7 @@ const StoryCanvas = ({
 
         {/* 요소들 */}
         {storyEditor.elements.map((el: any) => {
+          // 간단한 위치 계산
           const width = el.width * scale.x;
           const height = el.height * scale.y;
           const x = el.x * scale.x - width / 2;
