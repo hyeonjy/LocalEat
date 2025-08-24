@@ -35,7 +35,7 @@ const RestaurantDetailClient = ({ id }: { id: string }) => {
   const { restaurant, menus, reviews, keywords } = data!;
 
   return (
-    <div className="mt-[64px] flex w-full flex-col items-center bg-blue-200">
+    <div className="mt-[64px] flex w-full flex-col items-center">
       <RestaurantHeader restaurant={restaurant} />
       <MenuSection name={restaurant.name} menus={menus} />
       <ReviewTabs
