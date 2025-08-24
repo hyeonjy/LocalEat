@@ -88,18 +88,29 @@ const StoryEditorPage = () => {
         onChange={storyEditor.handleFileChange}
         className="hidden"
       />
-      <div className="pt-[82px]">
-        <div className="relative mx-auto flex w-full xl:w-[1200px]">
-          <EditorSidebar
-            onTemplateSelect={storyEditor.handleTemplateSelect}
-            addNewElement={storyEditor.addNewElement}
-          />
+      <div className="pt-[60px] md:pt-[82px]">
+        <div className="relative mx-auto flex w-full flex-col md:flex-row xl:w-[1200px]">
+          <div className="hidden md:block">
+            <EditorSidebar
+              onTemplateSelect={storyEditor.handleTemplateSelect}
+              addNewElement={storyEditor.addNewElement}
+            />
+          </div>
 
-          <StoryCanvas
-            storyEditor={storyEditor}
-            canvasProps={{ canvasW, canvasH, scale }}
-            selectedToolbarPos={selectedToolbarPos}
-          />
+          <div className="w-full bg-[#F5F5F5]">
+            <StoryCanvas
+              storyEditor={storyEditor}
+              canvasProps={{ canvasW, canvasH, scale }}
+              selectedToolbarPos={selectedToolbarPos}
+            />
+          </div>
+
+          <div className="block md:hidden">
+            <EditorSidebar
+              onTemplateSelect={storyEditor.handleTemplateSelect}
+              addNewElement={storyEditor.addNewElement}
+            />
+          </div>
         </div>
       </div>
     </>

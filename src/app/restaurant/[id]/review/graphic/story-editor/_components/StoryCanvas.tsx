@@ -1,6 +1,4 @@
-import { RESIZE_HANDLE_STYLES } from '@/constants/storyEditor';
 import Image from 'next/image';
-import { Rnd } from 'react-rnd';
 import ElementToolbar from './ElementToolbar';
 
 interface StoryCanvasProps {
@@ -21,7 +19,7 @@ const StoryCanvas = ({
   const { canvasW, canvasH, scale } = canvasProps;
 
   return (
-    <main className="ml-[384px] flex h-[calc(100vh-65px)] flex-1 items-center justify-center bg-[#F5F5F5] py-10 pl-5">
+    <main className="mx-auto flex h-[calc(100vh-65px)] w-[calc(100%-32px)] flex-1 items-center justify-center py-10 md:mx-0 md:ml-[384px] md:w-full md:pl-5">
       <div
         ref={storyEditor.canvasRef}
         className="relative overflow-visible rounded bg-white shadow-inner"
@@ -63,7 +61,7 @@ const StoryCanvas = ({
         )}
 
         {/* 요소들 */}
-        {storyEditor.elements.map((el: any) => {
+        {/* {storyEditor.elements.map((el: any) => {
           const width = el.width * scale.x;
           const height = el.height * scale.y;
           const x = el.x * scale.x - width / 2;
@@ -301,7 +299,7 @@ const StoryCanvas = ({
           }
 
           return null;
-        })}
+        })} */}
       </div>
     </main>
   );

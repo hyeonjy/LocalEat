@@ -35,7 +35,7 @@ const TextElement = ({ addNewElement }: TextElementProps) => {
         {TEXT_BOX_OPTIONS.map((option) => (
           <div
             key={option.id}
-            className="w-[337px] cursor-pointer rounded-[12px] bg-[#FAFAFA] p-5 text-center transition-colors"
+            className="w-[288px] cursor-pointer rounded-[12px] bg-[#FAFAFA] p-5 text-center transition-colors md:w-[337px]"
             onClick={() => addNewElement(option)}
           >
             <div

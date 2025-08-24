@@ -37,7 +37,7 @@ const StickerElement = ({ addNewElement }: StickerElementProps) => {
           {LOGO_OPTIONS.map((option) => (
             <div
               key={option.id}
-              className="flex h-[108px] w-[108px] cursor-pointer items-center justify-center rounded-[12px] bg-[#FAFAFA]"
+              className="flex h-[92px] w-[92px] cursor-pointer items-center justify-center rounded-[12px] bg-[#FAFAFA] md:h-[108px] md:w-[108px]"
               onClick={() => addNewElement(option)}
             >
               <Image
@@ -56,11 +56,11 @@ const StickerElement = ({ addNewElement }: StickerElementProps) => {
         <h3 className="mb-5 text-[16px] font-semibold leading-[130%]">
           스티커
         </h3>
-        <div className="grid w-[336px] grid-cols-3 gap-x-[6px] gap-y-[14px]">
+        <div className="grid w-[288px] grid-cols-3 gap-x-[6px] gap-y-[14px] md:w-[336px]">
           {STICKER_OPTIONS.map((option) => (
             <div
               key={option.id}
-              className="flex h-[108px] w-[108px] cursor-pointer items-center justify-center rounded-[12px] bg-[#FAFAFA]"
+              className="flex h-[92px] w-[92px] cursor-pointer items-center justify-center rounded-[12px] bg-[#FAFAFA] md:h-[108px] md:w-[108px]"
               onClick={() => addNewElement(option)}
             >
               <Image
