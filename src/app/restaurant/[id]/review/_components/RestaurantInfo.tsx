@@ -61,7 +61,12 @@ const RestaurantInfo = ({
         </section>
       )}
       {type === 'graphic' && (
-        <RatingInput ratings={rating} onChange={setRating} />
+        <div>
+          <RatingInput ratings={rating} onChange={setRating} />
+          <p className="text-[#47474D mt-[20px] block text-center text-[14px] font-medium leading-[130%] md:hidden">
+            다음에 또 올래요!
+          </p>
+        </div>
       )}
     </div>
   );

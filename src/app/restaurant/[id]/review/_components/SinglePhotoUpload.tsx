@@ -66,7 +66,7 @@ const SinglePhotoUpload = ({
     <div
       className={cn(
         'flex h-[371px] flex-col items-center rounded-[28px] bg-[#FDF8F6] px-[30px] py-[40px] md:items-start md:rounded-[50px] lg:h-[377px]',
-        page === 'standard' ? 'md:w-[257px] lg:w-[330px]' : 'w-full',
+        page === 'standard' ? 'md:w-[257px] lg:w-[330px]' : 'flex-1',
       )}
     >
       <p className="text-[20px] font-semibold leading-[130%] text-[#171719]">

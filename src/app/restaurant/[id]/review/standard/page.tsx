@@ -184,7 +184,7 @@ const StandardReviewForm = ({ params }: StandardReviewPageProps) => {
         </div>
       </section>
 
-      <section className="mx-auto mt-[32px] flex w-[calc(100%-32px)] flex-col gap-[16px] md:mx-0 md:w-[692px] md:flex-row lg:gap-[20px]">
+      <section className="mx-auto mt-[32px] flex w-[calc(100%-32px)] flex-col gap-[16px] md:mx-0 md:w-[692px] md:flex-row lg:w-[772px] lg:gap-[20px]">
         <SinglePhotoUpload image={receiptImage} onImageAdd={handleReceiptAdd} />
         <MultiPhotoUpload
           photos={photos}
