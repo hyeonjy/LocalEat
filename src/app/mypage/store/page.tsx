@@ -280,6 +280,10 @@ const Store = () => {
                         onSwiper={(swiper) =>
                           handleSwiperChange(categoryIndex, swiper)
                         }
+                        style={{
+                          paddingTop: '1px',
+                          paddingBottom: '1px',
+                        }}
                       >
                         {category.items.map((item, itemIndex) => (
                           <SwiperSlide key={item.id} className="!w-auto">
