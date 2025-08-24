@@ -43,7 +43,7 @@ const RestaurantHeaderButton = ({ restaurantId }: { restaurantId: number }) => {
   };
 
   return (
-    <div className="flex h-[50px] items-center justify-between">
+    <div className="flex h-[50px] items-center justify-between gap-[24px]">
       <div className="flex gap-[8px]">
         <div className="flex flex-col items-center gap-[2px] text-[#787882]">
           <Image
@@ -68,7 +68,7 @@ const RestaurantHeaderButton = ({ restaurantId }: { restaurantId: number }) => {
       </div>
       <button
         onClick={handleOpenClick}
-        className="flex h-[50px] w-[508px] items-center justify-center rounded-[10px] bg-[#FA4D09] px-[24px] py-[10px] text-[20px] font-semibold leading-[130%] text-white"
+        className="flex h-[50px] w-full items-center justify-center rounded-[10px] bg-[#FA4D09] px-[24px] py-[10px] text-[20px] font-semibold leading-[130%] text-white"
       >
         리뷰 작성하기
       </button>

@@ -46,11 +46,11 @@ const KeywordSection = ({
   }, [checkScrollPosition, keywords]);
 
   return (
-    <div className="my-[16px] flex items-center justify-between">
-      <div className="relative w-[636px]">
+    <div className="my-[16px] flex items-center justify-between gap-[20px]">
+      <div className="relative w-full">
         <div
           ref={scrollRef}
-          className="scrollbar-hide flex w-[598px] gap-[8px] overflow-x-auto"
+          className="scrollbar-hide flex w-[calc(100%-32px)] gap-[8px] overflow-x-auto"
           style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
           onScroll={checkScrollPosition}
         >
@@ -81,24 +81,28 @@ const KeywordSection = ({
 
       {type === 'standard' && (
         <div className="flex items-center text-sm text-[#5F5F68]">
-          <span className="mx-2">•</span>
-          <button
-            onClick={() => onSortChange('latest')}
-            className={`cursor-pointer hover:text-black ${
-              sort === 'latest' ? 'font-semibold text-black' : ''
-            }`}
-          >
-            최신순
-          </button>
-          <span className="mx-2">•</span>
-          <button
-            onClick={() => onSortChange('popular')}
-            className={`cursor-pointer hover:text-black ${
-              sort === 'popular' ? 'font-semibold text-black' : ''
-            }`}
-          >
-            인기순
-          </button>
+          <div className="flex w-[58px] items-center whitespace-nowrap">
+            <span className="mx-2">•</span>
+            <button
+              onClick={() => onSortChange('latest')}
+              className={`cursor-pointer hover:text-black ${
+                sort === 'latest' ? 'font-semibold text-black' : ''
+              }`}
+            >
+              최신순
+            </button>
+          </div>
+          <div className="flex w-[58px] items-center whitespace-nowrap">
+            <span className="mx-2">•</span>
+            <button
+              onClick={() => onSortChange('popular')}
+              className={`cursor-pointer hover:text-black ${
+                sort === 'popular' ? 'font-semibold text-black' : ''
+              }`}
+            >
+              인기순
+            </button>
+          </div>
         </div>
       )}
     </div>

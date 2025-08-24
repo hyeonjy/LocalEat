@@ -131,8 +131,11 @@ const ReviewTabs = ({
     : standardReviews.slice(0, 6);
 
   return (
-    <Tabs defaultValue="standard" className="w-full">
-      <TabsList className="mx-auto w-full max-w-[1200px] border-none">
+    <Tabs
+      defaultValue="standard"
+      className="w-full max-w-[1280px] px-[40px] py-[32px]"
+    >
+      <TabsList className="mx-auto w-full border-none">
         <TabsTrigger
           value="standard"
           className="relative pb-2 text-xl font-semibold text-gray-400 focus-visible:ring-0 data-[state=active]:bg-transparent data-[state=active]:text-black data-[state=active]:shadow-none data-[state=active]:after:absolute data-[state=active]:after:bottom-0 data-[state=active]:after:left-0 data-[state=active]:after:h-[2px] data-[state=active]:after:w-full data-[state=active]:after:bg-black data-[state=active]:after:content-['']"
@@ -155,7 +158,7 @@ const ReviewTabs = ({
         />
 
         {/* 일반리뷰 내용 */}
-        <div className="w-[1200px]">
+        <div className="bg-orange-200">
           {displayedStandardReviews.length > 0 ? (
             <>
               <div className="grid grid-cols-2 gap-[24px]">
@@ -190,10 +193,10 @@ const ReviewTabs = ({
 
                     return (
                       <div
-                        className="flex flex-col rounded-[12px] border border-[#E2E2E4] bg-[#FCFCFD] p-[24px]"
+                        className="flex h-[390px] flex-1 flex-col rounded-[12px] border border-[#E2E2E4] bg-[#FCFCFD] p-[24px]"
                         key={standardReview.id}
                       >
-                        <div className="mb-[16px] flex justify-between">
+                        <div className="mb-[12px] flex justify-between">
                           <div className="flex items-center">
                             <Image
                               src={standardReview.profile_image}
@@ -218,10 +221,10 @@ const ReviewTabs = ({
                             className="h-[24px] w-[24px]"
                           />
                         </div>
-                        <p className="mb-[12px] w-full text-lg">
+                        <p className="mb-[16px] line-clamp-2 h-[42px] w-full bg-red-200 text-[16px] text-lg font-normal leading-[130%] text-[#2E2E32]">
                           {standardReview.content}
                         </p>
-                        <div className="mb-[20px] flex items-center gap-[10px]">
+                        <div className="scrollbar-hide mb-[16px] flex w-full items-center gap-[10px] overflow-hidden overflow-x-auto">
                           {standardReview.photos.map((photo) => (
                             <Image
                               key={photo.id}
@@ -229,11 +232,11 @@ const ReviewTabs = ({
                               alt="photo"
                               width={180}
                               height={226}
-                              className="h-[226px] w-[180px] rounded-[20px]"
+                              className="h-[180px] w-[180px] rounded-[20px]"
                             />
                           ))}
                         </div>
-                        <div className="flex h-full items-end gap-[10px]">
+                        <div className="flex h-[36px] items-end gap-[10px] pt-[4px]">
                           <button
                             className={cn(
                               'flex h-[32px] items-center justify-center rounded-full border border-[#C7C7CC] px-[12px] py-[8px] text-[#5F5F68]',

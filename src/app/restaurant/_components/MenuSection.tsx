@@ -21,7 +21,7 @@ const MenuSection = ({ name, menus }: MenuSectionProps) => {
   }, []);
 
   return (
-    <section className="relative mb-[64px] h-[336px] w-full px-5 xl:px-0">
+    <section className="relative h-[408px] w-full max-w-[1280px] px-[40px] py-[32px]">
       <div className="mx-auto mb-6 flex w-full max-w-[1200px] text-[24px] font-semibold leading-[130%]">
         <h2 className="text-[#FA4D09]">{name}</h2>
         <p className="text-[#171719]">의 대표 메뉴</p>
@@ -38,6 +38,7 @@ const MenuSection = ({ name, menus }: MenuSectionProps) => {
           slidesPerView="auto"
           spaceBetween={isMounted ? 24 : 0}
           loop={true}
+          className="flex w-full justify-start"
         >
           {menus.map((menu) => (
             <SwiperSlide
