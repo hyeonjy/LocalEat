@@ -65,7 +65,7 @@ const SinglePhotoUpload = ({
   return (
     <div
       className={cn(
-        'rounded-[30px] bg-[#FDF8F6] px-[30px] pb-[49px] pt-[40px]',
+        'rounded-[30px] bg-[#FDF8F6] px-[30px] py-[40px]',
         page === 'standard' ? 'w-[330px]' : 'w-full',
       )}
     >

@@ -23,7 +23,7 @@ const RestaurantInfo = ({
         {restaurant.name}, 어떠셨나요?
       </h1>
       {type === 'standard' && (
-        <section className="flex w-[791px] flex-col rounded-[50px] bg-[#FDF8F6] p-[40px]">
+        <section className="flex w-[772px] flex-col rounded-[50px] bg-[#FDF8F6] px-[30px] py-[40px]">
           <div className="flex justify-between">
             <div className="flex items-center gap-[4px]">
               <Image

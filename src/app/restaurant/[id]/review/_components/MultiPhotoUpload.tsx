@@ -43,7 +43,7 @@ const MultiPhotoUpload = ({
   };
 
   return (
-    <div className="w-[453px] flex-1 rounded-[30px] bg-[#FDF8F6] px-[24px] py-[28px]">
+    <div className="w-[426px] flex-1 rounded-[30px] bg-[#FDF8F6] py-[40px] pl-[27px] pr-[26px]">
       <p className="text-[20px] font-semibold leading-[130%] text-[#171719]">
         사진 인증 [필수]
       </p>

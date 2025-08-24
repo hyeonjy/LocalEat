@@ -9,7 +9,7 @@ type KeywordCategory = {
 const KEYWORD_CATEGORIES: KeywordCategory[] = [
   {
     title: '서비스/만족도',
-    width: '150px',
+    width: '151px',
     keywords: [
       '또 오고 싶어요❤️',
       '응대가 친절해요🤫',
@@ -22,7 +22,7 @@ const KEYWORD_CATEGORIES: KeywordCategory[] = [
   },
   {
     title: '음식/맛',
-    width: '238px',
+    width: '243px',
     keywords: [
       '식감이 좋아요🥑',
       '신선해요🥒',
@@ -42,7 +42,7 @@ const KEYWORD_CATEGORIES: KeywordCategory[] = [
   },
   {
     title: '분위기/공간',
-    width: '282px',
+    width: '279px',
     keywords: [
       '가족이랑 가기 좋아요🌻',
       '작업하기 좋아요🥨',
@@ -72,7 +72,7 @@ const KeywordSelection = ({
   onKeywordToggle,
 }: KeywordSelectionProps) => {
   return (
-    <section className="mt-[32px] w-[791px] rounded-[50px] bg-[#FDF8F6] px-[47px] py-[40px]">
+    <section className="mt-[32px] w-[772px] rounded-[50px] bg-[#FDF8F6] px-[33px] py-[40px]">
       <h2 className="mb-[24px] text-[20px] font-semibold leading-[130%]">
         키워드를 선택해주세요.
       </h2>
