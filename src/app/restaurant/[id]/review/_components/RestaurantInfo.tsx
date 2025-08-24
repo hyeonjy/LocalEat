@@ -19,11 +19,11 @@ const RestaurantInfo = ({
 }: RestaurantInfoProps) => {
   return (
     <div className="mt-[60px]">
-      <h1 className="mb-[32px] text-center text-[30px] font-semibold leading-[140%]">
+      <h1 className="mb-[32px] text-center text-[32px] font-semibold leading-[140%]">
         {restaurant.name}, 어떠셨나요?
       </h1>
       {type === 'standard' && (
-        <section className="flex w-[772px] flex-col rounded-[50px] bg-[#FDF8F6] px-[30px] py-[40px]">
+        <section className="flex flex-col rounded-[50px] bg-[#FDF8F6] px-[85px] py-[40px] md:w-[692px] lg:w-[772px] lg:px-[30px]">
           <div className="flex justify-between">
             <div className="flex items-center gap-[4px]">
               <Image
@@ -32,7 +32,7 @@ const RestaurantInfo = ({
                 width={24}
                 height={24}
               />
-              <span className="text-body-mm text-[#5F5F68]">
+              <span className="text-[16px] font-medium leading-[130%] text-[#5F5F68]">
                 {restaurant.address}
               </span>
             </div>
@@ -49,7 +49,7 @@ const RestaurantInfo = ({
                 alt={menu.name}
                 width={226}
                 height={171}
-                className="h-[171px] w-[226px] rounded-[10px]"
+                className="w-[162px] rounded-[10px] lg:h-[171px] lg:w-[226px]"
               />
             ))}
           </div>

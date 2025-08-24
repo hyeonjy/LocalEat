@@ -43,9 +43,12 @@ function Calendar({
         ...formatters,
       }}
       classNames={{
-        root: cn('w-[428px] !px-[22px] !py-[28px]', defaultClassNames.root),
+        root: cn(
+          'w-[379px] lg:w-[428px] !px-[20px] lg:!px-[22px] !py-[28px] ',
+          defaultClassNames.root,
+        ),
         months: cn(
-          'relative flex flex-col gap-[0px] md:flex-row px-[20px]',
+          'relative flex flex-col gap-[0px] md:flex-row lg:px-[20px]',
           defaultClassNames.months,
         ),
         month: cn('flex w-full flex-col gap-[12px]', defaultClassNames.month),
@@ -55,16 +58,16 @@ function Calendar({
         ),
         button_previous: cn(
           buttonVariants({ variant: buttonVariant }),
-          'absolute right-[80px] h-[--cell-size] w-[--cell-size] select-none p-0 aria-disabled:opacity-50',
+          'absolute right-[57px] lg:right-[80px] h-[--cell-size] w-[--cell-size] select-none p-0 aria-disabled:opacity-50',
           defaultClassNames.button_previous,
         ),
         button_next: cn(
           buttonVariants({ variant: buttonVariant }),
-          'absolute right-[25px] h-[--cell-size] w-[--cell-size] select-none p-0 aria-disabled:opacity-50',
+          'absolute right-[0px] lg:right-[25px] h-[--cell-size] w-[--cell-size] select-none p-0 aria-disabled:opacity-50',
           defaultClassNames.button_next,
         ),
         month_caption: cn(
-          'flex h-[26px] w-full items-center pl-[10px] text-[#171719]',
+          'flex h-[26px] w-full items-center pl-[10px] text-[#171719] !text-[20px]',
           defaultClassNames.month_caption,
         ),
         dropdowns: cn(
@@ -77,7 +80,7 @@ function Calendar({
         ),
         dropdown: cn('absolute inset-0 opacity-0', defaultClassNames.dropdown),
         caption_label: cn(
-          'select-none font-medium',
+          'select-none font-medium !text-[20px]',
           captionLayout === 'label'
             ? 'text-sm'
             : '[&>svg]:text-muted-foreground flex h-8 items-center gap-1 rounded-md pl-2 pr-1 text-sm [&>svg]:size-3.5',

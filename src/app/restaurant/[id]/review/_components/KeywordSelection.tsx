@@ -72,12 +72,12 @@ const KeywordSelection = ({
   onKeywordToggle,
 }: KeywordSelectionProps) => {
   return (
-    <section className="mt-[32px] w-[772px] rounded-[50px] bg-[#FDF8F6] px-[33px] py-[40px]">
+    <section className="mt-[32px] w-[692px] overflow-x-hidden rounded-[50px] bg-[#FDF8F6] px-[33px] py-[40px] lg:w-[772px]">
       <h2 className="mb-[24px] text-[20px] font-semibold leading-[130%]">
         키워드를 선택해주세요.
       </h2>
 
-      <div className="flex gap-[16px]">
+      <div className="flex gap-[16px] overflow-x-scroll">
         {KEYWORD_CATEGORIES.map((category) => (
           <div key={category.title}>
             <h2 className="mb-[16px] text-[18px] font-semibold leading-[130%]">

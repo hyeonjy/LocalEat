@@ -21,7 +21,7 @@ const TimeSelection = ({
         type="button"
         onClick={() => onChange(time.eng)}
         className={cn(
-          'box-border h-[83px] w-[244px] rounded-[9px] border bg-white text-[20px] font-normal leading-[130%] text-[#2E2E32]',
+          'box-border h-[83px] w-[213px] rounded-[9px] border bg-white text-[20px] font-normal leading-[130%] text-[#2E2E32] lg:w-[244px]',
           value === time.eng
             ? 'border-[2px] border-[#FA4D09]'
             : 'border-[#B6B6B6]',

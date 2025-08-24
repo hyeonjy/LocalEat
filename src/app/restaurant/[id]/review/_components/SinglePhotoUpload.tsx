@@ -65,14 +65,14 @@ const SinglePhotoUpload = ({
   return (
     <div
       className={cn(
-        'rounded-[30px] bg-[#FDF8F6] px-[30px] py-[40px]',
-        page === 'standard' ? 'w-[330px]' : 'w-full',
+        'h-[371px] rounded-[30px] bg-[#FDF8F6] px-[30px] py-[40px] lg:h-[377px]',
+        page === 'standard' ? 'w-[257px] lg:w-[330px]' : 'w-full',
       )}
     >
       <p className="text-[20px] font-semibold leading-[130%] text-[#171719]">
         {type === 'receipt' ? '영수증 인증 [선택]' : '스토리 리뷰 [필수]'}
       </p>
-      <p className="mb-[24px] mt-[6px] text-[16px] font-normal leading-[130%] text-[#787882]">
+      <p className="mb-[30px] mt-[6px] text-[16px] font-normal leading-[130%] text-[#787882] lg:mb-[24px]">
         {type === 'receipt' ? (
           <>
             인증 시 <span className="text-[#0826E9]">500P</span> 즉시 지급!
@@ -85,7 +85,7 @@ const SinglePhotoUpload = ({
       </p>
 
       <div className="flex items-center gap-[12px]">
-        <label className="flex h-[220px] w-[140px] cursor-pointer flex-col items-center justify-center gap-[6px] rounded-[20px] border border-[#C7C7CC] bg-[#E2E2E4] text-[14px] font-semibold leading-[140%] text-[#787882]">
+        <label className="flex h-[163px] w-[104px] cursor-pointer flex-col items-center justify-center gap-[6px] rounded-[20px] border border-[#C7C7CC] bg-[#E2E2E4] text-[12px] font-semibold leading-[140%] text-[#787882] lg:h-[220px] lg:w-[140px] lg:text-[14px]">
           {type === 'receipt' ? (
             <>
               <Image
@@ -93,6 +93,7 @@ const SinglePhotoUpload = ({
                 alt="사진 추가"
                 width={24}
                 height={24}
+                className="h-[20px] w-[20px] lg:h-[24px] lg:w-[24px]"
               />
               <span>사진 추가</span>
               <input
@@ -122,7 +123,7 @@ const SinglePhotoUpload = ({
           )}
         </label>
 
-        <div className="relative h-[178px] w-[120px] overflow-hidden rounded-[20px] border">
+        <div className="relative h-[123px] w-[83px] overflow-hidden rounded-[20px] border lg:h-[178px] lg:w-[120px]">
           {type === 'story' && storyData ? (
             <>
               <StoryPreview
@@ -134,7 +135,7 @@ const SinglePhotoUpload = ({
               <div className="absolute inset-0 z-10 bg-black/50" />
               <Link
                 href="./graphic/story-editor"
-                className="absolute inset-0 z-20 flex items-center justify-center text-[14px] font-semibold leading-[100%] text-white"
+                className="absolute inset-0 z-20 flex items-center justify-center text-[10px] font-semibold leading-[100%] text-white lg:text-[14px]"
               >
                 예시 확인하기
               </Link>
@@ -162,12 +163,12 @@ const SinglePhotoUpload = ({
               {type === 'story' && image ? (
                 <Link
                   href="./graphic/story-editor"
-                  className="absolute inset-0 z-10 flex items-center justify-center text-[14px] font-semibold leading-[100%] text-white"
+                  className="absolute inset-0 z-10 flex items-center justify-center text-[10px] font-semibold leading-[100%] text-white lg:text-[14px]"
                 >
                   예시 확인하기
                 </Link>
               ) : (
-                <span className="absolute inset-0 z-10 flex items-center justify-center text-[14px] font-semibold leading-[100%] text-white">
+                <span className="absolute inset-0 z-10 flex items-center justify-center text-[10px] font-semibold leading-[100%] text-white lg:text-[14px]">
                   예시 확인하기
                 </span>
               )}
