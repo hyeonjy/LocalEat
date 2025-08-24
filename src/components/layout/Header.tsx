@@ -11,9 +11,7 @@ const Header = () => {
 
   const pathname = usePathname();
 
-  const isHidden =
-    pathname.includes('/review/graphic') ||
-    pathname.includes('/review/standard');
+  const isHidden = pathname.includes('/review/graphic/story-editor');
 
   return (
     <>
