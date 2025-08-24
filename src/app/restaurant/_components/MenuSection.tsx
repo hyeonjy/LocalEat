@@ -21,10 +21,19 @@ const MenuSection = ({ name, menus }: MenuSectionProps) => {
   }, []);
 
   return (
-    <section className="relative h-[408px] w-full max-w-[1280px] px-[40px] py-[32px]">
-      <div className="mx-auto mb-6 flex w-full max-w-[1200px] text-[24px] font-semibold leading-[130%]">
+    <section className="relative h-[408px] w-full max-w-[1280px] px-[16px] md:px-[40px] md:py-[32px]">
+      <div className="mx-auto mb-6 hidden w-full max-w-[1200px] text-[24px] font-semibold leading-[130%] md:flex">
         <h2 className="text-[#FA4D09]">{name}</h2>
         <p className="text-[#171719]">의 대표 메뉴</p>
+      </div>
+
+      <div className="flex flex-col items-center pb-[20px] pt-[40px] md:hidden">
+        <h2 className="mb-[4px] text-center text-[16px] font-semibold leading-[150%] text-[#FA4D09]">
+          {name}
+        </h2>
+        <p className="text-center text-[24px] font-bold leading-[130%] text-[#171719]">
+          대표 메뉴
+        </p>
       </div>
 
       {/* 카드 + 버튼 wrapper */}

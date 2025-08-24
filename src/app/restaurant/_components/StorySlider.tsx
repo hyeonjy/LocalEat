@@ -1,10 +1,28 @@
 import { GraphicReviewProps } from '@/types/restaurant';
 import Image from 'next/image';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import StoryPreview from '../[id]/review/_components/StoryPreview';
 
 const StorySlider = ({ stories }: { stories: GraphicReviewProps[] }) => {
   const [currentIndex, setCurrentIndex] = useState(0);
+  const [screenSize, setScreenSize] = useState<'sm' | 'md' | 'lg'>('md');
+
+  useEffect(() => {
+    const checkScreenSize = () => {
+      if (window.innerWidth >= 1024) {
+        setScreenSize('lg');
+      } else if (window.innerWidth >= 768) {
+        setScreenSize('md');
+      } else {
+        setScreenSize('sm');
+      }
+    };
+
+    checkScreenSize();
+    window.addEventListener('resize', checkScreenSize);
+
+    return () => window.removeEventListener('resize', checkScreenSize);
+  }, []);
 
   const nextSlide = () => {
     setCurrentIndex((prev) => (prev + 1) % stories.length);
@@ -18,10 +36,19 @@ const StorySlider = ({ stories }: { stories: GraphicReviewProps[] }) => {
     setCurrentIndex(index);
   };
 
+  // 화면 크기별 슬라이더 기준
+  // sm: 3개 이상일 때 슬라이더
+  // md: 3개 이상일 때 슬라이더
+  // lg: 5개 이상일 때 슬라이더
+  const shouldUseSlider =
+    screenSize === 'lg' ? stories.length >= 5 : stories.length >= 3;
+
   return (
-    <div className="relative flex flex-col items-center">
-      <div className="relative h-[520px] w-full overflow-hidden">
-        <div className="flex h-full items-center justify-center">
+    <div className="relative flex flex-col items-center bg-red-200">
+      <div className="relative h-[520px] w-full overflow-hidden bg-green-200">
+        <div
+          className={`flex h-full items-center gap-[24px] ${shouldUseSlider ? 'justify-center' : 'justify-start'}`}
+        >
           {stories.map((story, index) => {
             const created_at = new Date(story.created_at);
             const isThisYear =
@@ -31,100 +58,146 @@ const StorySlider = ({ stories }: { stories: GraphicReviewProps[] }) => {
               ? `${String(created_at.getMonth() + 1).padStart(2, '0')}.${String(created_at.getDate()).padStart(2, '0')}`
               : `${created_at.getFullYear()}.${String(created_at.getMonth() + 1).padStart(2, '0')}.${String(created_at.getDate()).padStart(2, '0')}`;
 
-            // 현재 인덱스를 중심으로 5개 카드 표시
-            const isCenter = index === currentIndex;
-            const isLeft1 =
-              index === (currentIndex - 1 + stories.length) % stories.length;
-            const isLeft2 =
-              index === (currentIndex - 2 + stories.length) % stories.length;
-            const isRight1 = index === (currentIndex + 1) % stories.length;
-            const isRight2 = index === (currentIndex + 2) % stories.length;
+            // 화면 크기에 따라 슬라이더 사용 여부 결정
+            const useSlider = shouldUseSlider;
 
-            const isVisible =
-              isCenter || isLeft1 || isLeft2 || isRight1 || isRight2;
-            if (!isVisible) return null;
+            if (useSlider) {
+              // 슬라이더 로직: 현재 인덱스를 중심으로 5개 카드 표시
+              const isCenter = index === currentIndex;
+              const isLeft1 =
+                index === (currentIndex - 1 + stories.length) % stories.length;
+              const isLeft2 =
+                index === (currentIndex - 2 + stories.length) % stories.length;
+              const isRight1 = index === (currentIndex + 1) % stories.length;
+              const isRight2 = index === (currentIndex + 2) % stories.length;
 
-            let positionClass = '';
-            let sizeClass = '';
+              const isVisible =
+                isCenter || isLeft1 || isLeft2 || isRight1 || isRight2;
+              if (!isVisible) return null;
 
-            if (isCenter) {
-              positionClass = 'z-20';
-              sizeClass = 'h-[494px] w-[290px] opacity-100';
-            } else if (isLeft1) {
-              positionClass = 'z-10 -translate-x-[314px]';
-              sizeClass = 'h-[494px] w-[290px]';
-            } else if (isLeft2) {
-              positionClass = 'z-10 -translate-x-[628px]';
-              sizeClass = 'h-[494px] w-[290px]';
-            } else if (isRight1) {
-              positionClass = 'z-10 translate-x-[314px]';
-              sizeClass = 'h-[494px] w-[290px]';
-            } else if (isRight2) {
-              positionClass = 'z-10 translate-x-[628px]';
-              sizeClass = 'h-[494px] w-[290px]';
-            }
+              let transformClass = '';
+              let sizeClass = '';
 
-            return (
-              <div
-                key={story.id}
-                className={`absolute cursor-pointer rounded-[16px] transition-all duration-300 ease-in-out ${positionClass} ${sizeClass}`}
-                onClick={() => goToSlide(index)}
-              >
-                <div className="relative h-[440px] w-[290px] overflow-hidden rounded-t-[16px]">
-                  <StoryPreview
-                    backgroundImage={story.background_image_url}
-                    elements={story.elements}
-                    previewW={290}
-                    previewH={440}
-                  />
+              if (isCenter) {
+                transformClass = 'z-20';
+                sizeClass = 'h-[524px] w-[320px] opacity-100';
+              } else if (isLeft1) {
+                transformClass = 'z-10 -translate-x-[344px]'; // 320px + 24px gap
+                sizeClass = 'h-[494px] w-[320px]';
+              } else if (isLeft2) {
+                transformClass = 'z-10 -translate-x-[688px]'; // (320px + 24px gap) * 2
+                sizeClass = 'h-[494px] w-[320px]';
+              } else if (isRight1) {
+                transformClass = 'z-10 translate-x-[344px]'; // 320px + 24px gap
+                sizeClass = 'h-[494px] w-[320px]';
+              } else if (isRight2) {
+                transformClass = 'z-10 translate-x-[688px]'; // (320px + 24px gap) * 2
+                sizeClass = 'h-[494px] w-[320px]';
+              }
 
-                  {/* 중앙이 아닌 카드에만 오버레이 */}
+              return (
+                <div
+                  key={story.id}
+                  className={`absolute cursor-pointer rounded-[16px] ${transformClass} ${sizeClass}`}
+                  onClick={() => goToSlide(index)}
+                >
                   <div
-                    className={`absolute inset-0 rounded-t-[16px] transition-all duration-300 ease-in-out ${
-                      isCenter ? 'opacity-0' : 'opacity-100'
+                    className={`relative w-[320px] overflow-hidden rounded-t-[16px] ${
+                      isCenter ? 'h-[470px]' : 'h-[440px]'
                     }`}
-                    style={{ background: 'rgba(0, 0, 0, 0.50)' }}
-                  ></div>
+                  >
+                    <StoryPreview
+                      backgroundImage={story.background_image_url}
+                      elements={story.elements}
+                      previewW={320}
+                      previewH={isCenter ? 470 : 440}
+                    />
 
-                  {(isLeft1 || isRight1) && (
-                    <div className="absolute top-[40%] z-20 flex w-full flex-col items-center">
+                    {/* 중앙이 아닌 카드에만 오버레이 */}
+                    <div
+                      className={`absolute inset-0 rounded-t-[16px] transition-all duration-300 ease-in-out ${
+                        isCenter ? 'opacity-0' : 'opacity-100'
+                      }`}
+                      style={{ background: 'rgba(0, 0, 0, 0.50)' }}
+                    ></div>
+
+                    {(isLeft1 || isRight1) && (
+                      <div className="absolute top-[40%] z-20 flex w-full flex-col items-center">
+                        <Image
+                          src={story.profile_image}
+                          alt={story.nickname}
+                          width={80}
+                          height={80}
+                          className="rounded-[50%] border-[2px] border-[#FA4D09] p-[2px]"
+                        />
+                        <p className="mt-[6px] text-[24px] font-semibold leading-[130%] text-white">
+                          {story.nickname}
+                        </p>
+                      </div>
+                    )}
+                  </div>
+
+                  <div className="absolute bottom-0 left-0 flex w-full items-center justify-between overflow-hidden rounded-b-[16px] bg-[#2E2E32] px-[16px] py-[12px]">
+                    <div className="flex items-center">
                       <Image
                         src={story.profile_image}
                         alt={story.nickname}
-                        width={80}
-                        height={80}
-                        className="rounded-[50%] border-[2px] border-[#FA4D09] p-[2px]"
+                        width={30}
+                        height={30}
+                        className="mr-[4px] h-[30px] w-[30px] rounded-[50%] bg-white"
                       />
-                      <p className="mt-[6px] text-[24px] font-semibold leading-[130%] text-white">
+                      <p className="text-[14px] font-semibold leading-[130%] text-white">
                         {story.nickname}
                       </p>
                     </div>
-                  )}
-                </div>
-
-                <div className="absolute bottom-0 left-0 flex w-full items-center justify-between overflow-hidden rounded-b-[16px] bg-[#2E2E32] px-[16px] py-[12px]">
-                  <div className="flex items-center">
-                    <Image
-                      src={story.profile_image}
-                      alt={story.nickname}
-                      width={30}
-                      height={30}
-                      className="mr-[4px] h-[30px] w-[30px] rounded-[50%] bg-white"
-                    />
-                    <p className="text-[14px] font-semibold leading-[130%] text-white">
-                      {story.nickname}
+                    <p className="text-[14px] font-normal leading-[100%] text-white">
+                      {formattedDate} • {story.visit_count}번째 방문
                     </p>
                   </div>
-                  <p className="text-[14px] font-normal leading-[100%] text-white">
-                    {formattedDate} • {story.visit_count}번째 방문
-                  </p>
                 </div>
-              </div>
-            );
+              );
+            } else {
+              // 슬라이더 사용하지 않을 때: 정렬된 레이아웃
+              return (
+                <div
+                  key={story.id}
+                  className="relative h-[494px] w-[320px] cursor-pointer rounded-[16px]"
+                  onClick={() => goToSlide(index)}
+                >
+                  <div className="relative h-[440px] w-[320px] overflow-hidden rounded-t-[16px]">
+                    <StoryPreview
+                      backgroundImage={story.background_image_url}
+                      elements={story.elements}
+                      previewW={320}
+                      previewH={440}
+                    />
+                  </div>
+
+                  <div className="absolute bottom-0 left-0 flex w-full items-center justify-between overflow-hidden rounded-b-[16px] bg-[#2E2E32] px-[16px] py-[12px]">
+                    <div className="flex items-center">
+                      <Image
+                        src={story.profile_image}
+                        alt={story.nickname}
+                        width={30}
+                        height={30}
+                        className="mr-[4px] h-[30px] w-[30px] rounded-[50%] bg-white"
+                      />
+                      <p className="text-[14px] font-semibold leading-[130%] text-white">
+                        {story.nickname}
+                      </p>
+                    </div>
+                    <p className="text-[14px] font-normal leading-[100%] text-white">
+                      {formattedDate} • {story.visit_count}번째 방문
+                    </p>
+                  </div>
+                </div>
+              );
+            }
           })}
         </div>
 
-        {stories.length > 1 && (
+        {/* 화살표 버튼: 슬라이더 사용할 때만 표시 */}
+        {shouldUseSlider && stories.length > 1 && (
           <>
             {/* 이전 버튼 */}
             <button

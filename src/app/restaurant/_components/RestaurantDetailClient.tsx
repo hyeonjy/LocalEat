@@ -42,6 +42,7 @@ const RestaurantDetailClient = ({ id }: { id: string }) => {
         standardReviews={reviews.standard}
         graphicReviews={reviews.graphic}
         keywords={keywords}
+        name={restaurant.name}
         restaurantId={String(restaurant.id)}
         sort={sort}
         onSortChange={setSort}
