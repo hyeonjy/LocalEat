@@ -14,7 +14,7 @@ const LocalEatTab = ({
   topRatedRestaurants,
   topRecentRestaurants,
 }: LocalEatTabProps) => {
-  console.log(topRatedRestaurants);
+  console.log('top: ', topRatedRestaurants);
 
   return (
     <div className="mt-[87px]">

@@ -41,7 +41,7 @@ const StorySlider = ({ stories }: { stories: GraphicReviewProps[] }) => {
   // md (600px 이상): 3개 이상일 때 슬라이더
   // lg (1024px 이상): 5개 이상일 때 슬라이더
   const shouldUseSlider =
-    screenSize === 'lg' ? stories.length >= 5 : stories.length >= 3;
+    screenSize === 'lg' ? stories.length >= 4 : stories.length >= 3;
 
   return (
     <div className="relative flex flex-col items-center">
@@ -227,7 +227,7 @@ const StorySlider = ({ stories }: { stories: GraphicReviewProps[] }) => {
                   </div>
 
                   <div className="absolute bottom-0 left-0 flex w-full items-center justify-between overflow-hidden rounded-b-[16px] bg-[#2E2E32] px-[16px] py-[12px]">
-                    <div className="flex items-center bg-red-200">
+                    <div className="flex items-center">
                       <Image
                         src={story.profile_image}
                         alt={story.nickname}
