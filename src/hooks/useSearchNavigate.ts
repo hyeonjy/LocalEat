@@ -17,19 +17,31 @@ type NearbyResponse = {
 
 const PAGE_SIZE = 10;
 
-const RAW_BASE = (process.env.NEXT_PUBLIC_API_BASE ?? '').trim();
-const getOrigin = () => {
-  // 끝 슬래시 제거
-  const fromEnv = RAW_BASE.replace(/\/$/, '');
-  if (fromEnv) return fromEnv;
-  // 브라우저 환경이면 현재 도메인으로 폴백
-  if (typeof window !== 'undefined') return window.location.origin;
-  // 서버에서 불리면 에러(환경변수 넣으라는 안내)
-  throw new Error(
-    'API base URL is missing. Set NEXT_PUBLIC_API_BASE in Vercel.',
-  );
-};
+// ---- 안전한 URL 빌더 ----
+function sanitizeOrigin(input?: string) {
+  return (input ?? '')
+    .trim()
+    .replace(/^['"]+|['"]+$/g, '') // 앞뒤 따옴표 제거
+    .replace(/\/+$/, '');          // 끝 슬래시 제거
+}
 
+function buildApiUrl(path: string, params: Record<string, string | number | undefined>) {
+  const base = sanitizeOrigin(process.env.NEXT_PUBLIC_API_BASE);
+
+  const qs = new URLSearchParams();
+  Object.entries(params).forEach(([k, v]) => {
+    if (v !== undefined && v !== null && v !== '') qs.set(k, String(v));
+  });
+
+  if (base) return `${base}${path}?${qs.toString()}`;
+  if (typeof window !== 'undefined') return `${path}?${qs.toString()}`;
+
+  // 서버 사이드에서 BASE 없으면 명확히 에러
+  throw new Error('API base URL is missing. Set NEXT_PUBLIC_API_BASE in Vercel.');
+}
+
+
+// ---- 여기만 교체 ----
 async function fetchNearby(params: {
   keyword: string;
   offset: number;
@@ -38,21 +50,20 @@ async function fetchNearby(params: {
 }): Promise<NearbyResponse> {
   const { keyword, offset, limit = PAGE_SIZE, signal } = params;
 
-  const origin = getOrigin();
-  // ✅ 기준 URL + 상대경로 방식이 new URL에 가장 안전
-  const url = new URL('/api/restaurants/nearby', origin);
+  const href = buildApiUrl('/api/restaurants/nearby', {
+    q: keyword || undefined,
+    limit,
+    offset,
+  });
 
-  if (keyword) url.searchParams.set('q', keyword);
-  url.searchParams.set('limit', String(limit));
-  url.searchParams.set('offset', String(offset));
-
-  const res = await fetch(url.toString(), { signal });
+  const res = await fetch(href, { signal });
   if (!res.ok) {
     const text = await res.text().catch(() => '');
     throw new Error(`검색 실패: ${res.status} ${text}`);
   }
   return res.json();
 }
+
 export function useInfiniteMapSearch(keyword?: string) {
   return useInfiniteQuery<NearbyResponse>({
     queryKey: ['nearby', keyword ?? ''], // 빈 문자열로 고정해 캐시키 안정화
