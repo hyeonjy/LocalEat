@@ -5,22 +5,11 @@ import ReviewToggle from '@/components/search/ReviewToggle';
 import SearchMap from '@/components/search/SearchMap';
 import SearchResultList from '@/components/search/SearchResultList';
 import { useInfiniteMapSearch } from '@/hooks/useSearchNavigate';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 
 const SearchPageClient = ({ initialKeyword }: { initialKeyword: string }) => {
   const [photoOnly, setPhotoOnly] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
-
-  // 디버깅: 초기 키워드와 환경변수 확인
-  useEffect(() => {
-    console.log('🔍 SearchPageClient 디버깅 정보:');
-    console.log('initialKeyword:', initialKeyword);
-    console.log('NEXT_PUBLIC_API_BASE:', process.env.NEXT_PUBLIC_API_BASE);
-    console.log(
-      'window.location.origin:',
-      typeof window !== 'undefined' ? window.location.origin : '서버사이드',
-    );
-  }, [initialKeyword]);
 
   // ✅ 여기서 한 번만 패칭 (서버에서 받은 키워드 사용)
   const {
@@ -31,20 +20,6 @@ const SearchPageClient = ({ initialKeyword }: { initialKeyword: string }) => {
     isFetchingNextPage,
     fetchNextPage,
   } = useInfiniteMapSearch(initialKeyword);
-
-  // 디버깅: 쿼리 상태 확인
-  useEffect(() => {
-    console.log('🔍 useInfiniteMapSearch 상태:', {
-      status,
-      error,
-      dataPagesCount: data?.pages?.length || 0,
-      itemsCount: data?.pages?.flatMap((p) => p.items)?.length || 0,
-    });
-
-    if (error) {
-      console.error('❌ useInfiniteMapSearch 오류:', error);
-    }
-  }, [status, error, data]);
 
   const items = data?.pages?.flatMap((p) => p.items) ?? [];
   const center = {
