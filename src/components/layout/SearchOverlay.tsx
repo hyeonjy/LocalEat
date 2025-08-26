@@ -1,9 +1,20 @@
 'use client';
 
 import { useSearchStore } from '@/store/overlayStore';
+import { useRouter } from 'next/navigation';
+import { useState } from 'react';
 
 const SearchOverlay = () => {
   const closeSearch = useSearchStore((state) => state.close);
+
+  const router = useRouter();
+  const [keyword, setKeyword] = useState('');
+
+  const submit = () => {
+    const q = keyword.trim();
+    if (!q) return;
+    router.push(`/search?q=${encodeURIComponent(q)}`);
+  };
 
   return (
     <>
@@ -28,10 +39,14 @@ const SearchOverlay = () => {
           <input
             type="text"
             placeholder="지역명 입력"
+            value={keyword}
+            onChange={(e) => setKeyword(e.target.value)}
+            onKeyDown={(e) => e.key === 'Enter' && submit()}
             className="flex w-[712px] items-center justify-between self-stretch rounded-[12px] border border-[#ADADB3] bg-white p-5"
           />
           <button
             type="button"
+            onClick={submit}
             className="absolute right-4 top-1/2 -translate-y-1/2"
           >
             <img src="assets/icons/search.svg" alt="검색_아이콘" />
