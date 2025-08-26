@@ -34,10 +34,7 @@ const LocalEatTab = ({
           </TabsTrigger>
         </TabsList>
 
-        <TabsContent
-          value="top10"
-          className="mt-0 flex flex-col items-center bg-green-100"
-        >
+        <TabsContent value="top10" className="mt-0 flex flex-col items-center">
           {/* mobile */}
           <section className="block h-[752px] w-full overflow-hidden bg-[url('/assets/icons/top1.png')] bg-cover bg-center bg-no-repeat px-[16px] py-[48px] md:hidden">
             <div className="mb-[32px] flex flex-col">
@@ -159,7 +156,7 @@ const LocalEatTab = ({
           </section>
 
           <section className="w-full max-w-[1280px] md:px-[40px] md:py-[32px]">
-            <div className="mx-auto flex items-center gap-[4px] font-[Pretendard] text-[14px] font-semibold leading-[130%] text-[#92929B]">
+            <div className="mx-auto mb-[12px] flex items-center gap-[4px] font-[Pretendard] text-[14px] font-semibold leading-[130%] text-[#92929B]">
               <img alt="중요알림_아이콘" src="assets/icons/error_outline.svg" />
               <span>매주 수요일 업데이트 · 현재 기준일: 8.27</span>
             </div>
@@ -290,9 +287,9 @@ const LocalEatTab = ({
           </section>
 
           <section className="w-full max-w-[1280px] md:px-[40px] md:py-[32px]">
-            <div className="mx-auto hidden items-center gap-[4px] font-[Pretendard] text-[14px] font-semibold leading-[130%] text-[#92929B] md:flex">
+            <div className="mx-auto mb-[12px] hidden items-center gap-[4px] font-[Pretendard] text-[14px] font-semibold leading-[130%] text-[#92929B] md:flex">
               <img alt="중요알림_아이콘" src="assets/icons/error_outline.svg" />
-              <span>매주 수요일 업데이트 · 현재 기준일: 5.28</span>
+              <span>매주 수요일 업데이트 · 현재 기준일: 7.28</span>
             </div>
 
             <div className="flex h-[120px] flex-col justify-center px-[16px] pb-[20px] pt-[40px] md:hidden">
