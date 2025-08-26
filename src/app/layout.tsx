@@ -1,3 +1,4 @@
+import Footer from '@/components/layout/Footer';
 import Header from '@/components/layout/Header';
 import Providers from '@/providers/RQProvider';
 import '@/styles/globals.css';
@@ -21,7 +22,7 @@ export default function RootLayout({
       <body className={`flex flex-col antialiased`}>
         <Header />
         <Providers>{children}</Providers>
-        {/* <Footer /> */}
+        <Footer />
       </body>
     </html>
   );
