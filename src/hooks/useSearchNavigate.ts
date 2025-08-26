@@ -17,6 +17,19 @@ type NearbyResponse = {
 
 const PAGE_SIZE = 10;
 
+const RAW_BASE = (process.env.NEXT_PUBLIC_API_BASE ?? '').trim();
+const getOrigin = () => {
+  // 끝 슬래시 제거
+  const fromEnv = RAW_BASE.replace(/\/$/, '');
+  if (fromEnv) return fromEnv;
+  // 브라우저 환경이면 현재 도메인으로 폴백
+  if (typeof window !== 'undefined') return window.location.origin;
+  // 서버에서 불리면 에러(환경변수 넣으라는 안내)
+  throw new Error(
+    'API base URL is missing. Set NEXT_PUBLIC_API_BASE in Vercel.',
+  );
+};
+
 async function fetchNearby(params: {
   keyword: string;
   offset: number;
@@ -24,21 +37,22 @@ async function fetchNearby(params: {
   signal?: AbortSignal;
 }): Promise<NearbyResponse> {
   const { keyword, offset, limit = PAGE_SIZE, signal } = params;
-  const base = process.env.NEXT_PUBLIC_API_BASE!;
-  const url = new URL(`${base}/api/restaurants/nearby`);
-  if (keyword) url.searchParams.set('q', keyword); // ✅ 백엔드 키는 q
-  url.searchParams.set('limit', String(limit)); // ✅ 프론트/백 동일화
-  url.searchParams.set('offset', String(offset)); // ✅ 다음 페이지키 기반
-  const res = await fetch(url.toString(), {
-    signal /*, credentials: 'include' */,
-  });
+
+  const origin = getOrigin();
+  // ✅ 기준 URL + 상대경로 방식이 new URL에 가장 안전
+  const url = new URL('/api/restaurants/nearby', origin);
+
+  if (keyword) url.searchParams.set('q', keyword);
+  url.searchParams.set('limit', String(limit));
+  url.searchParams.set('offset', String(offset));
+
+  const res = await fetch(url.toString(), { signal });
   if (!res.ok) {
     const text = await res.text().catch(() => '');
     throw new Error(`검색 실패: ${res.status} ${text}`);
   }
   return res.json();
 }
-
 export function useInfiniteMapSearch(keyword?: string) {
   return useInfiniteQuery<NearbyResponse>({
     queryKey: ['nearby', keyword ?? ''], // 빈 문자열로 고정해 캐시키 안정화
