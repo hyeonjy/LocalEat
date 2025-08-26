@@ -21,61 +21,70 @@ export default function Home() {
   return (
     <div>
       <section className="mt-[64px]">
-        <div className="mx-auto flex w-[1280px] self-stretch rounded-[12px] bg-[#F7F7F8] px-[40px] py-[32px]">
-          <div className="w-[343px]">
-            <p className="pt-[30px] text-[24px] font-semibold leading-[130%] text-[#FA4D09]">
-              리워드가 2배!
-              <br />
-              매주 찾아오는 지역 미션
-            </p>
-            <h2 className="mt-[12px] text-[60px] font-bold leading-[130%] tracking-[0.6px] text-[#171719]">
-              이번 주 미션 신림동 편
-            </h2>
-            <Link
-              href="none"
-              className="mt-[36px] flex h-[60px] w-[166px] items-center justify-center gap-[8px] rounded-[12px] bg-[#FA4D09] px-[28px] py-[12px] text-center text-[20px] font-semibold leading-[150%] text-white"
-            >
-              자세히 보기
-            </Link>
+        <div className="mx-auto max-w-[1280px] rounded-[12px] bg-[#F7F7F8] px-[20px] py-[32px] md:px-[40px]">
+          <div className="xl:flex-row xl:items-start xl:gap-[64px] flex flex-col">
+            {/* 텍스트 블록 */}
+            <div className="xl:w-[343px] w-full">
+              <p className="pt-[20px] text-[20px] font-semibold leading-[130%] text-[#FA4D09] md:pt-[30px] md:text-[24px]">
+                리워드가 2배!
+                <br />
+                매주 찾아오는 지역 미션
+              </p>
+              <h2 className="mt-[12px] text-[40px] font-bold leading-[130%] tracking-[0.6px] text-[#171719] md:text-[60px]">
+                이번 주 미션 신림동 편
+              </h2>
+              <Link
+                href="none"
+                className="mt-[24px] flex h-[52px] w-full items-center justify-center gap-[8px] rounded-[12px] bg-[#FA4D09] px-[24px] py-[12px] text-center text-[18px] font-semibold leading-[150%] text-white sm:w-[166px] md:mt-[36px] md:h-[60px] md:px-[28px] md:text-[20px]"
+              >
+                자세히 보기
+              </Link>
+            </div>
+
+            {/* 카드 리스트 */}
+            <ul className="xl:mt-0 m-0 mt-6 flex w-full list-none flex-nowrap justify-start gap-[20px] overflow-hidden p-0">
+              {/* 카드 1 */}
+              <li className="/* 기본 크기 */ /* 721px 이하에서 고정 */ /* 더 이상 못 줄이게 가드 */ flex h-[386px] min-h-[286px] min-w-[200px] flex-none shrink-0 basis-[386px] flex-col items-center justify-end gap-[10px] rounded-[20px] bg-[#ccc] p-[26px] max-[721px]:h-[286px] max-[721px]:basis-[200px]">
+                <div className="flex flex-col items-center justify-center self-stretch rounded-[8px] bg-white/95 px-[24px] py-[20px] shadow-[0_0_12px_rgba(0,0,0,0.25)]">
+                  <div className="flex w-full items-end gap-[6px]">
+                    <h3 className="text-[20px] font-bold leading-[100%] text-[#171719]">
+                      세울타코
+                    </h3>
+                    <span className="text-[14px] font-normal leading-[100%] text-[#787882]">
+                      리뷰 20
+                    </span>
+                  </div>
+                  <p>관악산 근처 타코집 시원한 생맥과 자극적인 맛의 타코!</p>
+                </div>
+              </li>
+
+              {/* 카드 2 (동일 규칙) */}
+              <li className="/* 기본 크기 */ /* 721px 이하에서 고정 */ /* 더 이상 못 줄이게 가드 */ flex h-[386px] min-h-[286px] min-w-[200px] flex-none shrink-0 basis-[386px] flex-col items-center justify-end gap-[10px] rounded-[20px] bg-[#ccc] p-[26px] max-[721px]:h-[286px] max-[721px]:basis-[200px]">
+                <div className="flex flex-col items-center justify-center self-stretch rounded-[8px] bg-white/95 px-[24px] py-[20px] shadow-[0_0_12px_rgba(0,0,0,0.25)]">
+                  <div className="flex w-full items-end gap-[6px]">
+                    <h3 className="text-[20px] font-bold leading-[100%] text-[#171719]">
+                      세울타코
+                    </h3>
+                    <span className="text-[14px] font-normal leading-[100%] text-[#787882]">
+                      리뷰 20
+                    </span>
+                  </div>
+                  <p>관악산 근처 타코집 시원한 생맥과 자극적인 맛의 타코!</p>
+                </div>
+              </li>
+            </ul>
           </div>
-          <ul className="ml-[64px] flex gap-[20px]">
-            <li className="flex h-[386px] w-[386px] max-w-[386px] flex-col items-center justify-end gap-[10px] rounded-[20px] bg-[#ccc] p-[26px]">
-              <div className="flex flex-col items-center justify-center self-stretch rounded-[8px] bg-white/95 px-[24px] py-[20px] shadow-[0px_0px_12px_0px_rgba(0,0,0,0.25)]">
-                <div className="flex w-full items-end gap-[6px]">
-                  <h3 className="text-[20px] font-bold leading-[100%] text-[#171719]">
-                    세울타코
-                  </h3>
-                  <span className="text-[14px] font-normal leading-[100%] text-[#787882]">
-                    리뷰 20
-                  </span>
-                </div>
-                <p>관악산 근처 타코집 시원한 생맥과 자극적인 맛의 타코!</p>
-              </div>
-            </li>
-            <li className="flex h-[386px] w-[386px] max-w-[386px] flex-col items-center justify-end gap-[10px] rounded-[20px] bg-[#ccc] p-[26px]">
-              <div className="flex flex-col items-center justify-center self-stretch rounded-[8px] bg-white/95 px-[24px] py-[20px] shadow-[0px_0px_12px_0px_rgba(0,0,0,0.25)]">
-                <div className="flex w-full items-end gap-[6px]">
-                  <h3 className="text-[20px] font-bold leading-[100%] text-[#171719]">
-                    세울타코
-                  </h3>
-                  <span className="text-[14px] font-normal leading-[100%] text-[#787882]">
-                    리뷰 20
-                  </span>
-                </div>
-                <p>관악산 근처 타코집 시원한 생맥과 자극적인 맛의 타코!</p>
-              </div>
-            </li>
-          </ul>
         </div>
       </section>
+
       <section className="mt-[32px]">
-        <div className="mx-auto w-[1280px] gap-[10px] self-stretch rounded-[12px] px-[40px] py-[32px]">
+        <div className="xl:px-[40px] mx-auto w-full max-w-[1280px] rounded-[12px] px-4 py-6 sm:px-[16px] md:px-8 md:py-[32px]">
           <div className="flex w-full items-end justify-between">
             <div className="w-full">
-              <p className="pt-[30px] text-[24px] font-semibold leading-[130%] text-[#FA4D09]">
+              <p className="pt-[30px] font-semibold leading-[130%] text-[#FA4D09] max-[721px]:text-[16px] min-[722px]:text-[24px]">
                 요즘 인기 있는 식당
               </p>
-              <h2 className="text-[40px] font-bold leading-[130%] tracking-[0.4px] text-[#171719]">
+              <h2 className="font-bold leading-[130%] tracking-[0.4px] text-[#171719] max-[721px]:text-[24px] min-[722px]:text-[40px]">
                 로컬잇픽 TOP 10
               </h2>
             </div>
@@ -87,48 +96,61 @@ export default function Home() {
               전체보기
             </Link>
           </div>
-          <ul className="mt-[24px]">
-            <li className="flex h-[472px] w-[282px] flex-col items-start overflow-hidden rounded-[20px] shadow-[0px_0px_4px_0px_rgba(0,0,0,0.15)]">
-              <div className="h-[282px] w-full bg-[#ccc]">{/* 이미지 */}</div>
-              <div className="flex flex-col items-start gap-[12px] self-stretch bg-white px-[24px] py-[20px]">
+
+          <ul className="mt-[24px] flex flex-wrap gap-[20px] max-[721px]:flex-col max-[721px]:items-start max-[721px]:gap-[12px]">
+            <li className="/* 모바일 */ flex h-[472px] w-[282px] flex-col items-start overflow-hidden rounded-[20px] shadow-[0_0_4px_rgba(0,0,0,0.15)] max-[721px]:h-[178px] max-[721px]:w-[349px] max-[721px]:min-w-[250px] max-[721px]:flex-row max-[721px]:items-center max-[721px]:gap-0 max-[721px]:self-stretch max-[721px]:py-1">
+              {/* 이미지 (모바일: 왼쪽, li와 같은 높이) */}
+              <div className="/* 모바일 */ h-[282px] w-full bg-[#ccc] max-[721px]:order-1 max-[721px]:h-full max-[721px]:w-[145px] max-[721px]:flex-shrink-0">
+                {/* 실제 이미지 사용 시 */}
+                {/* <img src="..." alt="" className="h-full w-full object-cover" /> */}
+              </div>
+
+              {/* 텍스트 (모바일: 오른쪽) */}
+              <div className="/* 모바일 */ flex flex-col items-start gap-[12px] self-stretch bg-white px-[24px] py-[20px] max-[721px]:order-2 max-[721px]:flex-1 max-[721px]:bg-transparent max-[721px]:px-[12px] max-[721px]:py-[12px]">
                 <ul className="flex gap-[4px]">
-                  <li className="font-pretendard flex items-center justify-center gap-[10px] rounded-[4px] bg-[#FEEDE6] px-[6px] py-[4px] text-[16px] font-normal leading-[130%] text-[#FA4D09]">
+                  <li className="font-pretendard flex items-center justify-center gap-[10px] rounded-[4px] bg-[#FEEDE6] px-[6px] py-[4px] text-[16px] font-normal leading-[130%] text-[#FA4D09] max-[721px]:text-[14px]">
                     신당동
                   </li>
-                  <li className="font-pretendard flex items-center justify-center gap-[10px] rounded-[4px] bg-[#E0F6F1] px-[6px] py-[4px] text-[16px] font-normal leading-[130%] text-[#004332]">
+                  <li className="font-pretendard flex items-center justify-center gap-[10px] rounded-[4px] bg-[#E0F6F1] px-[6px] py-[4px] text-[16px] font-normal leading-[130%] text-[#004332] max-[721px]:text-[14px]">
                     신당역
                   </li>
                 </ul>
+
                 <div className="flex gap-[12px]">
-                  <span className="text-[32px] font-bold leading-[130%] tracking-[-0.48px] text-black">
+                  <span className="text-[32px] font-bold leading-[130%] tracking-[-0.48px] text-black max-[721px]:text-[24px]">
                     1
                   </span>
                   <div>
-                    <h3 className="self-stretch text-[20px] font-semibold leading-[130%] tracking-[-0.3px] text-black">
+                    <h3 className="self-stretch text-[20px] font-semibold leading-[130%] tracking-[-0.3px] text-black max-[721px]:text-[18px]">
                       원조 남원 닭발
                     </h3>
-                    <span className="text-[16px] font-normal leading-[130%] text-[#727275]">
+                    <span className="text-[16px] font-normal leading-[130%] text-[#727275] max-[721px]:text-[14px]">
                       리뷰 120
                     </span>
                   </div>
                 </div>
-                <p className="line-clamp-2 self-stretch overflow-hidden text-ellipsis border-t border-[#E2E2E4] pt-[8px] text-[16px] font-normal leading-[130%] text-[#010101]">
+
+                {/* 모바일에선 설명 감춤 (세로 높이 확보) */}
+                <p className="line-clamp-2 self-stretch overflow-hidden text-ellipsis border-t border-[#E2E2E4] pt-[8px] text-[16px] font-normal leading-[130%] text-[#010101] max-[721px]:hidden">
                   노포갬성 닭발집 숯향나는 통닭발에 맥주한잔하기 좋았어요
                   기본으로 깍두기
                 </p>
               </div>
             </li>
+
+            {/* 나머지 카드들도 동일 구조로 반복 */}
           </ul>
         </div>
       </section>
+
       <section className="mt-[32px]">
-        <div className="mx-auto w-[1280px] gap-[10px] self-stretch rounded-[12px] px-[40px] py-[32px]">
+        <div className="xl:px-[40px] mx-auto w-full max-w-[1280px] rounded-[12px] px-4 py-[32px]">
           <div className="flex w-full items-end justify-between">
             <div className="w-full">
-              <p className="pt-[30px] text-[24px] font-semibold leading-[130%] text-[#FA4D09]">
+              <p className="pt-[30px] font-semibold leading-[130%] text-[#FA4D09] max-[721px]:text-[16px] min-[722px]:text-[24px]">
                 로컬잇에 새로 등록된 식당
               </p>
-              <h2 className="text-[40px] font-bold leading-[130%] tracking-[0.4px] text-[#171719]">
+              <h2 className="font-bold leading-[130%] tracking-[0.4px] text-[#171719] max-[721px]:text-[24px] min-[722px]:text-[40px]">
                 NEW EAT 10
               </h2>
             </div>
@@ -140,9 +162,11 @@ export default function Home() {
               전체보기
             </Link>
           </div>
-          <div className="mx-auto mt-[24px] grid max-w-[1280px] grid-cols-[486px_384px_282px] grid-rows-[231px_231px] gap-[24px]">
-            {/* 왼쪽 큰 카드: 2행 차지 */}
-            <div className="row-span-2 h-[486px] w-[486px] rounded-xl bg-[#ccc] p-4">
+
+          {/* GRID */}
+          <div className="xl:grid-cols-[486px_384px_282px] xl:grid-rows-[231px_231px] mx-auto mt-[24px] grid grid-cols-1 gap-[24px] min-[722px]:grid-cols-2 lg:grid-cols-2">
+            {/* 1) 왼쪽 큰 카드: xl에서만 세로 2칸 차지, 그 외엔 상단에서 w-full */}
+            <div className="/* ← 여기 추가: 2열 그리드에서 전체 폭 */ xl:col-span-1 xl:row-span-2 /* ← xl에선 1칸 차지 + 세로 2칸 */ h-[486px] w-full rounded-xl bg-[#ccc] p-4 min-[722px]:col-span-2">
               <p className="text-lg font-semibold text-white">
                 맛있는 커피와
                 <br />
@@ -151,8 +175,8 @@ export default function Home() {
               <p className="mt-2 text-sm text-white">광화문 벌새</p>
             </div>
 
-            {/* 오른쪽 위 카드: 가로로 2열 합침 */}
-            <div className="col-span-2 h-[231px] w-[690px] rounded-xl bg-[#FA4D09] p-4 text-white">
+            {/* 2) 오른쪽 위 카드: 722px 이상~xl 미만에서 col-span-2로 가로 전체, xl에서도 상단 2칸 가로 합침 */}
+            <div className="xl:col-span-2 h-[231px] w-full rounded-xl bg-[#FA4D09] p-4 text-white min-[722px]:col-span-2">
               <p className="text-xl font-bold">
                 동네 사람들의
                 <br />
@@ -161,8 +185,8 @@ export default function Home() {
               <p className="mt-2 text-sm">포남동 금천칼국수</p>
             </div>
 
-            {/* 오른쪽 아래 왼쪽 카드 */}
-            <div className="h-[231px] w-[384px] rounded-xl bg-[#0F3B2E] p-4 text-white">
+            {/* 3) 오른쪽 아래 왼쪽 카드: 722px 이상에서 좌측, 722px 미만에선 2번 아래로 내려와 단일 컬럼 */}
+            <div className="h-[231px] w-full rounded-xl bg-[#0F3B2E] p-4 text-white">
               <p className="text-lg font-semibold">
                 맛있는 떡과
                 <br />
@@ -171,8 +195,8 @@ export default function Home() {
               <p className="mt-2 text-sm">이동면 이동복떡집</p>
             </div>
 
-            {/* 오른쪽 아래 오른쪽 카드 */}
-            <div className="h-[231px] w-[282px] rounded-xl bg-[#ccc] p-4">
+            {/* 4) 오른쪽 아래 오른쪽 카드: 722px 이상에서 우측, 722px 미만엔 3번 아래로 */}
+            <div className="h-[231px] w-full rounded-xl bg-[#ccc] p-4">
               <p className="text-lg font-bold">
                 고사리의 변신 색다른 파스타 도전
               </p>
@@ -183,14 +207,15 @@ export default function Home() {
           </div>
         </div>
       </section>
+
       <section>
-        <div className="mx-auto w-[1280px] gap-[10px] self-stretch rounded-[12px] px-[40px] py-[32px]">
+        <div className="mx-auto w-[1280px] gap-[10px] self-stretch rounded-[12px] px-[40px] py-[32px] min-[381px]:max-[721px]:px-[16px]">
           <div className="flex w-full items-end justify-between">
             <div className="w-full">
-              <p className="pt-[30px] text-[24px] font-semibold leading-[130%] text-[#FA4D09]">
+              <p className="pt-[30px] font-semibold leading-[130%] text-[#FA4D09] max-[721px]:text-[16px] min-[722px]:text-[24px]">
                 로컬잇터들의 방문 스토리 보러가기
               </p>
-              <h2 className="text-[40px] font-bold leading-[130%] tracking-[0.4px] text-[#171719]">
+              <h2 className="font-bold leading-[130%] tracking-[0.4px] text-[#171719] max-[721px]:text-[24px] min-[722px]:text-[40px]">
                 다녀왔밥 모음.zip
               </h2>
             </div>
@@ -210,13 +235,13 @@ export default function Home() {
         </div>
       </section>
       <section>
-        <div className="mx-auto w-[1280px] gap-[10px] self-stretch rounded-[12px] px-[40px] py-[32px]">
+        <div className="mx-auto w-[1280px] gap-[10px] self-stretch rounded-[12px] px-[40px] py-[32px] min-[381px]:max-[721px]:px-[16px]">
           <div className="flex w-full items-end justify-between">
             <div className="w-full">
-              <p className="pt-[30px] text-[24px] font-semibold leading-[130%] text-[#FA4D09]">
+              <p className="pt-[30px] font-semibold leading-[130%] text-[#FA4D09] max-[721px]:text-[16px] min-[722px]:text-[24px]">
                 맛집 탐방가 로컬잇터들의 동선 대공개!
               </p>
-              <h2 className="text-[40px] font-bold leading-[130%] tracking-[0.4px] text-[#171719]">
+              <h2 className="font-bold leading-[130%] tracking-[0.4px] text-[#171719] max-[721px]:text-[24px] min-[722px]:text-[40px]">
                 로컬잇터 컬렉션
               </h2>
             </div>
