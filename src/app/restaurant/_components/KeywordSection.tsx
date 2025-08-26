@@ -46,11 +46,11 @@ const KeywordSection = ({
   }, [checkScrollPosition, keywords]);
 
   return (
-    <div className="my-[16px] flex items-center justify-between">
-      <div className="relative w-[636px]">
+    <div className="my-[8px] flex flex-col items-center justify-between gap-0 md:my-[16px] md:flex-row md:gap-[20px]">
+      <div className="relative w-full">
         <div
           ref={scrollRef}
-          className="scrollbar-hide flex w-[598px] gap-[8px] overflow-x-auto"
+          className="scrollbar-hide flex w-[calc(100%-32px)] gap-[8px] overflow-x-auto"
           style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
           onScroll={checkScrollPosition}
         >
@@ -80,25 +80,53 @@ const KeywordSection = ({
       </div>
 
       {type === 'standard' && (
-        <div className="flex items-center text-sm text-[#5F5F68]">
-          <span className="mx-2">•</span>
-          <button
-            onClick={() => onSortChange('latest')}
-            className={`cursor-pointer hover:text-black ${
-              sort === 'latest' ? 'font-semibold text-black' : ''
-            }`}
+        <div className="flex h-[40px] w-full items-center justify-between md:hidden">
+          {/* 드롭다운 메뉴 */}
+          <select
+            value={sort}
+            onChange={(e) => onSortChange(e.target.value as SortType)}
+            className="rounded-[4px] border border-[#E2E2E4] bg-white py-[7px] pl-[16px] pr-[8px] text-[12px] font-normal leading-[130%] text-[#171719]"
           >
-            최신순
-          </button>
-          <span className="mx-2">•</span>
-          <button
-            onClick={() => onSortChange('popular')}
-            className={`cursor-pointer hover:text-black ${
-              sort === 'popular' ? 'font-semibold text-black' : ''
-            }`}
-          >
-            인기순
-          </button>
+            <option value="latest">최신순</option>
+            <option value="popular">인기순</option>
+          </select>
+
+          {/* 정보 아이콘 */}
+          <div className="h-6 w-6">
+            <Image
+              src="/assets/icons/alert.svg"
+              alt="정보"
+              width={24}
+              height={24}
+            />
+          </div>
+        </div>
+      )}
+
+      {type === 'standard' && (
+        <div className="hidden items-center text-sm text-[#5F5F68] md:flex">
+          <div className="flex w-[58px] items-center whitespace-nowrap">
+            <span className="mx-2">•</span>
+            <button
+              onClick={() => onSortChange('latest')}
+              className={`cursor-pointer hover:text-black ${
+                sort === 'latest' ? 'font-semibold text-black' : ''
+              }`}
+            >
+              최신순
+            </button>
+          </div>
+          <div className="flex w-[58px] items-center whitespace-nowrap">
+            <span className="mx-2">•</span>
+            <button
+              onClick={() => onSortChange('popular')}
+              className={`cursor-pointer hover:text-black ${
+                sort === 'popular' ? 'font-semibold text-black' : ''
+              }`}
+            >
+              인기순
+            </button>
+          </div>
         </div>
       )}
     </div>

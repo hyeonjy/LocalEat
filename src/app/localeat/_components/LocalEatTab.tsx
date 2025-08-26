@@ -2,7 +2,6 @@
 
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { TopRestaurantProps } from '@/types/restaurant';
-import Image from 'next/image';
 import RestaurantList from './RestaurantList';
 
 type LocalEatTabProps = {
@@ -14,12 +13,12 @@ const LocalEatTab = ({
   topRatedRestaurants,
   topRecentRestaurants,
 }: LocalEatTabProps) => {
-  console.log(topRatedRestaurants);
+  console.log('top: ', topRatedRestaurants);
 
   return (
     <div className="mt-[87px]">
       <Tabs defaultValue="top10" className="w-full">
-        <TabsList className="mx-auto mt-[23px] flex w-[1200px] border-b-0">
+        <TabsList className="mx-auto mt-[23px] flex max-w-[1200px] border-b-0">
           <TabsTrigger
             value="top10"
             className="relative pb-1 text-xl font-semibold text-gray-400 focus-visible:ring-0 data-[state=active]:bg-transparent data-[state=active]:text-black data-[state=active]:shadow-none data-[state=active]:after:absolute data-[state=active]:after:bottom-0 data-[state=active]:after:left-0 data-[state=active]:after:h-[2px] data-[state=active]:after:w-full data-[state=active]:after:bg-black data-[state=active]:after:content-['']"
@@ -34,8 +33,11 @@ const LocalEatTab = ({
           </TabsTrigger>
         </TabsList>
 
-        <TabsContent value="top10">
-          <section className="h-[370px] w-full overflow-hidden bg-[url('/assets/icons/top1.png')] bg-cover bg-center bg-no-repeat">
+        <TabsContent
+          value="top10"
+          className="mt-0 flex flex-col items-center bg-green-100"
+        >
+          {/* <section className="h-[265px] w-full overflow-hidden bg-[url('/assets/icons/top1.png')] bg-cover bg-center bg-no-repeat lg:h-[378px]">
             <div className="mx-auto flex h-full w-[1200px] items-center justify-between">
               <div className="flex h-full flex-col">
                 <h2 className="pt-[84px] font-[Pretendard] text-[40px] font-bold leading-[130%] tracking-[0.4px] text-white">
@@ -74,14 +76,17 @@ const LocalEatTab = ({
                 alt="mapimage"
                 width={591}
                 height={591}
+                className="h-[378px] w-[378px] lg:h-[591px] lg:w-[591px]"
               />
             </div>
-          </section>
-          <section className="w-full">
-            <div className="mx-auto mt-[35px] flex w-[1200px] items-center gap-[4px] font-[Pretendard] text-[14px] font-semibold leading-[130%] text-[#92929B]">
+          </section> */}
+
+          <section className="w-full max-w-[1280px] bg-blue-200 px-[40px] py-[32px]">
+            <div className="mx-auto flex items-center gap-[4px] font-[Pretendard] text-[14px] font-semibold leading-[130%] text-[#92929B]">
               <img alt="중요알림_아이콘" src="assets/icons/error_outline.svg" />
-              매주 수요일 업데이트 · 현재 기준일: 5.28
+              <span>매주 수요일 업데이트 · 현재 기준일: 5.28</span>
             </div>
+
             <RestaurantList
               restaurants={topRatedRestaurants}
               isTopRated={true}
@@ -89,8 +94,8 @@ const LocalEatTab = ({
           </section>
         </TabsContent>
 
-        <TabsContent value="recent">
-          <section className="h-[370px] w-full overflow-hidden bg-[url('/assets/icons/top2.png')] bg-cover bg-center bg-no-repeat">
+        <TabsContent value="recent" className="mt-0">
+          {/* <section className="h-[378px] w-full overflow-hidden bg-[url('/assets/icons/top2.png')] bg-cover bg-center bg-no-repeat">
             <div className="mx-auto flex h-full w-[1200px] items-center justify-between">
               <div className="flex h-full flex-col">
                 <h2 className="pt-[84px] font-[Pretendard] text-[40px] font-bold leading-[130%] tracking-[0.4px] text-white">
@@ -131,12 +136,13 @@ const LocalEatTab = ({
                 height={591}
               />
             </div>
-          </section>
+          </section> */}
           <section className="w-full">
-            <div className="mx-auto mt-[35px] flex w-[1200px] items-center gap-[4px] font-[Pretendard] text-[14px] font-semibold leading-[130%] text-[#92929B]">
+            <div className="mx-auto mt-[35px] flex w-[1200px] items-center font-[Pretendard] text-[14px] font-semibold leading-[130%] text-[#92929B]">
               <img alt="중요알림_아이콘" src="assets/icons/error_outline.svg" />
-              매주 수요일 업데이트 · 현재 기준일: 5.28
+              <span>매주 수요일 업데이트 · 현재 기준일: 5.28</span>
             </div>
+
             <RestaurantList
               restaurants={topRecentRestaurants}
               isTopRated={false}

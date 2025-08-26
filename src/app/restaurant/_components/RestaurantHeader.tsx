@@ -12,16 +12,16 @@ const RestaurantHeader = ({ restaurant }: RestaurantHeaderProps) => {
   const openingState = getRestaurantStatus(restaurant.opening_hours);
 
   return (
-    <div className="mb-[64px] mt-[32px] flex h-[342px] w-full max-w-[1200px] items-center justify-between gap-[24px] xl:w-[1200px] xl:px-0">
+    <div className="flex w-full max-w-[1280px] flex-col items-center justify-between gap-[24px] px-[16px] py-[20px] md:h-[414px] md:flex-row md:gap-[20px] md:px-[40px] md:pb-[32px] md:pt-[40px] lg:gap-[24px]">
       <Image
         alt={`${restaurant.name} 대표 이미지`}
         src={restaurant.image_url}
         width="588"
         height="342"
-        className="h-[342px] w-[588px] rounded-[12px]"
+        className="h-[342px] w-full rounded-[12px] md:w-[460px] lg:w-[588px]"
       />
 
-      <div className="w-[588px]">
+      <div className="w-full md:w-[464px] lg:w-[588px]">
         <p className="mb-[4px] flex items-center gap-2 text-[16px] font-normal leading-[130%] text-[#787882]">
           <span>{restaurant.address.split(' ')[0]}</span>
           <span>|</span>

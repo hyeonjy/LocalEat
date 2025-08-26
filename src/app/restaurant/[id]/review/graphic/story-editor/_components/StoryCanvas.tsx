@@ -21,7 +21,7 @@ const StoryCanvas = ({
   const { canvasW, canvasH, scale } = canvasProps;
 
   return (
-    <main className="ml-[384px] flex h-[calc(100vh-65px)] flex-1 items-center justify-center bg-[#F5F5F5] py-10 pl-5">
+    <main className="flex h-[90vh] w-full items-center justify-center bg-[#F5F5F5] py-4 lg:h-[calc(100vh-65px)] lg:py-10">
       <div
         ref={storyEditor.canvasRef}
         className="relative overflow-visible rounded bg-white shadow-inner"
@@ -64,6 +64,7 @@ const StoryCanvas = ({
 
         {/* 요소들 */}
         {storyEditor.elements.map((el: any) => {
+          // 간단한 위치 계산
           const width = el.width * scale.x;
           const height = el.height * scale.y;
           const x = el.x * scale.x - width / 2;

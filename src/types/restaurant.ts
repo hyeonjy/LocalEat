@@ -184,6 +184,7 @@ export type MissionRestaurantProps = {
   image_url: string;
   review_count: number;
   menus: string[];
+  address: string;
 };
 
 export type RestaurantDetailResponse = {

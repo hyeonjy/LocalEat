@@ -205,7 +205,8 @@ const config: Config = {
     screens: {
       sm: '320px', // Mobile
       md: '722px', // Tablet
-      lg: '1025px', // Desktop
+      lg: '1025px', // Desktop,
+      xl: '1280px',
     },
   },
   plugins: [require('tailwindcss-animate')],

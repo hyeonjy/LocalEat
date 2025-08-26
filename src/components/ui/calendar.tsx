@@ -43,9 +43,12 @@ function Calendar({
         ...formatters,
       }}
       classNames={{
-        root: cn('w-[428px] !px-[22px] !py-[28px]', defaultClassNames.root),
+        root: cn(
+          'w-full md:w-[379px] lg:w-[428px] !px-[20px] lg:!px-[22px] !py-[28px] ',
+          defaultClassNames.root,
+        ),
         months: cn(
-          'relative flex flex-col gap-[0px] md:flex-row px-[20px]',
+          'relative flex flex-col gap-[0px] md:flex-row lg:px-[20px]',
           defaultClassNames.months,
         ),
         month: cn('flex w-full flex-col gap-[12px]', defaultClassNames.month),
@@ -55,16 +58,16 @@ function Calendar({
         ),
         button_previous: cn(
           buttonVariants({ variant: buttonVariant }),
-          'absolute right-[80px] h-[--cell-size] w-[--cell-size] select-none p-0 aria-disabled:opacity-50',
+          'absolute right-[57px] lg:right-[80px] h-[--cell-size] w-[--cell-size] select-none p-0 aria-disabled:opacity-50',
           defaultClassNames.button_previous,
         ),
         button_next: cn(
           buttonVariants({ variant: buttonVariant }),
-          'absolute right-[25px] h-[--cell-size] w-[--cell-size] select-none p-0 aria-disabled:opacity-50',
+          'absolute right-[0px] lg:right-[25px] h-[--cell-size] w-[--cell-size] select-none p-0 aria-disabled:opacity-50',
           defaultClassNames.button_next,
         ),
         month_caption: cn(
-          'flex h-[26px] w-full items-center pl-[10px] text-[#171719]',
+          'flex h-[26px] w-full items-center pl-[10px] text-[#171719] !text-[20px]',
           defaultClassNames.month_caption,
         ),
         dropdowns: cn(
@@ -77,16 +80,19 @@ function Calendar({
         ),
         dropdown: cn('absolute inset-0 opacity-0', defaultClassNames.dropdown),
         caption_label: cn(
-          'select-none font-medium',
+          'select-none font-medium !text-[20px]',
           captionLayout === 'label'
             ? 'text-sm'
             : '[&>svg]:text-muted-foreground flex h-8 items-center gap-1 rounded-md pl-2 pr-1 text-sm [&>svg]:size-3.5',
           defaultClassNames.caption_label,
         ),
-        table: 'w-full border-collapse',
-        weekdays: cn('flex', defaultClassNames.weekdays),
+        table: 'border-collapse ',
+        weekdays: cn(
+          'flex !w-full !justify-center !items-center',
+          defaultClassNames.weekdays,
+        ),
         weekday: cn(
-          'flex select-none w-[49px] h-[49px] text-[#171719] justify-center items-center rounded-[50%] text-[16px] font-normal leading-[130%]',
+          'flex flex-1 select-none h-[49px] text-[#171719] !justify-center !items-center rounded-[50%] text-[16px] font-normal leading-[130%]',
           defaultClassNames.weekday,
         ),
         week: cn('mt-[0] flex w-full', defaultClassNames.week),
@@ -197,7 +203,7 @@ function CalendarDayButton({
       data-range-end={modifiers.range_end}
       data-range-middle={modifiers.range_middle}
       className={cn(
-        'flex h-[49px] !w-[49px] flex-col gap-1 rounded-[50%] py-[14px] text-[16px] font-normal leading-[130%] data-[range-end=true]:rounded-[50%] data-[range-middle=true]:rounded-[50%] data-[range-start=true]:rounded-[50%] data-[range-end=true]:bg-primary data-[range-middle=true]:bg-accent data-[range-start=true]:bg-primary data-[selected-single=true]:bg-[#FA4D09] data-[range-end=true]:text-primary-foreground data-[range-middle=true]:text-accent-foreground data-[range-start=true]:text-primary-foreground data-[selected-single=true]:text-primary-foreground group-data-[focused=true]/day:relative group-data-[focused=true]/day:z-10 [&>span]:text-xs [&>span]:opacity-70',
+        'flex h-full w-full flex-col !items-center !justify-center gap-1 rounded-[50%] py-[14px] text-[16px] font-normal leading-[130%] data-[range-end=true]:rounded-[50%] data-[range-middle=true]:rounded-[50%] data-[range-start=true]:rounded-[50%] data-[range-end=true]:bg-primary data-[range-middle=true]:bg-accent data-[range-start=true]:bg-primary data-[selected-single=true]:bg-[#FA4D09] data-[range-end=true]:text-primary-foreground data-[range-middle=true]:text-accent-foreground data-[range-start=true]:text-primary-foreground data-[selected-single=true]:text-primary-foreground group-data-[focused=true]/day:relative group-data-[focused=true]/day:z-10 [&>span]:text-xs [&>span]:opacity-70',
         defaultClassNames.day,
         className,
       )}

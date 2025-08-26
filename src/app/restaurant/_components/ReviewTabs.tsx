@@ -25,6 +25,7 @@ type ReviewTabsProps = {
     standard: keywordSummaryProps[];
     graphic: keywordSummaryProps[];
   };
+  name: string;
   restaurantId: string;
   sort: 'latest' | 'popular';
   onSortChange: (sort: 'latest' | 'popular') => void;
@@ -34,6 +35,7 @@ const ReviewTabs = ({
   standardReviews,
   graphicReviews,
   keywords,
+  name,
   restaurantId,
   sort,
   onSortChange,
@@ -131,187 +133,203 @@ const ReviewTabs = ({
     : standardReviews.slice(0, 6);
 
   return (
-    <Tabs defaultValue="standard" className="w-full">
-      <TabsList className="mx-auto w-full max-w-[1200px] border-none">
-        <TabsTrigger
-          value="standard"
-          className="relative pb-2 text-xl font-semibold text-gray-400 focus-visible:ring-0 data-[state=active]:bg-transparent data-[state=active]:text-black data-[state=active]:shadow-none data-[state=active]:after:absolute data-[state=active]:after:bottom-0 data-[state=active]:after:left-0 data-[state=active]:after:h-[2px] data-[state=active]:after:w-full data-[state=active]:after:bg-black data-[state=active]:after:content-['']"
-        >
-          리얼 리뷰
-        </TabsTrigger>
+    <div className="w-full max-w-[1280px] px-[16px] pb-[8px] md:px-[40px] md:py-[32px]">
+      <div className="flex flex-col items-center pb-[20px] pt-[40px] md:hidden">
+        <h2 className="mb-[4px] text-center text-[16px] font-semibold leading-[150%] text-[#FA4D09]">
+          {name}
+        </h2>
+        <p className="text-center text-[24px] font-bold leading-[130%] text-[#171719]">
+          로컬잇 리뷰
+        </p>
+      </div>
 
-        <TabsTrigger
-          value="graphic"
-          className="relative pb-2 text-xl font-semibold text-gray-400 focus-visible:ring-0 data-[state=active]:bg-transparent data-[state=active]:text-black data-[state=active]:shadow-none data-[state=active]:after:absolute data-[state=active]:after:bottom-0 data-[state=active]:after:left-0 data-[state=active]:after:h-[2px] data-[state=active]:after:w-full data-[state=active]:after:bg-black data-[state=active]:after:content-['']"
-        >
-          리얼 스토리
-        </TabsTrigger>
-      </TabsList>
-      <TabsContent value="standard" className="mx-auto w-full max-w-[1200px]">
-        <KeywordSection
-          keywords={keywords.standard}
-          sort={sort}
-          onSortChange={onSortChange}
-        />
+      <Tabs defaultValue="standard">
+        <TabsList className="mx-auto w-full border-none">
+          <TabsTrigger
+            value="standard"
+            className="relative w-[50%] pb-2 text-xl font-semibold text-gray-400 focus-visible:ring-0 data-[state=active]:bg-transparent data-[state=active]:text-black data-[state=active]:shadow-none data-[state=active]:after:absolute data-[state=active]:after:bottom-0 data-[state=active]:after:left-0 data-[state=active]:after:h-[2px] data-[state=active]:after:w-full data-[state=active]:after:bg-black data-[state=active]:after:content-[''] md:w-auto"
+          >
+            리얼 리뷰
+          </TabsTrigger>
 
-        {/* 일반리뷰 내용 */}
-        <div className="w-[1200px]">
-          {displayedStandardReviews.length > 0 ? (
-            <>
-              <div className="grid grid-cols-2 gap-[24px]">
-                {displayedStandardReviews.map(
-                  (standardReview: StandardReviewProps) => {
-                    const visited_at = new Date(standardReview.visited_at);
-                    const isThisYear =
-                      visited_at.getFullYear() === new Date().getFullYear();
+          <TabsTrigger
+            value="graphic"
+            className="relative w-[50%] pb-2 text-xl font-semibold text-gray-400 focus-visible:ring-0 data-[state=active]:bg-transparent data-[state=active]:text-black data-[state=active]:shadow-none data-[state=active]:after:absolute data-[state=active]:after:bottom-0 data-[state=active]:after:left-0 data-[state=active]:after:h-[2px] data-[state=active]:after:w-full data-[state=active]:after:bg-black data-[state=active]:after:content-[''] md:w-auto"
+          >
+            리얼 스토리
+          </TabsTrigger>
+        </TabsList>
+        <TabsContent value="standard" className="mx-auto w-full max-w-[1200px]">
+          <KeywordSection
+            keywords={keywords.standard}
+            sort={sort}
+            onSortChange={onSortChange}
+          />
 
-                    const formattedDate = isThisYear
-                      ? `${String(visited_at.getMonth() + 1).padStart(2, '0')}.${String(visited_at.getDate()).padStart(2, '0')}`
-                      : `${visited_at.getFullYear()}.${String(visited_at.getMonth() + 1).padStart(2, '0')}.${String(visited_at.getDate()).padStart(2, '0')}`;
+          {/* 일반리뷰 내용 */}
+          <div>
+            {displayedStandardReviews.length > 0 ? (
+              <>
+                <div className="grid grid-cols-1 gap-[16px] md:grid-cols-2 md:gap-[24px]">
+                  {displayedStandardReviews.map(
+                    (standardReview: StandardReviewProps) => {
+                      const visited_at = new Date(standardReview.visited_at);
+                      const isThisYear =
+                        visited_at.getFullYear() === new Date().getFullYear();
 
-                    // reactions 파생값 계산 (타입/키 불일치 대비 정상화)
-                    const likeCount =
-                      standardReview?.reactions?.find(
-                        (r) => r.type === '공감해요',
-                      )?.user_id.length || 0;
-                    const helpfulCount =
-                      standardReview?.reactions?.find(
-                        (r) => r.type === '도움이 됐어요',
-                      )?.user_id.length || 0;
+                      const formattedDate = isThisYear
+                        ? `${String(visited_at.getMonth() + 1).padStart(2, '0')}.${String(visited_at.getDate()).padStart(2, '0')}`
+                        : `${visited_at.getFullYear()}.${String(visited_at.getMonth() + 1).padStart(2, '0')}.${String(visited_at.getDate()).padStart(2, '0')}`;
 
-                    const likedByMe = isReacted(
-                      standardReview.reactions,
-                      '공감해요',
-                    );
-                    const helpfulByMe = isReacted(
-                      standardReview.reactions,
-                      '도움이 됐어요',
-                    );
+                      // reactions 파생값 계산 (타입/키 불일치 대비 정상화)
+                      const likeCount =
+                        standardReview?.reactions?.find(
+                          (r) => r.type === '공감해요',
+                        )?.user_id.length || 0;
+                      const helpfulCount =
+                        standardReview?.reactions?.find(
+                          (r) => r.type === '도움이 됐어요',
+                        )?.user_id.length || 0;
 
-                    return (
-                      <div
-                        className="flex flex-col rounded-[12px] border border-[#E2E2E4] bg-[#FCFCFD] p-[24px]"
-                        key={standardReview.id}
-                      >
-                        <div className="mb-[16px] flex justify-between">
-                          <div className="flex items-center">
+                      const likedByMe = isReacted(
+                        standardReview.reactions,
+                        '공감해요',
+                      );
+                      const helpfulByMe = isReacted(
+                        standardReview.reactions,
+                        '도움이 됐어요',
+                      );
+
+                      return (
+                        <div
+                          className="flex h-[375px] flex-1 flex-col rounded-[12px] border border-[#E2E2E4] bg-[#FCFCFD] p-[16px] md:h-[390px] md:p-[24px]"
+                          key={standardReview.id}
+                        >
+                          <div className="mb-[12px] flex items-center justify-between">
+                            <div className="flex items-center">
+                              <Image
+                                src={standardReview.profile_image}
+                                alt={standardReview.nickname}
+                                width={40}
+                                height={40}
+                                className="mr-[10px] h-[45px] w-[45px] rounded-[50%] bg-white md:h-[40px] md:w-[40px]"
+                              />
+
+                              <div className="flex flex-col md:flex-row">
+                                <p className="mr-[12px] text-[16px] font-semibold leading-[130%] text-[#2E2E32]">
+                                  {standardReview.nickname}
+                                </p>
+                                <p className="text-[12px] font-medium leading-[130%] text-[#5F5F68] md:text-[14px]">
+                                  {formattedDate} • {standardReview.visit_count}
+                                  번째 방문 • 로컬인증
+                                </p>
+                              </div>
+                            </div>
                             <Image
-                              src={standardReview.profile_image}
-                              alt={standardReview.nickname}
-                              width={40}
-                              height={40}
-                              className="mr-[10px] h-[40px] w-[40px] rounded-[50%] bg-white"
+                              src={'/assets/icons/more.svg'}
+                              alt="더보기 아이콘"
+                              width={24}
+                              height={24}
+                              className="h-[24px] w-[24px]"
                             />
-                            <p className="mr-[12px] text-[16px] font-semibold leading-[130%] text-[#2E2E32]">
-                              {standardReview.nickname}
-                            </p>
-                            <p className="text-[14px] font-medium leading-[130%] text-[#5F5F68]">
-                              {formattedDate} • {standardReview.visit_count}번째
-                              방문 • 로컬인증
-                            </p>
                           </div>
-                          <Image
-                            src={'/assets/icons/more.svg'}
-                            alt="더보기 아이콘"
-                            width={24}
-                            height={24}
-                            className="h-[24px] w-[24px]"
-                          />
+                          <p className="mb-[10px] line-clamp-3 h-[48px] w-full text-[12px] text-lg font-normal leading-[130%] text-[#2E2E32] md:mb-[16px] md:line-clamp-2 md:h-[42px] md:text-[16px]">
+                            {standardReview.content}
+                          </p>
+                          <div className="scrollbar-hide mb-[16px] flex w-full items-center gap-[10px] overflow-hidden overflow-x-auto">
+                            {standardReview.photos.map((photo) => (
+                              <Image
+                                key={photo.id}
+                                src={photo.image_url}
+                                alt="photo"
+                                width={180}
+                                height={226}
+                                className="h-[180px] w-[180px] rounded-[20px]"
+                              />
+                            ))}
+                          </div>
+                          <div className="flex h-[36px] items-end gap-[10px] pt-[4px]">
+                            <button
+                              className={cn(
+                                'flex h-[32px] items-center justify-center rounded-full border border-[#C7C7CC] px-[12px] py-[8px] text-[14px] font-medium leading-[130%] text-[#5F5F68]',
+                                likedByMe &&
+                                  'border-[#FA4D09] bg-[#FEEDE6] text-[#FA4D09]',
+                              )}
+                              disabled={isMutatingReaction}
+                              onClick={() =>
+                                handleReaction(
+                                  standardReview.id,
+                                  '공감해요',
+                                  likedByMe,
+                                )
+                              }
+                            >
+                              공감해요 {likeCount}
+                            </button>
+                            <button
+                              className={cn(
+                                'flex h-[32px] items-center justify-center rounded-full border border-[#C7C7CC] px-[12px] py-[8px] text-[14px] font-medium leading-[130%] text-[#5F5F68]',
+                                helpfulByMe &&
+                                  'border-[#FA4D09] bg-[#FEEDE6] text-[#FA4D09]',
+                              )}
+                              disabled={isMutatingReaction}
+                              onClick={() =>
+                                handleReaction(
+                                  standardReview.id,
+                                  '도움이 됐어요',
+                                  helpfulByMe,
+                                )
+                              }
+                            >
+                              도움이 됐어요 {helpfulCount}
+                            </button>
+                          </div>
                         </div>
-                        <p className="mb-[12px] w-full text-lg">
-                          {standardReview.content}
-                        </p>
-                        <div className="mb-[20px] flex items-center gap-[10px]">
-                          {standardReview.photos.map((photo) => (
-                            <Image
-                              key={photo.id}
-                              src={photo.image_url}
-                              alt="photo"
-                              width={180}
-                              height={226}
-                              className="h-[226px] w-[180px] rounded-[20px]"
-                            />
-                          ))}
-                        </div>
-                        <div className="flex h-full items-end gap-[10px]">
-                          <button
-                            className={cn(
-                              'flex h-[32px] items-center justify-center rounded-full border border-[#C7C7CC] px-[12px] py-[8px] text-[#5F5F68]',
-                              likedByMe && 'bg-orange-400 text-white',
-                            )}
-                            disabled={isMutatingReaction}
-                            onClick={() =>
-                              handleReaction(
-                                standardReview.id,
-                                '공감해요',
-                                likedByMe,
-                              )
-                            }
-                          >
-                            공감해요 {likeCount}
-                          </button>
-                          <button
-                            className={cn(
-                              'flex h-[32px] items-center justify-center rounded-full border border-[#C7C7CC] px-[12px] py-[8px] text-[#5F5F68]',
-                              helpfulByMe && 'bg-orange-400 text-white',
-                            )}
-                            disabled={isMutatingReaction}
-                            onClick={() =>
-                              handleReaction(
-                                standardReview.id,
-                                '도움이 됐어요',
-                                helpfulByMe,
-                              )
-                            }
-                          >
-                            도움이 됐어요 {helpfulCount}
-                          </button>
-                        </div>
-                      </div>
-                    );
-                  },
-                )}
-              </div>
-
-              {!showAllStandardReviews && standardReviews.length > 6 && (
-                <div className="relative flex items-center justify-center py-[20px]">
-                  <div className="absolute h-[1px] w-full bg-[#E2E2E4]"></div>
-                  <button
-                    onClick={() => setShowAllStandardReviews(true)}
-                    className="relative z-10 w-[187px] rounded-full border border-[#C7C7CC] bg-white px-[20px] py-[10px] text-[20px] font-semibold leading-[130%] text-[#47474D] hover:bg-gray-50"
-                  >
-                    더 많은 리뷰 보기
-                  </button>
+                      );
+                    },
+                  )}
                 </div>
-              )}
-            </>
-          ) : (
-            <p className="my-[50px] ml-[10px] text-lg text-gray-500">
-              리얼 리뷰가 없습니다. 첫 리뷰를 남겨주세요.
-            </p>
-          )}
-        </div>
-      </TabsContent>
 
-      <TabsContent value="graphic" className="mx-auto w-full max-w-[1200px]">
-        <KeywordSection
-          keywords={keywords.graphic}
-          sort={sort}
-          onSortChange={onSortChange}
-          type="graphic"
-        />
+                {!showAllStandardReviews && standardReviews.length > 6 && (
+                  <div className="relative flex items-center justify-center py-[20px]">
+                    <div className="absolute h-[1px] w-full bg-[#E2E2E4]"></div>
+                    <button
+                      onClick={() => setShowAllStandardReviews(true)}
+                      className="relative z-10 w-[187px] rounded-full border border-[#C7C7CC] bg-white px-[20px] py-[10px] text-[20px] font-semibold leading-[130%] text-[#47474D] hover:bg-gray-50"
+                    >
+                      더 많은 리뷰 보기
+                    </button>
+                  </div>
+                )}
+              </>
+            ) : (
+              <p className="my-[50px] ml-[10px] text-lg text-gray-500">
+                리얼 리뷰가 없습니다. 첫 리뷰를 남겨주세요.
+              </p>
+            )}
+          </div>
+        </TabsContent>
 
-        <div>
-          {graphicReviews.length > 0 ? (
-            <StorySlider stories={graphicReviews} />
-          ) : (
-            <p className="my-[50px] ml-[10px] text-lg text-gray-500">
-              리얼 스토리가 없습니다. 첫 리뷰를 남겨주세요.
-            </p>
-          )}
-        </div>
-      </TabsContent>
-    </Tabs>
+        <TabsContent value="graphic" className="mx-auto w-full max-w-[1200px]">
+          <KeywordSection
+            keywords={keywords.graphic}
+            sort={sort}
+            onSortChange={onSortChange}
+            type="graphic"
+          />
+
+          <div>
+            {graphicReviews.length > 0 ? (
+              <StorySlider stories={graphicReviews} />
+            ) : (
+              <p className="my-[50px] ml-[10px] text-lg text-gray-500">
+                리얼 스토리가 없습니다. 첫 리뷰를 남겨주세요.
+              </p>
+            )}
+          </div>
+        </TabsContent>
+      </Tabs>
+    </div>
   );
 };
 

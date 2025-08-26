@@ -43,7 +43,7 @@ const MultiPhotoUpload = ({
   };
 
   return (
-    <div className="w-[453px] flex-1 rounded-[30px] bg-[#FDF8F6] px-[24px] py-[28px]">
+    <div className="flex flex-col items-center rounded-[28px] bg-[#FDF8F6] py-[40px] pl-[27px] pr-[26px] md:h-[371px] md:w-[419px] md:items-start md:rounded-[50px] lg:h-[377px] lg:w-[426px]">
       <p className="text-[20px] font-semibold leading-[130%] text-[#171719]">
         사진 인증 [필수]
       </p>
@@ -51,16 +51,16 @@ const MultiPhotoUpload = ({
         음식 사진 1장 이상 필수예요! (최대 4장)
       </p>
 
-      <div className="flex gap-[12px]">
-        <label className="flex h-[220px] w-[140px] shrink-0 cursor-pointer flex-col items-center justify-center rounded-[20px] border border-[#C7C7CC] bg-[#E2E2E4] text-[14px] text-[#787882]">
+      <div className="flex flex-col items-center gap-[16px] md:flex-row md:gap-[12px]">
+        <label className="flex h-[220px] w-[135px] shrink-0 cursor-pointer flex-col items-center justify-center rounded-[20px] border border-[#C7C7CC] bg-[#E2E2E4] text-[14px] text-[#787882] md:h-[168px] md:w-[107px] md:text-[12px] lg:h-[220px] lg:w-[140px] lg:text-[14px]">
           <Image
             src="/assets/icons/photo.svg"
             alt="사진 추가"
             width={24}
             height={24}
           />
-          <span className="font-semibold">사진 추가</span>
-          <span className="mt-1 text-[13px] font-medium">
+          <span className="mt-[4px] font-semibold">사진 추가</span>
+          <span className="mt-[2px] font-medium">
             {photos.length}/{MAX_PHOTOS}
           </span>
           <input
@@ -73,11 +73,11 @@ const MultiPhotoUpload = ({
         </label>
 
         {photos.length === 0 ? (
-          <div className="my-auto flex h-[220px] w-[280px] items-center justify-center rounded-[20px] bg-[#E5E6E8] text-[16px] font-semibold text-white">
+          <div className="my-auto flex h-[214px] w-[222px] items-center justify-center rounded-[20px] bg-[#E5E6E8] text-[14px] font-semibold text-white md:text-[10px] lg:text-[16px]">
             예시 확인하기
           </div>
         ) : (
-          <div className="grid h-[220px] w-[280px] grid-cols-2 grid-rows-2 gap-[2px]">
+          <div className="grid h-[214px] w-[222px] grid-cols-2 grid-rows-2 gap-[2px]">
             {Array.from({ length: MAX_PHOTOS }).map((_, index) => {
               const file = photos[index];
               const photoUrl = photoUrls[index];

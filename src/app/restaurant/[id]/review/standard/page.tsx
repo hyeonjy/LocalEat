@@ -163,11 +163,11 @@ const StandardReviewForm = ({ params }: StandardReviewPageProps) => {
         setRating={setRating}
       />
 
-      <section className="mt-[32px] flex w-[791px] flex-col rounded-[50px] bg-[#FDF8F6] p-[40px]">
+      <section className="mx-auto mt-[32px] flex w-[calc(100%-32px)] flex-col rounded-[28px] bg-[#FDF8F6] px-[16px] py-[20px] md:mx-0 md:w-[692px] md:rounded-[50px] md:p-[40px] lg:w-[772px]">
         <span className="mb-[20px] text-[20px] font-semibold leading-[140%]">
           언제 방문하셨나요?
         </span>
-        <div className="flex gap-[40px]">
+        <div className="flex flex-col gap-[20px] md:flex-row">
           <Calendar
             mode="single"
             defaultMonth={visitDate}
@@ -184,7 +184,7 @@ const StandardReviewForm = ({ params }: StandardReviewPageProps) => {
         </div>
       </section>
 
-      <section className="mt-[32px] flex gap-[20px]">
+      <section className="mx-auto mt-[32px] flex w-[calc(100%-32px)] flex-col gap-[16px] md:mx-0 md:w-[692px] md:flex-row lg:w-[772px] lg:gap-[20px]">
         <SinglePhotoUpload image={receiptImage} onImageAdd={handleReceiptAdd} />
         <MultiPhotoUpload
           photos={photos}
@@ -198,7 +198,7 @@ const StandardReviewForm = ({ params }: StandardReviewPageProps) => {
         onKeywordToggle={handleKeywordToggle}
       />
 
-      <section className="my-[32px] h-[213px] w-[791px] rounded-[50px] bg-[#FDF8F6] p-[40px]">
+      <section className="mx-auto my-[32px] h-[213px] w-[calc(100%-32px)] rounded-[28px] bg-[#FDF8F6] p-[40px] md:mx-0 md:w-[692px] md:rounded-[50px] lg:w-[772px]">
         <h2 className="mb-[10px] text-[20px] font-semibold leading-[130%] text-[#171719]">
           리뷰를 작성해주세요.
         </h2>
@@ -219,10 +219,10 @@ const StandardReviewForm = ({ params }: StandardReviewPageProps) => {
         </div>
       </section>
 
-      <div className="flex w-[791px] justify-end">
+      <div className="mx-auto flex w-[calc(100%-32px)] justify-end md:mx-0 md:w-[692px] lg:w-[772px]">
         <button
           disabled={isSubmitting}
-          className="flex h-[50px] w-[100px] items-center justify-center rounded-[8px] bg-[#FA4D09] px-[20px] py-[16px] text-white disabled:opacity-60"
+          className="flex h-[37px] w-[68px] items-center justify-center rounded-[8px] bg-[#FA4D09] px-[20px] py-[8px] text-[16px] font-medium leading-[130%] text-white disabled:opacity-60"
         >
           등록
         </button>

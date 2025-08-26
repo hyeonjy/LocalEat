@@ -224,7 +224,7 @@ const GraphicReviewForm = ({ params }: GraphicReviewPageProps) => {
         onKeywordToggle={handleKeywordToggle}
       />
 
-      <section className="mt-[32px] flex w-[791px] gap-[20px]">
+      <section className="mx-auto mt-[32px] flex w-[calc(100%-32px)] flex-col gap-[16px] md:mx-0 md:w-[692px] md:flex-row lg:w-[772px] lg:gap-[20px]">
         <SinglePhotoUpload
           image={formData.receiptImage}
           onImageAdd={handleReceiptAdd}
@@ -239,10 +239,10 @@ const GraphicReviewForm = ({ params }: GraphicReviewPageProps) => {
         />
       </section>
 
-      <div className="mt-[32px] flex w-[791px] justify-end">
+      <div className="mx-auto mt-[10px] flex w-[calc(100%-32px)] justify-end md:mx-0 md:w-[692px] lg:w-[772px]">
         <button
           disabled={isSubmitting}
-          className="flex h-[50px] w-[100px] items-center justify-center rounded-[8px] bg-[#FA4D09] px-[20px] py-[16px] text-white disabled:opacity-60"
+          className="flex h-[50px] w-[83px] items-center justify-center rounded-[8px] bg-[#FA4D09] px-[20px] py-[8px] text-[16px] font-medium leading-[130%] text-white disabled:opacity-60"
         >
           등록
         </button>
