@@ -47,6 +47,35 @@ const getOrigin = () => {
   );
 };
 
+// ---- 안전한 URL 빌더 ----
+function sanitizeOrigin(input?: string) {
+  return (input ?? '')
+    .trim()
+    .replace(/^['"]+|['"]+$/g, '') // 앞뒤 따옴표 제거
+    .replace(/\/+$/, ''); // 끝 슬래시 제거
+}
+
+function buildApiUrl(
+  path: string,
+  params: Record<string, string | number | undefined>,
+) {
+  const base = sanitizeOrigin(process.env.NEXT_PUBLIC_API_BASE);
+
+  const qs = new URLSearchParams();
+  Object.entries(params).forEach(([k, v]) => {
+    if (v !== undefined && v !== null && v !== '') qs.set(k, String(v));
+  });
+
+  if (base) return `${base}${path}?${qs.toString()}`;
+  if (typeof window !== 'undefined') return `${path}?${qs.toString()}`;
+
+  // 서버 사이드에서 BASE 없으면 명확히 에러
+  throw new Error(
+    'API base URL is missing. Set NEXT_PUBLIC_API_BASE in Vercel.',
+  );
+}
+
+// ---- 여기만 교체 ----
 async function fetchNearby(params: {
   keyword: string;
   offset: number;
@@ -92,6 +121,7 @@ async function fetchNearby(params: {
     throw error;
   }
 }
+
 export function useInfiniteMapSearch(keyword?: string) {
   console.log('🔍 useInfiniteMapSearch 호출됨:', { keyword });
 
