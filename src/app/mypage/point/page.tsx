@@ -30,19 +30,21 @@ const PointPage = () => {
   return (
     <div className="min-h-screen pt-16">
       <div className="mx-auto max-w-[820px] px-[24px]">
-        <h1 className="mt-[40px] text-[32px] font-bold leading-[130%] text-[#171719]">
+        <h1 className="mt-[40px] h-[42px] text-[32px] font-bold leading-[130%] text-[#171719]">
           포인트 내역
         </h1>
 
         <div className="mt-[20px] flex justify-between">
           <div className="flex h-[162px] w-[277px] flex-col justify-between rounded-2xl bg-white p-5 shadow-[0px_0px_4px_0px_rgba(0,0,0,0.25)]">
             <div>
-              <p className="mb-2 text-sm text-gray-600">내 포인트</p>
-              <p className="text-[24px] font-semibold text-[#171719]">
+              <p className="mb-2 text-[16px] font-semibold leading-[150%] text-[#171719]">
+                내 포인트
+              </p>
+              <p className="text-[24px] font-semibold leading-[130%] text-[#171719]">
                 {currentPoints.toLocaleString()}P
               </p>
             </div>
-            <Button className="w-full rounded-[8px] bg-[#FA4D09] text-[16px] font-medium text-white hover:bg-orange-600">
+            <Button className="h-[41px] w-full rounded-[8px] bg-[#FA4D09] text-[16px] font-medium text-white hover:bg-orange-600">
               포인트 상점 구경하기
             </Button>
           </div>

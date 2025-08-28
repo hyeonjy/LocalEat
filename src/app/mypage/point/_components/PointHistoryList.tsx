@@ -69,14 +69,14 @@ const PointHistoryList = ({ userId }: PointHistoryListProps) => {
   return (
     <>
       {/* 필터 탭과 기간 선택 */}
-      <div className="mb-4 mt-[20px] flex justify-between">
+      <div className="mb-2 mt-[20px] flex h-[36px] items-center justify-between">
         {/* 필터 탭 */}
         <div className="flex space-x-[6px]">
           {FILTERS.map((filter) => (
             <button
               key={filter}
               onClick={() => setSelectedFilter(filter)}
-              className={`h-[28px] w-[45px] whitespace-nowrap rounded-[100px] border border-[#C7C7CC] px-[10px] py-[6px] text-[14px] font-normal leading-[100%] text-[#2E2E32] ${
+              className={`flex h-[28px] w-[45px] items-center justify-center whitespace-nowrap rounded-[20px] border border-[#C7C7CC] px-[12px] py-[8px] text-[14px] font-normal leading-[100%] text-[#2E2E32] ${
                 selectedFilter === filter
                   ? 'border-[#FA4D09] bg-[#FEEDE6] text-[#FA4D09]'
                   : 'bg-white'
@@ -89,15 +89,19 @@ const PointHistoryList = ({ userId }: PointHistoryListProps) => {
         </div>
 
         {/* 기간 선택 드롭다운 */}
-        <div className="relative w-[179px]">
+        <div className="relative h-[36px] w-[179px]">
           <select
             value={selectedPeriod}
             onChange={(e) => setSelectedPeriod(e.target.value)}
-            className="w-full cursor-pointer appearance-none rounded-[4px] border border-[#E2E2E4] bg-white px-3 py-2 pr-10 focus:outline-none disabled:opacity-50"
+            className="h-[36px] w-full cursor-pointer appearance-none rounded-[4px] border border-[#E2E2E4] bg-white px-3 py-2 pl-[12px] focus:outline-none disabled:opacity-50"
             disabled={isPending}
           >
             {PERIODS.map((period) => (
-              <option key={period.value} value={period.value}>
+              <option
+                key={period.value}
+                value={period.value}
+                className="flex h-[24px] items-center text-[14px] font-normal leading-[100%] text-[#171719]"
+              >
                 {period.name}
               </option>
             ))}
@@ -109,6 +113,25 @@ const PointHistoryList = ({ userId }: PointHistoryListProps) => {
             height={24}
             className="pointer-events-none absolute right-2 top-1/2 -translate-y-1/2"
           />
+        </div>
+      </div>
+
+      {/* 포인트 내역 헤더 */}
+      <div className="flex items-start bg-[#F7F7F8] text-[14px] font-normal leading-[130%] text-[#171719]">
+        {/* 왼쪽 날짜 */}
+        <div className="mr-[10px] w-[52px] pl-[10px] pt-3">날짜</div>
+
+        {/* 오른쪽 리스트 */}
+        <div className="w-full">
+          <div className="flex items-center justify-between py-3">
+            <div>상세</div>
+
+            <div className="flex w-[156px] items-center gap-[30px]">
+              <p className={`flex-1 text-center`}>포인트</p>
+
+              <div className="flex-1 text-center">상태</div>
+            </div>
+          </div>
         </div>
       </div>
 
@@ -124,9 +147,9 @@ const PointHistoryList = ({ userId }: PointHistoryListProps) => {
           </div>
         ) : (
           groupByDate().map(([date, items]) => (
-            <div key={date} className="mb-4 flex items-start">
+            <div key={date} className="flex items-start">
               {/* 왼쪽 날짜 */}
-              <div className="w-[52px] pr-3 pt-3 font-normal text-[#171719]">
+              <div className="mr-[10px] w-[52px] pl-[10px] pt-3 font-normal text-[#171719]">
                 {date}
               </div>
 
@@ -141,21 +164,29 @@ const PointHistoryList = ({ userId }: PointHistoryListProps) => {
                       className="flex items-center justify-between border-b border-[#E2E2E4] py-3"
                     >
                       <div>
-                        <div className="mb-1 text-[16px] font-bold text-[#171719]">
+                        <div className="mb-1 text-[16px] font-bold leading-[130%] text-[#171719]">
                           {history.restaurant_name}
                         </div>
-                        <div className="text-[14px] font-normal text-[#92929B]">
+                        <div className="text-[14px] font-normal leading-[100%] text-[#92929B]">
                           {time} | {history.source}
                         </div>
                       </div>
-                      <p
-                        className={`text-[16px] font-bold ${
-                          history.amount > 0 ? 'text-[#3177E8]' : 'text-red-500'
-                        }`}
-                      >
-                        {history.amount > 0 ? '+' : ''}
-                        {Math.abs(history.amount)}P
-                      </p>
+                      <div className="flex w-[156px] items-center gap-[30px]">
+                        <p
+                          className={`flex-1 text-[16px] font-bold ${
+                            history.amount > 0
+                              ? 'text-[#3177E8]'
+                              : 'text-[#92929B]'
+                          }`}
+                        >
+                          {history.amount > 0 ? '+' : ''}
+                          {Math.abs(history.amount)}P
+                        </p>
+
+                        <div className="flex-1 rounded-[20px] bg-[#E9FBEB] px-[12px] py-[6px] text-[14px] font-medium leading-[130%] text-[#2E2E32]">
+                          승인완료
+                        </div>
+                      </div>
                     </div>
                   );
                 })}
