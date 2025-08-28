@@ -2,6 +2,7 @@
 
 import MissionRestaurantSection from '@/components/home/MissionRestaurantSection';
 import NewEatRestaurant from '@/components/home/NewEatRestaurant';
+import StoryReviewCollection from '@/components/home/StoryReviewCollection';
 import TopTenRestaurantList from '@/components/home/TopTenRestaurantList';
 import { useAuthStore } from '@/store/authStore';
 import Link from 'next/link';
@@ -26,32 +27,7 @@ export default function Home() {
       <MissionRestaurantSection />
       <TopTenRestaurantList />
       <NewEatRestaurant />
-      <section>
-        <div className="mx-auto w-[1280px] gap-[10px] self-stretch rounded-[12px] px-[40px] py-[32px] min-[381px]:max-[721px]:px-[16px]">
-          <div className="flex w-full items-end justify-between">
-            <div className="w-full">
-              <p className="pt-[30px] font-semibold leading-[130%] text-[#FA4D09] max-[721px]:text-[16px] min-[722px]:text-[24px]">
-                로컬잇터들의 방문 스토리 보러가기
-              </p>
-              <h2 className="font-bold leading-[130%] tracking-[0.4px] text-[#171719] max-[721px]:text-[24px] min-[722px]:text-[40px]">
-                다녀왔밥 모음.zip
-              </h2>
-            </div>
-
-            <Link
-              className="flex w-[84px] items-center justify-center p-[2px] text-center text-[16px] font-normal leading-[130%] text-[#787882]"
-              href="/places"
-            >
-              전체보기
-            </Link>
-          </div>
-          <ul className="flex w-[1202px] flex-col items-start gap-[20px] bg-white px-0 pb-[37px] pt-[24px]">
-            <li className="flex h-[360px] w-[240px] flex-shrink-0 flex-col items-center justify-center rounded-[18px] bg-[#ccc]">
-              {/*이미지*/}
-            </li>
-          </ul>
-        </div>
-      </section>
+      <StoryReviewCollection />
       <section>
         <div className="mx-auto w-[1280px] gap-[10px] self-stretch rounded-[12px] px-[40px] py-[32px] min-[381px]:max-[721px]:px-[16px]">
           <div className="flex w-full items-end justify-between">
