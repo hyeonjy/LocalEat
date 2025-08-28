@@ -146,7 +146,9 @@ const SignUp = () => {
             {...register('email')}
           />
           {errors.email && (
-            <p className="mb-4 text-sm text-red-600">{errors.email.message}</p>
+            <p className="mt-2 text-xs font-normal leading-[130%] text-[#FF4242]">
+              {errors.email.message}
+            </p>
           )}
         </div>
 
@@ -164,7 +166,7 @@ const SignUp = () => {
             {...register('nickname')}
           />
           {errors.nickname && (
-            <p className="mb-4 text-sm text-red-600">
+            <p className="mt-2 text-xs font-normal leading-[130%] text-[#FF4242]">
               {errors.nickname.message}
             </p>
           )}
@@ -185,7 +187,7 @@ const SignUp = () => {
             {...register('password')}
           />
           {errors.password && (
-            <p className="mb-4 text-sm text-red-600">
+            <p className="mt-2 text-xs font-normal leading-[130%] text-[#FF4242]">
               {errors.password.message}
             </p>
           )}
@@ -206,7 +208,7 @@ const SignUp = () => {
             {...register('passwordConfirm')}
           />
           {errors.passwordConfirm && (
-            <p className="mb-4 text-sm text-red-600">
+            <p className="mt-2 text-xs font-normal leading-[130%] text-[#FF4242]">
               {errors.passwordConfirm.message}
             </p>
           )}
@@ -246,7 +248,7 @@ const SignUp = () => {
                 ))}
               </select>
               {errors.sido && (
-                <p className="mt-1 text-xs text-red-600">
+                <p className="mt-2 text-xs font-normal leading-[130%] text-[#FF4242]">
                   {errors.sido.message}
                 </p>
               )}
@@ -271,7 +273,7 @@ const SignUp = () => {
                 ))}
               </select>
               {errors.sgg && (
-                <p className="mt-1 text-xs text-red-600">
+                <p className="mt-2 text-xs font-normal leading-[130%] text-[#FF4242]">
                   {errors.sgg.message}
                 </p>
               )}
