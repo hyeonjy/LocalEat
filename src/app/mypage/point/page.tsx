@@ -34,8 +34,8 @@ const PointPage = () => {
           포인트 내역
         </h1>
 
-        <div className="mt-[20px] flex justify-between">
-          <div className="flex h-[162px] w-[277px] flex-col justify-between rounded-2xl bg-white p-5 shadow-[0px_0px_4px_0px_rgba(0,0,0,0.25)]">
+        <div className="mt-[20px] flex justify-between gap-[20px]">
+          <div className="flex h-[162px] flex-1 flex-col justify-between rounded-2xl bg-white p-5 shadow-[0px_0px_4px_0px_rgba(0,0,0,0.25)] lg:w-[277px] lg:flex-none">
             <div>
               <p className="mb-2 text-[16px] font-semibold leading-[150%] text-[#171719]">
                 내 포인트
@@ -61,6 +61,7 @@ const PointPage = () => {
                   alt="coupon"
                   width={142}
                   height={90}
+                  className="h-[90px]"
                 />
               ))}
             </div>

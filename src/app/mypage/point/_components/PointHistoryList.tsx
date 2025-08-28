@@ -76,7 +76,7 @@ const PointHistoryList = ({ userId }: PointHistoryListProps) => {
             <button
               key={filter}
               onClick={() => setSelectedFilter(filter)}
-              className={`flex h-[28px] w-[45px] items-center justify-center whitespace-nowrap rounded-[20px] border border-[#C7C7CC] px-[12px] py-[8px] text-[14px] font-normal leading-[100%] text-[#2E2E32] ${
+              className={`flex h-[30px] w-[49px] items-center justify-center whitespace-nowrap rounded-[20px] border border-[#C7C7CC] px-[12px] py-[8px] text-[14px] font-normal leading-[100%] text-[#2E2E32] ${
                 selectedFilter === filter
                   ? 'border-[#FA4D09] bg-[#FEEDE6] text-[#FA4D09]'
                   : 'bg-white'
