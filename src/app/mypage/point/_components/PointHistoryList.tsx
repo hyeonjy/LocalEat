@@ -184,7 +184,7 @@ const PointHistoryList = ({ userId }: PointHistoryListProps) => {
                       </div>
                       <div className="flex w-[76px] items-center gap-[30px] md:w-[156px]">
                         <p
-                          className={`hidden text-[16px] font-bold md:flex-1 ${
+                          className={`hidden text-[16px] font-bold md:flex md:flex-1 ${
                             history.amount > 0
                               ? 'text-[#3177E8]'
                               : 'text-[#92929B]'
