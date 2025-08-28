@@ -4,7 +4,6 @@ import { getUserReceipts, getUserReviews } from '@/app/actions/user';
 import { Star } from '@/app/restaurant/[id]/review/_components/RatingInput';
 import StoryPreview from '@/app/restaurant/[id]/review/_components/StoryPreview';
 import { useAuthStore } from '@/store/authStore';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@radix-ui/react-tabs';
 import { useQuery } from '@tanstack/react-query';
 import Image from 'next/image';
 import { useState } from 'react';
@@ -74,82 +73,63 @@ const page = () => {
   });
 
   return (
-    <div className="mt-[64px] flex w-full flex-col items-center">
-      <div className="mx-auto w-full max-w-[772px] border-none">
-        <h1 className="mt-[40px] text-[32px] font-bold leading-[130%]">
-          내 기록
-        </h1>
-      </div>
+    <div className="mx-auto mt-[60px] flex w-[772px] flex-col items-center">
+      <h1 className="mt-[40px] w-full text-[32px] font-bold leading-[130%]">
+        내 기록
+      </h1>
 
-      <Tabs defaultValue="review">
-        <TabsList className="mb-[20px]">
-          <TabsTrigger
-            value="review"
-            className="relative h-[51px] w-[386px] pb-2 text-[18px] font-semibold text-gray-400 focus-visible:ring-0 data-[state=active]:bg-transparent data-[state=active]:text-black data-[state=active]:shadow-none data-[state=active]:after:absolute data-[state=active]:after:bottom-0 data-[state=active]:after:left-0 data-[state=active]:after:h-[2px] data-[state=active]:after:w-full data-[state=active]:after:bg-black data-[state=active]:after:content-['']"
+      <div className="w-full">
+        <div className="flex gap-[6px] py-[12px]">
+          <button
+            onClick={() => setReviewFilter('all')}
+            className={`h-[30px] rounded-[20px] px-[12px] py-[8px] text-[14px] font-normal leading-[100%] transition-colors ${
+              reviewFilter === 'all'
+                ? 'border border-[#FA4D09] bg-[#FEEDE6] text-[#FA4D09]'
+                : 'border border-[#C7C7CC] bg-white text-[#2E2E32]'
+            }`}
+          >
+            전체
+          </button>
+          <button
+            onClick={() => setReviewFilter('graphic')}
+            className={`h-[30px] rounded-[20px] px-[12px] py-[8px] text-[14px] font-normal leading-[100%] transition-colors ${
+              reviewFilter === 'graphic'
+                ? 'border border-[#FA4D09] bg-[#FEEDE6] text-[#FA4D09]'
+                : 'border border-[#C7C7CC] bg-white text-[#2E2E32]'
+            }`}
+          >
+            방문 스토리
+          </button>
+          <button
+            onClick={() => setReviewFilter('standard')}
+            className={`h-[30px] rounded-[20px] px-[12px] py-[8px] text-[14px] font-normal leading-[100%] transition-colors ${
+              reviewFilter === 'standard'
+                ? 'border border-[#FA4D09] bg-[#FEEDE6] text-[#FA4D09]'
+                : 'border border-[#C7C7CC] bg-white text-[#2E2E32]'
+            }`}
           >
             리뷰
-          </TabsTrigger>
-          <TabsTrigger
-            value="receipt"
-            className="relative h-[51px] w-[386px] pb-2 text-[18px] font-semibold text-gray-400 focus-visible:ring-0 data-[state=active]:bg-transparent data-[state=active]:text-black data-[state=active]:shadow-none data-[state=active]:after:absolute data-[state=active]:after:bottom-0 data-[state=active]:after:left-0 data-[state=active]:after:h-[2px] data-[state=active]:after:w-full data-[state=active]:after:bg-black data-[state=active]:after:content-['']"
-          >
-            영수증 인증
-          </TabsTrigger>
-        </TabsList>
+          </button>
+        </div>
 
         {isPending ? (
-          <div className="flex items-center justify-center py-12">
+          <div className="mt-[12px] flex items-center justify-center">
             <div className="text-gray-600">리뷰를 불러오는 중...</div>
           </div>
         ) : (
           <>
-            <TabsContent value="review" className="space-y-6">
-              {/* 리뷰 필터링 탭 */}
-              <div className="flex gap-2">
-                <button
-                  onClick={() => setReviewFilter('all')}
-                  className={`rounded-[100px] px-[10px] py-[7px] text-[14px] font-normal transition-colors ${
-                    reviewFilter === 'all'
-                      ? 'border border-[#FA4D09] bg-[#FEEDE6] text-[#FA4D09]'
-                      : 'border border-[#C7C7CC] bg-white text-[#2E2E32]'
-                  }`}
-                >
-                  전체
-                </button>
-                <button
-                  onClick={() => setReviewFilter('graphic')}
-                  className={`rounded-full px-6 py-2 text-sm font-medium transition-colors ${
-                    reviewFilter === 'graphic'
-                      ? 'border border-[#FA4D09] bg-[#FEEDE6] text-[#FA4D09]'
-                      : 'border border-[#C7C7CC] bg-white text-[#2E2E32]'
-                  }`}
-                >
-                  리얼 스토리
-                </button>
-                <button
-                  onClick={() => setReviewFilter('standard')}
-                  className={`rounded-full px-6 py-2 text-sm font-medium transition-colors ${
-                    reviewFilter === 'standard'
-                      ? 'border border-[#FA4D09] bg-[#FEEDE6] text-[#FA4D09]'
-                      : 'border border-[#C7C7CC] bg-white text-[#2E2E32]'
-                  }`}
-                >
-                  리얼 리뷰
-                </button>
+            {filteredReviews?.length === 0 && (
+              <div className="mt-[12px] flex w-full items-center justify-center">
+                <p className="text-gray-500">리뷰가 없습니다.</p>
               </div>
+            )}
 
-              {/* 리뷰 카드들 */}
-              {filteredReviews?.length === 0 && (
-                <div className="flex w-full items-center justify-center">
-                  <p className="text-center text-gray-500">리뷰가 없습니다.</p>
-                </div>
-              )}
-
-              <div className="grid grid-cols-3 gap-4 overflow-x-auto pb-4">
-                {filteredReviews?.map((review: any, index: number) => (
+            <div className="mt-[12px] grid grid-cols-3 gap-4 pb-[12px]">
+              {filteredReviews?.map((review: any, index: number) => (
+                <div className="mt-[1px] h-[330px]">
                   <div
                     key={review.id || index}
-                    className="min-h-[330px] w-[247px] overflow-hidden rounded-[12px] bg-white shadow-[0px_0px_4px_0px_rgba(0,0,0,0.15)]"
+                    className="h-[330px] w-[247px] overflow-hidden rounded-[12px] bg-white shadow-[0px_0px_4px_0px_rgba(0,0,0,0.15)]"
                   >
                     {review.type === 'standard' && (
                       <div className="relative flex h-full flex-col">
@@ -163,8 +143,8 @@ const page = () => {
                           />
 
                           {/* 리뷰 텍스트 */}
-                          <div className="mt-[40px] box-border h-[72px] w-full rounded-lg border-2 border-gray-100 px-[10px] py-[20px]">
-                            <p className="line-clamp-2 text-sm text-gray-700">
+                          <div className="mt-[40px] h-[72px] w-full rounded-[12px] border border-[#E2E2E4] px-[10px] py-[20px]">
+                            <p className="line-clamp-2 h-[32px] text-[12px] font-normal leading-[130%] text-[#171719]">
                               {review.content}
                             </p>
                           </div>
@@ -183,10 +163,10 @@ const page = () => {
 
                           {/* 식당 정보 */}
                           <div className="mt-[2px]">
-                            <h3 className="text-[16px] font-semibold text-gray-900">
+                            <h3 className="text-[16px] font-semibold leading-[130%] text-[#171719]">
                               {review.restaurant_name || '식당명'}
                             </h3>
-                            <p className="mt-[2px] text-[14px] text-gray-600">
+                            <p className="mt-[2px] text-[14px] font-normal leading-[130%] text-[#171719]">
                               {review.address
                                 .split(' ')
                                 .slice(0, 2)
@@ -222,132 +202,12 @@ const page = () => {
                       </div>
                     )}
                   </div>
-                ))}
-              </div>
-            </TabsContent>
-            <TabsContent value="receipt">
-              {/* 필터 탭과 기간 선택 */}
-              <div className="mb-4 mt-[20px] flex justify-between">
-                {/* 필터 탭 */}
-                <div className="flex space-x-[6px]">
-                  {FILTERS.map((filter) => (
-                    <button
-                      key={filter}
-                      onClick={() => setReceiptFilter(filter)}
-                      className={`rounded-[100px] border border-[#C7C7CC] px-[10px] py-[7px] text-[14px] font-normal leading-[100%] text-[#2E2E32] ${
-                        receiptFilter === filter
-                          ? 'border-[#FA4D09] bg-[#FEEDE6] text-[#FA4D09]'
-                          : 'bg-white'
-                      }`}
-                      disabled={receiptPending}
-                    >
-                      {filter}
-                    </button>
-                  ))}
                 </div>
-
-                {/* 기간 선택 드롭다운 */}
-                <div className="relative w-[179px]">
-                  <select
-                    value={period}
-                    onChange={(e) => setPeriod(e.target.value)}
-                    className="w-full cursor-pointer appearance-none rounded-[4px] border border-[#E2E2E4] bg-white px-3 py-2 pr-10 focus:outline-none disabled:opacity-50"
-                    disabled={receiptPending}
-                  >
-                    {PERIODS.map((periodOption) => (
-                      <option
-                        key={periodOption.value}
-                        value={periodOption.value}
-                      >
-                        {periodOption.name}
-                      </option>
-                    ))}
-                  </select>
-                  <Image
-                    src="/assets/icons/arrow_dropdown.svg"
-                    alt="arrow_down"
-                    width={24}
-                    height={24}
-                    className="pointer-events-none absolute right-2 top-1/2 -translate-y-1/2"
-                  />
-                </div>
-              </div>
-
-              <div className="flex items-center gap-[6px] rounded-[12px] border border-[#E2E2E4] bg-[#FCFCFD] p-[12px] text-[16px] text-[#787882]">
-                <Image
-                  src="/assets/icons/error_outline.svg"
-                  alt="alarm"
-                  width={24}
-                  height={24}
-                />
-                <p>
-                  영수증 인증은 최대 24시간 이내 검토되며, 승인 결과는 아래
-                  화면에서 확인할 수 있습니다.
-                </p>
-              </div>
-
-              {/* 영수증 내역 리스트 */}
-              <div>
-                {receiptPending ? (
-                  <div className="flex items-center justify-center py-12">
-                    <div className="text-gray-600">
-                      영수증 내역을 불러오는 중...
-                    </div>
-                  </div>
-                ) : receiptData?.receipts?.length === 0 ? (
-                  <div className="rounded-lg bg-white p-6 text-center text-gray-500 sm:p-8">
-                    해당 기간에 영수증 내역이 없습니다.
-                  </div>
-                ) : (
-                  groupByDate().map(([date, items]) => (
-                    <div key={date} className="mb-4 flex items-start">
-                      {/* 왼쪽 날짜 */}
-                      <div className="w-[52px] pr-3 pt-3 font-normal text-[#171719]">
-                        {date}
-                      </div>
-
-                      {/* 오른쪽 리스트 */}
-                      <div className="w-full">
-                        {items.map((receipt: any & { koreaTime: Date }) => {
-                          const time = receipt.koreaTime
-                            .toISOString()
-                            .slice(11, 16);
-                          return (
-                            <div
-                              key={receipt.id}
-                              className="flex items-center justify-between border-b border-[#E2E2E4] py-3"
-                            >
-                              <div>
-                                <div className="mb-1 text-[16px] font-bold text-[#171719]">
-                                  {receipt.restaurant_name}
-                                </div>
-                                <div className="text-[14px] font-normal text-[#92929B]">
-                                  {time}
-                                </div>
-                              </div>
-                              <div
-                                className={`rounded-[20px] px-[12px] py-[6px] text-[14px] font-medium leading-[130%] text-[#47474D] ${
-                                  receipt.status === '승인완료'
-                                    ? 'bg-[#E9FBEB]'
-                                    : receipt.status === '승인대기'
-                                      ? 'bg-[#E2E2E4]'
-                                      : 'bg-[#FFDBDB]'
-                                }`}
-                              >
-                                <p>{receipt.status}</p>
-                              </div>
-                            </div>
-                          );
-                        })}
-                      </div>
-                    </div>
-                  ))
-                )}
-              </div>
-            </TabsContent>
+              ))}
+            </div>
           </>
         )}
-      </Tabs>
+      </div>
     </div>
   );
 };
