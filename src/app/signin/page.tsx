@@ -67,21 +67,21 @@ const Signin = () => {
   console.log();
 
   return (
-    <div className="mx-auto mt-[64px] w-[364px] py-[100px] text-center">
+    <div className="mx-auto mt-[60px] w-full text-center md:mt-[64px] md:w-[364px] md:py-[100px]">
       {step == 'select' && (
-        <div className="mx-auto w-[364px] text-center">
-          <h2 className="w-full text-center text-[32px] font-bold leading-[130%] tracking-[-0.48px] text-[#171719]">
+        <div className="mx-auto w-full pt-[141px] text-center md:w-[364px] md:pt-0">
+          <h2 className="w-full text-center text-[24px] font-bold leading-[130%] tracking-[-0.48px] text-[#171719] md:text-[32px]">
             쉽고 간편하게
             <br />
             로그인할 수 있어요.
           </h2>
-          <p className="pt-[8px] text-[16px] font-normal leading-[130%] text-[#787882]">
+          <p className="pb-[20px] pt-[20px] text-[16px] font-normal leading-[130%] text-[#787882] md:pb-0 md:pt-[8px]">
             숨은 로컬 식당의 발견, 로컬잇
           </p>
-          <div className="mt-[70px] flex flex-col items-center gap-3">
+          <div className="mt-[138px] flex flex-col items-center gap-3 px-[16px] pb-[20px] md:mt-[70px] md:p-0">
             <a
               href={KAKAO_AUTH_URL}
-              className="flex w-[324px] items-center justify-center gap-[10px] rounded-[10px] bg-[#FEE502] p-[14px_20px] text-[16px] font-semibold leading-[150%] text-[#171719]"
+              className="flex w-full items-center justify-center gap-[10px] rounded-[10px] bg-[#FEE502] p-[14px_20px] text-[16px] font-semibold leading-[150%] text-[#171719] md:w-[324px]"
             >
               <Image
                 src="/assets/icons/kakao.svg"
@@ -91,7 +91,7 @@ const Signin = () => {
               />
               <p>카카오로 계속하기</p>
             </a>
-            <button className="flex w-[324px] items-center justify-center gap-[10px] rounded-[10px] bg-[#04C75B] p-[14px_20px] text-[16px] font-semibold leading-[150%] text-[#fff]">
+            <button className="flex w-full items-center justify-center gap-[10px] rounded-[10px] bg-[#04C75B] p-[14px_20px] text-[16px] font-semibold leading-[150%] text-[#fff] md:w-[324px]">
               <Image
                 src="/assets/icons/naver.svg"
                 alt="naver"
@@ -100,7 +100,7 @@ const Signin = () => {
               />
               <p>네이버로 계속하기</p>
             </button>
-            <button className="flex w-[324px] items-center justify-center gap-[10px] rounded-[10px] border border-[#E2E2E4] p-[14px_20px] text-[16px] font-semibold leading-[150%] text-[#171719]">
+            <button className="flex w-full items-center justify-center gap-[10px] rounded-[10px] border border-[#E2E2E4] p-[14px_20px] text-[16px] font-semibold leading-[150%] text-[#171719] md:w-[324px]">
               <Image
                 src="/assets/icons/google.svg"
                 alt="google"
@@ -111,7 +111,7 @@ const Signin = () => {
             </button>
             <button
               onClick={() => setStep('signin')}
-              className="flex w-[324px] items-center justify-center gap-[10px] rounded-[10px] border border-[#E2E2E4] p-[14px_20px] text-[16px] font-semibold leading-[150%] text-[#171719]"
+              className="flex w-full items-center justify-center gap-[10px] rounded-[10px] border border-[#E2E2E4] p-[14px_20px] text-[16px] font-semibold leading-[150%] text-[#171719] md:w-[324px]"
             >
               이메일로 계속하기
             </button>
