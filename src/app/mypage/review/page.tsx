@@ -73,13 +73,23 @@ const page = () => {
   });
 
   return (
-    <div className="mx-auto mt-[60px] flex w-[772px] flex-col items-center">
-      <h1 className="mt-[40px] w-full text-[32px] font-bold leading-[130%]">
-        내 기록
+    <div className="mx-auto mt-[60px] flex w-full flex-col items-center px-[16px] md:w-[772px] md:px-0">
+      <h1 className="mt-[40px] hidden w-full text-[32px] font-bold leading-[130%] md:block">
+        작성한 리뷰
       </h1>
 
+      <div className="flex h-[99px] w-full flex-col items-center gap-[4px] py-[20px] md:hidden">
+        <p className="text-[16px] font-semibold leading-[150%] text-[#FA4D09]">
+          My Page
+        </p>
+
+        <h1 className="text-[24px] font-bold leading-[130%] text-[#171719]">
+          작성한 리뷰
+        </h1>
+      </div>
+
       <div className="w-full">
-        <div className="flex gap-[6px] py-[12px]">
+        <div className="flex justify-center gap-[6px] md:justify-start md:py-[12px]">
           <button
             onClick={() => setReviewFilter('all')}
             className={`h-[30px] rounded-[20px] px-[12px] py-[8px] text-[14px] font-normal leading-[100%] transition-colors ${
@@ -124,9 +134,9 @@ const page = () => {
               </div>
             )}
 
-            <div className="mt-[12px] grid grid-cols-3 gap-4 pb-[12px]">
+            <div className="mt-[12px] flex flex-col items-center gap-[15px] pb-[12px] md:grid md:grid-cols-3">
               {filteredReviews?.map((review: any, index: number) => (
-                <div className="mt-[1px] h-[330px]">
+                <div className="mt-[1px] h-[330px] px-[20px] md:px-0">
                   <div
                     key={review.id || index}
                     className="h-[330px] w-[247px] overflow-hidden rounded-[12px] bg-white shadow-[0px_0px_4px_0px_rgba(0,0,0,0.15)]"
