@@ -125,20 +125,20 @@ const Signin = () => {
             onSubmit={handleSubmit(onSubmit)}
             className="w-full max-w-md rounded-lg bg-white"
           >
-            <h2 className="font-pretendard text-center text-[32px] font-bold leading-[130%] tracking-[-0.48px] text-[#171719]">
+            <h2 className="text-center text-[32px] font-bold leading-[130%] tracking-[-0.48px] text-[#171719]">
               이메일로 로그인
             </h2>
             <div className="flex flex-col items-start gap-2 pt-[70px]">
               <label
                 htmlFor="email"
-                className="font-pretendard text-[14px] font-semibold leading-[130%] text-[#5F5F68]"
+                className="text-[14px] font-semibold leading-[130%] text-[#5F5F68]"
               >
                 이메일
               </label>
               <input
                 id="email"
                 className="flex items-start justify-between self-stretch rounded-[10px] border border-[#E2E2E4] px-4 py-[14px]"
-                placeholder="이메일"
+                placeholder="이메일을 입력해주세요."
                 {...register('email')}
               />
               {errors.email && (
@@ -150,7 +150,7 @@ const Signin = () => {
             <div className="flex flex-col items-start gap-2 py-[24px]">
               <label
                 htmlFor="password"
-                className="font-pretendard text-[14px] font-semibold leading-[130%] text-[#5F5F68]"
+                className="text-[14px] font-semibold leading-[130%] text-[#5F5F68]"
               >
                 비밀번호
               </label>
@@ -158,7 +158,7 @@ const Signin = () => {
                 id="password"
                 className="flex items-start justify-between self-stretch rounded-[10px] border border-[#E2E2E4] px-4 py-[14px]"
                 type="password"
-                placeholder="비밀번호"
+                placeholder="비밀번호를 입력해주세요."
                 {...register('password')}
               />
             </div>
@@ -171,13 +171,13 @@ const Signin = () => {
             <button
               type="submit"
               disabled={isSubmitting}
-              className={`w-full rounded-[10px] px-[20px] py-[14px] ${isValid ? 'bg-[#FA4D09] text-white' : 'bg-[#F4F4F5] text-[#ADADB3]'}`}
+              className={`h-[50px] w-full rounded-[10px] py-[10px] text-[18px] font-medium leading-[150%] ${isValid ? 'bg-[#FA4D09] text-white' : 'bg-[#F4F4F5] text-[#ADADB3]'}`}
             >
               로그인
             </button>
             <Link
               href="signup"
-              className="mt-[12px] block w-full rounded-[10px] border border-[#C7C7CC] px-[20px] py-[14px] text-[#171719]"
+              className="mt-[12px] block h-[50px] w-full rounded-[10px] border border-[#C7C7CC] py-[10px] font-medium leading-[150%] text-[#171719]"
             >
               회원가입
             </Link>
