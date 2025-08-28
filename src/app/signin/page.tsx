@@ -4,6 +4,7 @@ import { LoginFailedModal, LoginSuccessModal } from '@/components/common/Modal';
 import { useAuthStore } from '@/store/authStore';
 import { KAKAO_AUTH_URL } from '@/types/auth';
 import { zodResolver } from '@hookform/resolvers/zod';
+import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
@@ -66,33 +67,52 @@ const Signin = () => {
   console.log();
 
   return (
-    <div className="mx-auto mt-[64px] w-[364px] py-[100px] text-center">
+    <div className="mx-auto mt-[60px] flex h-[calc(100vh-64px)] w-full flex-col text-center md:mt-[64px] md:w-[364px]">
       {step == 'select' && (
-        <div className="mx-auto w-[364px] text-center">
-          <h2 className="w-full text-center text-[32px] font-bold leading-[130%] tracking-[-0.48px] text-[#171719]">
+        <div className="mx-auto mt-[141px] flex h-auto w-full flex-col justify-center text-center md:mt-0 md:h-full">
+          <h2 className="w-full text-center text-[24px] font-bold leading-[130%] tracking-[-0.48px] text-[#171719] md:text-[32px]">
             쉽고 간편하게
             <br />
             로그인할 수 있어요.
           </h2>
-          <p className="pt-[8px] text-[#787882]">
+          <p className="pb-[20px] pt-[20px] text-[16px] font-normal leading-[130%] text-[#787882] md:pb-0 md:pt-[8px]">
             숨은 로컬 식당의 발견, 로컬잇
           </p>
-          <div className="mt-[70px] flex flex-col items-center gap-3">
+
+          <div className="mt-[138px] flex flex-col items-center gap-3 px-[16px] pb-[20px] md:mt-[70px] md:p-0">
             <a
               href={KAKAO_AUTH_URL}
-              className="flex w-[324px] items-center justify-center gap-[10px] rounded-[10px] bg-[#FEE502] p-[14px_20px] text-[16px] font-semibold leading-[150%]"
+              className="flex w-full items-center justify-center gap-[10px] rounded-[10px] bg-[#FEE502] p-[14px_20px] text-[16px] font-semibold leading-[150%] text-[#171719] md:w-[324px]"
             >
-              카카오로 계속하기
+              <Image
+                src="/assets/icons/kakao.svg"
+                alt="kakao"
+                width={14}
+                height={14}
+              />
+              <p>카카오로 계속하기</p>
             </a>
-            <button className="flex w-[324px] items-center justify-center gap-[10px] rounded-[10px] bg-[#04C75B] p-[14px_20px] text-[16px] font-semibold leading-[150%] text-[#fff]">
-              네이버로 계속하기
+            <button className="flex w-full items-center justify-center gap-[10px] rounded-[10px] bg-[#04C75B] p-[14px_20px] text-[16px] font-semibold leading-[150%] text-[#fff] md:w-[324px]">
+              <Image
+                src="/assets/icons/naver.svg"
+                alt="naver"
+                width={14}
+                height={14}
+              />
+              <p>네이버로 계속하기</p>
             </button>
-            <button className="flex w-[324px] items-center justify-center gap-[10px] rounded-[10px] border border-[#E2E2E4] p-[14px_20px] text-[16px] font-semibold leading-[150%]">
-              구글로 계속하기
+            <button className="flex w-full items-center justify-center gap-[10px] rounded-[10px] border border-[#E2E2E4] p-[14px_20px] text-[16px] font-semibold leading-[150%] text-[#171719] md:w-[324px]">
+              <Image
+                src="/assets/icons/google.svg"
+                alt="google"
+                width={14}
+                height={14}
+              />
+              <p>구글로 계속하기</p>
             </button>
             <button
               onClick={() => setStep('signin')}
-              className="flex w-[324px] items-center justify-center gap-[10px] rounded-[10px] border border-[#E2E2E4] p-[14px_20px] text-[16px] font-semibold leading-[150%]"
+              className="flex w-full items-center justify-center gap-[10px] rounded-[10px] border border-[#E2E2E4] p-[14px_20px] text-[16px] font-semibold leading-[150%] text-[#171719] md:w-[324px]"
             >
               이메일로 계속하기
             </button>
@@ -101,25 +121,22 @@ const Signin = () => {
       )}
 
       {step === 'signin' && (
-        <div className="flex items-center justify-center bg-gray-50">
-          <form
-            onSubmit={handleSubmit(onSubmit)}
-            className="w-full max-w-md rounded-lg bg-white"
-          >
-            <h2 className="font-pretendard text-center text-[32px] font-bold leading-[130%] tracking-[-0.48px] text-[#171719]">
+        <div className="mt-[40px] flex h-auto w-full items-center justify-center px-[16px] md:mt-0 md:h-full md:w-[364px] md:px-0">
+          <form onSubmit={handleSubmit(onSubmit)} className="w-full">
+            <h2 className="h-[42px] text-center text-[24px] font-bold leading-[130%] tracking-[-0.48px] text-[#171719] md:text-[32px]">
               이메일로 로그인
             </h2>
-            <div className="flex flex-col items-start gap-2 pt-[70px]">
+            <div className="flex flex-col items-start gap-2 pt-[40px] md:pt-[70px]">
               <label
                 htmlFor="email"
-                className="font-pretendard text-[14px] font-semibold leading-[130%] text-[#5F5F68]"
+                className="text-[14px] font-semibold leading-[130%] text-[#5F5F68]"
               >
                 이메일
               </label>
               <input
                 id="email"
-                className="flex items-start justify-between self-stretch rounded-[10px] border border-[#E2E2E4] px-4 py-[14px]"
-                placeholder="이메일"
+                className="flex h-[49px] items-start justify-between self-stretch rounded-[10px] border border-[#E2E2E4] px-4 py-[14px] text-[16px]"
+                placeholder="이메일을 입력해주세요."
                 {...register('email')}
               />
               {errors.email && (
@@ -131,15 +148,15 @@ const Signin = () => {
             <div className="flex flex-col items-start gap-2 py-[24px]">
               <label
                 htmlFor="password"
-                className="font-pretendard text-[14px] font-semibold leading-[130%] text-[#5F5F68]"
+                className="text-[14px] font-semibold leading-[130%] text-[#5F5F68]"
               >
                 비밀번호
               </label>
               <input
                 id="password"
-                className="flex items-start justify-between self-stretch rounded-[10px] border border-[#E2E2E4] px-4 py-[14px]"
+                className="flex h-[49px] items-start justify-between self-stretch rounded-[10px] border border-[#E2E2E4] px-4 py-[14px] text-[16px]"
                 type="password"
-                placeholder="비밀번호"
+                placeholder="비밀번호를 입력해주세요."
                 {...register('password')}
               />
             </div>
@@ -152,13 +169,13 @@ const Signin = () => {
             <button
               type="submit"
               disabled={isSubmitting}
-              className={`w-full rounded-[10px] px-[20px] py-[14px] ${isValid ? 'bg-[#FA4D09] text-white' : 'bg-[#F4F4F5] text-[#ADADB3]'}`}
+              className={`h-[50px] w-full rounded-[10px] py-[10px] text-[18px] font-medium leading-[150%] ${isValid ? 'bg-[#FA4D09] text-white' : 'bg-[#F4F4F5] text-[#ADADB3]'}`}
             >
               로그인
             </button>
             <Link
               href="signup"
-              className="mt-[12px] block w-full rounded-[10px] border border-[#C7C7CC] px-[20px] py-[14px] text-[#171719]"
+              className="mt-[12px] block h-[50px] w-full rounded-[10px] border border-[#C7C7CC] py-[10px] font-medium leading-[150%] text-[#171719]"
             >
               회원가입
             </Link>
