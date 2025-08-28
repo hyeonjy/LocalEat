@@ -4,7 +4,12 @@ import {
 } from '../actions/restaurant';
 import LocalEatTab from './_components/LocalEatTab';
 
-const LocaleatPage = async () => {
+type PageProps = {
+  searchParams: { tab?: 'top10' | 'recent' };
+};
+
+const LocaleatPage = async ({ searchParams }: PageProps) => {
+  const initialTab = searchParams?.tab === 'recent' ? 'recent' : 'top10';
   const [topRatedRestaurants, topRecentRestaurants] = await Promise.all([
     getTopRatedRestaurants(),
     getTopRecentRestaurants(),
@@ -12,6 +17,7 @@ const LocaleatPage = async () => {
 
   return (
     <LocalEatTab
+      initialTab={initialTab}
       topRatedRestaurants={topRatedRestaurants}
       topRecentRestaurants={topRecentRestaurants}
     />
