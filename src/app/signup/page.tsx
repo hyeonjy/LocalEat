@@ -123,22 +123,25 @@ const SignUp = () => {
   };
 
   return (
-    <div className="mx-auto mt-[154px] w-[364px] text-center">
-      <form onSubmit={handleSubmit(onSubmit)} className="w-full max-w-md">
-        <h2 className="mb-6 text-center text-2xl font-bold text-gray-800">
+    <div className="mx-auto mt-[60px] w-[364px] text-center">
+      <form
+        onSubmit={handleSubmit(onSubmit)}
+        className="w-full pb-[60px] pt-[60px] md:w-[364px]"
+      >
+        <h2 className="mb-[70px] text-center text-[32px] font-bold text-[#171719]">
           회원가입
         </h2>
 
         {/* 이메일 */}
-        <div className="flex flex-col items-start gap-2 pt-[70px]">
+        <div className="flex flex-col items-start gap-2">
           <label
             htmlFor="email"
-            className="font-pretendard text-[14px] font-semibold leading-[130%] text-[#5F5F68]"
+            className="text-[14px] font-semibold leading-[130%] text-[#5F5F68]"
           >
             이메일<span className="text-[#FF4242]">*</span>
           </label>
           <input
-            className="w-full rounded-[10px] border border-[#E2E2E4] px-[16px] py-[14px]"
+            className="h-[50px] w-full rounded-[10px] border border-[#E2E2E4] px-[16px] py-[14px]"
             placeholder="이메일을 입력해 주세요."
             {...register('email')}
           />
@@ -148,15 +151,15 @@ const SignUp = () => {
         </div>
 
         {/* 닉네임 */}
-        <div className="flex flex-col items-start gap-2 pt-[24px]">
+        <div className="mt-[24px] flex flex-col items-start gap-2">
           <label
             htmlFor="nickname"
-            className="font-pretendard text-[14px] font-semibold leading-[130%] text-[#5F5F68]"
+            className="text-[14px] font-semibold leading-[130%] text-[#5F5F68]"
           >
             닉네임<span className="text-[#FF4242]">*</span>
           </label>
           <input
-            className="w-full rounded-[10px] border border-[#E2E2E4] px-[16px] py-[14px]"
+            className="h-[50px] w-full rounded-[10px] border border-[#E2E2E4] px-[16px] py-[14px]"
             placeholder="사용할 닉네임을 입력해 주세요."
             {...register('nickname')}
           />
@@ -168,15 +171,15 @@ const SignUp = () => {
         </div>
 
         {/* 비밀번호 */}
-        <div className="flex flex-col items-start gap-2 pt-[24px]">
+        <div className="mt-[24px] flex flex-col items-start gap-2">
           <label
             htmlFor="password"
-            className="font-pretendard text-[14px] font-semibold leading-[130%] text-[#5F5F68]"
+            className="text-[14px] font-semibold leading-[130%] text-[#5F5F68]"
           >
             비밀번호<span className="text-[#FF4242]">*</span>
           </label>
           <input
-            className="w-full rounded-[10px] border border-[#E2E2E4] px-[16px] py-[14px]"
+            className="h-[50px] w-full rounded-[10px] border border-[#E2E2E4] px-[16px] py-[14px]"
             type="password"
             placeholder="비밀번호를 입력해 주세요."
             {...register('password')}
@@ -189,15 +192,15 @@ const SignUp = () => {
         </div>
 
         {/* 비밀번호 확인 */}
-        <div className="flex flex-col items-start gap-2 pt-[24px]">
+        <div className="mt-[24px] flex flex-col items-start gap-2">
           <label
             htmlFor="passwordCheck"
-            className="font-pretendard text-[14px] font-semibold leading-[130%] text-[#5F5F68]"
+            className="text-[14px] font-semibold leading-[130%] text-[#5F5F68]"
           >
             비밀번호 확인<span className="text-[#FF4242]">*</span>
           </label>
           <input
-            className="w-full rounded-[10px] border border-[#E2E2E4] px-[16px] py-[14px]"
+            className="h-[50px] w-full rounded-[10px] border border-[#E2E2E4] px-[16px] py-[14px]"
             type="password"
             placeholder="비밀번호를 한 번 더 입력해 주세요."
             {...register('passwordConfirm')}
@@ -210,10 +213,10 @@ const SignUp = () => {
         </div>
 
         {/* 지역 선택 */}
-        <div className="mt-8 text-left">
+        <div className="mt-[24px] text-left">
           <div className="mb-2 flex items-center justify-between">
             <span className="font-pretendard text-sm font-semibold text-[#5F5F68]">
-              내 동네 설정<span className="text-[#FF4242]">*</span>
+              내 동네 설정*
             </span>
           </div>
 
@@ -228,14 +231,14 @@ const SignUp = () => {
             <div>
               <label className="mb-1 block text-xs text-gray-500">시/도</label>
               <select
-                className="w-full rounded-[10px] border border-[#E2E2E4] px-[12px] py-[12px]"
+                className="h-[50px] w-full rounded-[10px] border border-[#E2E2E4] px-[12px] py-[12px]"
                 {...register('sido')}
                 onChange={(e) => {
                   setValue('sido', e.target.value, { shouldValidate: true });
                   setValue('sgg', '', { shouldValidate: true }); // 시군구 리셋
                 }}
               >
-                <option value="">시/도를 선택해 주세요</option>
+                <option value="">시/도 선택</option>
                 {SIDO_LIST.map((s) => (
                   <option key={s} value={s}>
                     {s}
@@ -259,9 +262,7 @@ const SignUp = () => {
                 disabled={!currentSido}
               >
                 <option value="">
-                  {currentSido
-                    ? '시/군/구를 선택해 주세요'
-                    : '시/도를 먼저 선택해 주세요'}
+                  {currentSido ? '시/군/구를 선택' : '시/도를 먼저 선택'}
                 </option>
                 {sggOptions.map((g) => (
                   <option key={g} value={g}>
@@ -281,7 +282,7 @@ const SignUp = () => {
         <button
           type="submit"
           disabled={isSubmitting}
-          className={`mt-[70px] w-full rounded-[10px] px-[20px] py-[14px] ${isValid ? 'bg-[#FA4D09] text-white' : 'bg-[#F4F4F5] text-[#ADADB3]'}`}
+          className={`mt-[70px] h-[50px] w-full rounded-[10px] px-[20px] py-[14px] ${isValid ? 'bg-[#FA4D09] text-white' : 'bg-[#F4F4F5] text-[#ADADB3]'}`}
         >
           {isSubmitting ? '가입 중…' : '가입하기'}
         </button>
