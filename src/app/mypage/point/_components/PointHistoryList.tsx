@@ -89,18 +89,18 @@ const PointHistoryList = ({ userId }: PointHistoryListProps) => {
         </div>
 
         {/* 기간 선택 드롭다운 */}
-        <div className="relative h-[36px] w-[179px]">
+        <div className="relative flex h-[32px] w-[81px] items-center md:h-[36px] md:w-[179px]">
           <select
             value={selectedPeriod}
             onChange={(e) => setSelectedPeriod(e.target.value)}
-            className="h-[36px] w-full cursor-pointer appearance-none rounded-[4px] border border-[#E2E2E4] bg-white px-3 py-2 pl-[12px] focus:outline-none disabled:opacity-50"
+            className="h-[32px] w-full cursor-pointer appearance-none rounded-[4px] border border-[#E2E2E4] bg-white px-[8px] py-[7px] pl-[16px] text-[12px] focus:outline-none disabled:opacity-50 md:h-[36px] md:py-2 md:pl-[12px] md:text-[14px]"
             disabled={isPending}
           >
             {PERIODS.map((period) => (
               <option
                 key={period.value}
                 value={period.value}
-                className="flex h-[24px] items-center text-[14px] font-normal leading-[100%] text-[#171719]"
+                className="flex h-[16px] items-center text-[12px] font-normal leading-[100%] text-[#171719] md:h-[24px] md:text-[14px]"
               >
                 {period.name}
               </option>
