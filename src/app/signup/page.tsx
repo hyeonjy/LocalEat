@@ -123,12 +123,12 @@ const SignUp = () => {
   };
 
   return (
-    <div className="mx-auto mt-[60px] w-[364px] text-center">
+    <div className="mx-auto mt-[60px] w-full px-[16px] text-center md:w-[364px] md:px-0">
       <form
         onSubmit={handleSubmit(onSubmit)}
-        className="w-full pb-[60px] pt-[60px] md:w-[364px]"
+        className="w-full pb-[40px] pt-[40px] md:w-[364px] md:pb-[60px] md:pt-[60px]"
       >
-        <h2 className="mb-[70px] text-center text-[32px] font-bold text-[#171719]">
+        <h2 className="text-[24px ] mb-[70px] text-center font-bold leading-[130%] text-[#171719] md:text-[32px]">
           회원가입
         </h2>
 
@@ -284,7 +284,7 @@ const SignUp = () => {
         <button
           type="submit"
           disabled={isSubmitting}
-          className={`mt-[70px] h-[50px] w-full rounded-[10px] px-[20px] py-[14px] ${isValid ? 'bg-[#FA4D09] text-white' : 'bg-[#F4F4F5] text-[#ADADB3]'}`}
+          className={`mt-[40px] h-[50px] w-full rounded-[10px] px-[20px] py-[14px] md:mt-[70px] ${isValid ? 'bg-[#FA4D09] text-white' : 'bg-[#F4F4F5] text-[#ADADB3]'}`}
         >
           {isSubmitting ? '가입 중…' : '가입하기'}
         </button>
