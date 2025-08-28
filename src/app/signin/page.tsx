@@ -67,9 +67,9 @@ const Signin = () => {
   console.log();
 
   return (
-    <div className="mx-auto mt-[60px] w-full text-center md:mt-[64px] md:w-[364px] md:py-[100px]">
+    <div className="mx-auto mt-[60px] flex h-[calc(100vh-64px)] w-full flex-col text-center md:mt-[64px] md:w-[364px]">
       {step == 'select' && (
-        <div className="mx-auto w-full pt-[141px] text-center md:w-[364px] md:pt-0">
+        <div className="mx-auto mt-[141px] flex h-auto w-full flex-col justify-center text-center md:mt-0 md:h-full">
           <h2 className="w-full text-center text-[24px] font-bold leading-[130%] tracking-[-0.48px] text-[#171719] md:text-[32px]">
             쉽고 간편하게
             <br />
@@ -78,6 +78,7 @@ const Signin = () => {
           <p className="pb-[20px] pt-[20px] text-[16px] font-normal leading-[130%] text-[#787882] md:pb-0 md:pt-[8px]">
             숨은 로컬 식당의 발견, 로컬잇
           </p>
+
           <div className="mt-[138px] flex flex-col items-center gap-3 px-[16px] pb-[20px] md:mt-[70px] md:p-0">
             <a
               href={KAKAO_AUTH_URL}
@@ -120,15 +121,12 @@ const Signin = () => {
       )}
 
       {step === 'signin' && (
-        <div className="flex items-center justify-center bg-gray-50">
-          <form
-            onSubmit={handleSubmit(onSubmit)}
-            className="w-full max-w-md rounded-lg bg-white"
-          >
-            <h2 className="text-center text-[32px] font-bold leading-[130%] tracking-[-0.48px] text-[#171719]">
+        <div className="mt-[40px] flex h-auto w-full items-center justify-center px-[16px] md:mt-0 md:h-full md:w-[364px] md:px-0">
+          <form onSubmit={handleSubmit(onSubmit)} className="w-full">
+            <h2 className="h-[42px] text-center text-[24px] font-bold leading-[130%] tracking-[-0.48px] text-[#171719] md:text-[32px]">
               이메일로 로그인
             </h2>
-            <div className="flex flex-col items-start gap-2 pt-[70px]">
+            <div className="flex flex-col items-start gap-2 pt-[40px] md:pt-[70px]">
               <label
                 htmlFor="email"
                 className="text-[14px] font-semibold leading-[130%] text-[#5F5F68]"
@@ -137,7 +135,7 @@ const Signin = () => {
               </label>
               <input
                 id="email"
-                className="flex items-start justify-between self-stretch rounded-[10px] border border-[#E2E2E4] px-4 py-[14px]"
+                className="flex h-[49px] items-start justify-between self-stretch rounded-[10px] border border-[#E2E2E4] px-4 py-[14px] text-[16px]"
                 placeholder="이메일을 입력해주세요."
                 {...register('email')}
               />
@@ -156,7 +154,7 @@ const Signin = () => {
               </label>
               <input
                 id="password"
-                className="flex items-start justify-between self-stretch rounded-[10px] border border-[#E2E2E4] px-4 py-[14px]"
+                className="flex h-[49px] items-start justify-between self-stretch rounded-[10px] border border-[#E2E2E4] px-4 py-[14px] text-[16px]"
                 type="password"
                 placeholder="비밀번호를 입력해주세요."
                 {...register('password')}
