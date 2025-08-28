@@ -2,6 +2,8 @@ import Header from '@/components/layout/Header';
 import Providers from '@/providers/RQProvider';
 import '@/styles/globals.css';
 import type { Metadata } from 'next';
+import './globals.css';
+
 
 export const metadata: Metadata = {
   title: 'Local Eat',

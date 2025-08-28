@@ -6,11 +6,13 @@ import Image from 'next/image';
 import RestaurantList from './RestaurantList';
 
 type LocalEatTabProps = {
+  initialTab: 'top10' | 'recent';
   topRatedRestaurants: TopRestaurantProps[];
   topRecentRestaurants: TopRestaurantProps[];
 };
 
 const LocalEatTab = ({
+  initialTab,
   topRatedRestaurants,
   topRecentRestaurants,
 }: LocalEatTabProps) => {
@@ -18,7 +20,7 @@ const LocalEatTab = ({
 
   return (
     <div className="mt-[87px]">
-      <Tabs defaultValue="top10" className="w-full">
+      <Tabs defaultValue={initialTab} className="w-full">
         <TabsList className="mx-auto mt-[23px] flex max-w-[1200px] border-b-0">
           <TabsTrigger
             value="top10"
