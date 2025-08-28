@@ -4,6 +4,7 @@ import { LoginFailedModal, LoginSuccessModal } from '@/components/common/Modal';
 import { useAuthStore } from '@/store/authStore';
 import { KAKAO_AUTH_URL } from '@/types/auth';
 import { zodResolver } from '@hookform/resolvers/zod';
+import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
@@ -74,25 +75,43 @@ const Signin = () => {
             <br />
             로그인할 수 있어요.
           </h2>
-          <p className="pt-[8px] text-[#787882]">
+          <p className="pt-[8px] text-[16px] font-normal leading-[130%] text-[#787882]">
             숨은 로컬 식당의 발견, 로컬잇
           </p>
           <div className="mt-[70px] flex flex-col items-center gap-3">
             <a
               href={KAKAO_AUTH_URL}
-              className="flex w-[324px] items-center justify-center gap-[10px] rounded-[10px] bg-[#FEE502] p-[14px_20px] text-[16px] font-semibold leading-[150%]"
+              className="flex w-[324px] items-center justify-center gap-[10px] rounded-[10px] bg-[#FEE502] p-[14px_20px] text-[16px] font-semibold leading-[150%] text-[#171719]"
             >
-              카카오로 계속하기
+              <Image
+                src="/assets/icons/kakao.svg"
+                alt="kakao"
+                width={14}
+                height={14}
+              />
+              <p>카카오로 계속하기</p>
             </a>
             <button className="flex w-[324px] items-center justify-center gap-[10px] rounded-[10px] bg-[#04C75B] p-[14px_20px] text-[16px] font-semibold leading-[150%] text-[#fff]">
-              네이버로 계속하기
+              <Image
+                src="/assets/icons/naver.svg"
+                alt="naver"
+                width={14}
+                height={14}
+              />
+              <p>네이버로 계속하기</p>
             </button>
-            <button className="flex w-[324px] items-center justify-center gap-[10px] rounded-[10px] border border-[#E2E2E4] p-[14px_20px] text-[16px] font-semibold leading-[150%]">
-              구글로 계속하기
+            <button className="flex w-[324px] items-center justify-center gap-[10px] rounded-[10px] border border-[#E2E2E4] p-[14px_20px] text-[16px] font-semibold leading-[150%] text-[#171719]">
+              <Image
+                src="/assets/icons/google.svg"
+                alt="google"
+                width={14}
+                height={14}
+              />
+              <p>구글로 계속하기</p>
             </button>
             <button
               onClick={() => setStep('signin')}
-              className="flex w-[324px] items-center justify-center gap-[10px] rounded-[10px] border border-[#E2E2E4] p-[14px_20px] text-[16px] font-semibold leading-[150%]"
+              className="flex w-[324px] items-center justify-center gap-[10px] rounded-[10px] border border-[#E2E2E4] p-[14px_20px] text-[16px] font-semibold leading-[150%] text-[#171719]"
             >
               이메일로 계속하기
             </button>
