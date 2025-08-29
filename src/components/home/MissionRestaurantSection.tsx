@@ -197,7 +197,7 @@ const MissionRestaurantSection: React.FC = () => {
                         onClick={handleLinkClick}
                       >
                         <div
-                          className="flex h-[386px] w-[386px] min-w-[200px] flex-col items-center justify-end gap-[10px] rounded-[20px] bg-cover bg-center bg-no-repeat p-[26px] max-[721px]:h-[286px] max-[721px]:w-[200px]"
+                          className="hidden h-[386px] w-[386px] min-w-[200px] flex-col items-center justify-end gap-[10px] rounded-[20px] bg-cover bg-center bg-no-repeat p-[26px] min-[722px]:flex"
                           style={{
                             backgroundImage: `url(${restaurant.image_url})`,
                           }}
@@ -213,6 +213,42 @@ const MissionRestaurantSection: React.FC = () => {
                               </span>
                             </div>
                             <p className="mt-[6px] text-[16px] font-semibold text-[#171719]">
+                              대표메뉴: {(restaurant.menus || []).join(', ')}
+                            </p>
+                          </div>
+                        </div>
+
+                        {/* ✅ 새 카드: 722px 이상에서는 숨김 */}
+                        <div className="flex w-[200px] flex-col overflow-hidden rounded-[20px] bg-white shadow-[0_0_12px_rgba(0,0,0,0.08)] min-[722px]:hidden">
+                          {/* 이미지 영역 */}
+                          <div
+                            className="flex h-[194px] flex-col items-center justify-center gap-[10px] self-stretch bg-cover bg-center bg-no-repeat py-[26px]"
+                            style={{
+                              backgroundImage: `url(${restaurant.image_url})`,
+                            }}
+                            aria-label={`${restaurant.title} 이미지`}
+                          />
+
+                          {/* 텍스트 영역 */}
+                          <div className="flex min-w-[200px] flex-col items-start justify-center self-stretch rounded-b-[10px] p-4">
+                            <div className="flex w-full items-center gap-[6px]">
+                              <h3 className="text-[18px] font-bold leading-[120%] text-[#171719]">
+                                {restaurant.title}
+                              </h3>
+
+                              {/* 리뷰 아이콘 + 개수 (텍스트 '리뷰' 대신 아이콘) */}
+                              <span className="ml-[2px] inline-flex items-center gap-[4px] text-[12px] leading-[100%] text-[#787882]">
+                                <Image
+                                  src="/assets/icons/massage_gray.svg"
+                                  alt="리뷰 수"
+                                  width={12}
+                                  height={12}
+                                />
+                                {restaurant.review_count}
+                              </span>
+                            </div>
+
+                            <p className="mt-[6px] line-clamp-2 text-[14px] font-semibold text-[#171719]">
                               대표메뉴: {(restaurant.menus || []).join(', ')}
                             </p>
                           </div>

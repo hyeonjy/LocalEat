@@ -75,10 +75,20 @@ const NewEatRestaurant = () => {
           </div>
 
           <Link
-            className="flex w-[84px] items-center justify-center p-[2px] text-center text-[16px] font-normal leading-[130%] text-[#787882]"
             href={{ pathname: '/localeat', query: { tab: 'recent' } }}
+            className="flex h-[40px] w-[40px] items-center justify-center rounded-full border border-[#E2E2E4] bg-white lg:h-auto lg:w-[84px] lg:rounded-none lg:border-0 lg:bg-transparent lg:p-[2px] lg:text-center lg:text-[16px] lg:font-normal lg:leading-[130%] lg:text-[#787882]"
           >
-            전체보기
+            {/* 1024px 이상: 텍스트 */}
+            <span className="hidden lg:block">전체보기</span>
+
+            {/* 1024px 미만: 아이콘 */}
+            <Image
+              src="/assets/icons/arrow_outward.svg"
+              alt="전체보기"
+              width={12}
+              height={12}
+              className="block lg:hidden"
+            />
           </Link>
         </div>
 

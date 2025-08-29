@@ -10,6 +10,7 @@ import { Swiper, SwiperSlide } from 'swiper/react';
 
 import { getLatestStoryCards, type StoryCard } from '@/app/actions/review';
 import StoryPreview from '@/app/restaurant/[id]/review/_components/StoryPreview';
+import Image from 'next/image';
 
 // 정규화 함수
 const BACKEND_ORIGIN =
@@ -47,9 +48,9 @@ const StoryReviewCollection = ({ limit = 12 }: Props) => {
 
   return (
     <section>
-      <div className="mx-auto w-[1280px] gap-[10px] self-stretch rounded-[12px] px-[40px] py-[32px] min-[381px]:max-[721px]:px-[16px]">
-        <div className="flex w-full items-end justify-between">
-          <div className="w-full">
+      <div className="mx-auto w-full max-w-[1280px] gap-[10px] self-stretch rounded-[12px] px-[40px] py-[32px] min-[381px]:max-[721px]:px-[16px]">
+        <div className="flex items-end justify-between">
+          <div>
             <p className="pt-[30px] font-semibold leading-[130%] text-[#FA4D09] max-[721px]:text-[16px] min-[722px]:text-[24px]">
               로컬잇터들의 방문 스토리 보러가기
             </p>
@@ -58,10 +59,20 @@ const StoryReviewCollection = ({ limit = 12 }: Props) => {
             </h2>
           </div>
           <Link
-            className="flex w-[84px] items-center justify-center p-[2px] text-[16px] text-[#787882]"
-            href="/places"
+            href=""
+            className="flex h-[40px] w-[40px] items-center justify-center rounded-full border border-[#E2E2E4] bg-white lg:h-auto lg:w-[84px] lg:rounded-none lg:border-0 lg:bg-transparent lg:p-[2px] lg:text-center lg:text-[16px] lg:font-normal lg:leading-[130%] lg:text-[#787882]"
           >
-            전체보기
+            {/* 1024px 이상: 텍스트 */}
+            <span className="hidden lg:block">전체보기</span>
+
+            {/* 1024px 미만: 아이콘 */}
+            <Image
+              src="/assets/icons/arrow_outward.svg"
+              alt="전체보기"
+              width={12}
+              height={12}
+              className="block lg:hidden"
+            />
           </Link>
         </div>
 
