@@ -1,13 +1,19 @@
 'use client';
+import { useAuthStore } from '@/store/authStore';
 import { useSearchStore } from '@/store/overlayStore';
 import Image from 'next/image';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import AuthButtons from './AuthButtons';
 import SearchOverlay from './SearchOverlay';
 
 const Header = () => {
+  const user = useAuthStore((state) => state.user);
+
+  useEffect(() => {
+    console.log('✅ Zustand에 저장된 유저:', user);
+  }, [user]);
   const pathname = usePathname();
   const isHidden = pathname.includes('/review/graphic/story-editor');
 
@@ -21,7 +27,7 @@ const Header = () => {
     <>
       <header className="fixed left-0 top-0 z-50 w-full border-b border-[#cecece] bg-white">
         <div
-          className={`xl:max-w-[1280px] mx-auto flex h-16 w-full max-w-full items-center justify-between px-4 max-[721px]:max-w-[720px] lg:max-w-[1024px] lg:px-8`}
+          className={`mx-auto flex h-16 w-full max-w-full items-center justify-between px-4 max-[721px]:max-w-[720px] lg:max-w-[1024px] lg:px-8 xl:max-w-[1280px]`}
         >
           {/* 좌측: 로고 + (lg↑) 내비 */}
           <div className="flex items-center gap-6 max-[721px]:gap-4">
@@ -140,33 +146,44 @@ const Header = () => {
           {/* 텍스트 링크 4개 (아이콘 없음) */}
           <nav className="flex flex-col px-2 py-2 text-[15px] max-[721px]:text-[14px]">
             <Link
-              href="#"
+              href="/mission"
               onClick={() => setMenuOpen(false)}
               className="rounded px-4 py-3 hover:bg-gray-100"
             >
               이번 주 미션
             </Link>
             <Link
-              href="#"
+              href="/localeat"
               onClick={() => setMenuOpen(false)}
               className="rounded px-4 py-3 hover:bg-gray-100"
             >
               로컬잇
             </Link>
             <Link
-              href="#"
+              href="/community"
               onClick={() => setMenuOpen(false)}
               className="rounded px-4 py-3 hover:bg-gray-100"
             >
               커뮤니티
             </Link>
-            <Link
-              href="#"
-              onClick={() => setMenuOpen(false)}
-              className="rounded px-4 py-3 hover:bg-gray-100"
-            >
-              마이페이지
-            </Link>
+            {/* ✅ 로그인 여부에 따라 링크 분기 */}
+            {user ? (
+              <Link
+                href="/mypage"
+                onClick={() => setMenuOpen(false)}
+                className="rounded px-4 py-3 hover:bg-gray-100"
+              >
+                마이페이지
+              </Link>
+            ) : (
+              <Link
+                href="/signin"
+                onClick={() => setMenuOpen(false)}
+                className="rounded px-4 py-3 hover:bg-gray-100"
+              >
+                로그인
+              </Link>
+            )}
           </nav>
         </aside>
       </div>

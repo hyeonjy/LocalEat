@@ -1,12 +1,12 @@
 'use client';
 
 import { useSearchStore } from '@/store/overlayStore';
+import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 
 const SearchOverlay = () => {
   const closeSearch = useSearchStore((state) => state.close);
-
   const router = useRouter();
   const [keyword, setKeyword] = useState('');
 
@@ -18,31 +18,31 @@ const SearchOverlay = () => {
 
   return (
     <>
-      {/* 검정 투명 배경: 헤더는 가리지 않도록 z-20 */}
+      {/* 배경 */}
       <div className="fixed inset-0 z-20 bg-black/50" onClick={closeSearch} />
 
-      {/* 검색창: 헤더 위에 나오게 z-40, top-16은 헤더 높이만큼 내려오기 */}
+      {/* 패널 */}
       <div
-        className="fixed left-0 top-16 z-40 h-[502px] w-full bg-white px-8 pb-[120px] pt-[40px] shadow-md"
-        onClick={(e) => e.stopPropagation()} // 내부 클릭 시 닫힘 방지
+        className="fixed left-0 top-16 z-40 h-[502px] w-full bg-white px-4 pb-[120px] pt-[40px] shadow-md lg:px-8"
+        onClick={(e) => e.stopPropagation()}
       >
-        {/* 중앙 문구 */}
-        <h2 className="font-pretendard text-center text-[40px] font-bold leading-[130%] tracking-[0.4px] text-[#171719]">
+        {/* 제목 */}
+        <h2 className="font-pretendard /* ✅ 375–721px 에서 24px */ text-center text-[40px] font-bold leading-[130%] tracking-[0.4px] text-[#171719] min-[375px]:max-[721px]:text-[24px]">
           이번 주 <span className="text-[#007558]">어디서</span> 먹지?
         </h2>
-        <p className="font-pretendard text-center text-[16px] font-semibold leading-[130%] tracking-[0.16px] text-[#92929B]">
+        <p className="font-pretendard text-center text-[16px] font-semibold leading-[130%] tracking-[0.16px] text-[#92929B] min-[375px]:max-[721px]:mt-[8px]">
           지나쳤던 골목, 알고 보니 맛집 핫플
         </p>
 
-        {/* 검색창 */}
-        <div className="relative mx-auto mt-6 w-[712px]">
+        {/* 검색창: 고정폭 → 가변폭 */}
+        <div className="relative mx-auto mt-6 w-full max-w-[712px]">
           <input
             type="text"
             placeholder="지역명 입력"
             value={keyword}
             onChange={(e) => setKeyword(e.target.value)}
             onKeyDown={(e) => e.key === 'Enter' && submit()}
-            className="flex w-[712px] items-center justify-between self-stretch rounded-[12px] border border-[#ADADB3] bg-white p-5"
+            className="flex w-full items-center justify-between self-stretch rounded-[12px] border border-[#ADADB3] bg-white p-5"
           />
           <button
             type="button"
@@ -53,8 +53,8 @@ const SearchOverlay = () => {
           </button>
         </div>
 
-        {/* 최근 검색어 */}
-        <div className="mx-auto mt-[4px] flex w-[712px] flex-col items-start justify-center gap-[16px] self-stretch rounded-[12px] bg-white p-5 shadow-[0_0_4px_0_rgba(0,0,0,0.15)]">
+        {/* 최근 검색어: 고정폭 → 가변폭 */}
+        <div className="mx-auto mt-[4px] flex w-full max-w-[712px] flex-col items-start justify-center gap-[16px] self-stretch rounded-[12px] bg-white p-5 shadow-[0_0_4px_0_rgba(0,0,0,0.15)]">
           <p className="font-pretendard text-[12px] font-bold leading-[130%] tracking-[-0.24px] text-[#92929B]">
             최근 검색어
           </p>
@@ -73,6 +73,22 @@ const SearchOverlay = () => {
               </li>
             ))}
           </ul>
+        </div>
+
+        {/* ✅ 375–721px 전용 블록 (최근 검색어 밑에 나타남) */}
+        <div className="mx-auto mt-[32px] hidden w-full max-w-[712px] flex-col items-center justify-center gap-1 text-center min-[375px]:max-[721px]:flex">
+          {/* 필요 컨텐츠를 여기에 넣어줘 (예: 힌트/푸터/태그 등) */}
+          <Image
+            src="/assets/icons/search_gray.svg"
+            alt="검색_아이콘"
+            width={24}
+            height={24}
+          />
+          <span className="text-[12px] text-[#92929B]">
+            동네+음식 조합으로
+            <br />
+            맛집을 더 쉽게 찾을 수 있습니다.
+          </span>
         </div>
       </div>
     </>
