@@ -240,7 +240,7 @@ const RestaurantReviewMap = ({ place, onClose }: RestaurantReviewMapProps) => {
                 <div className="absolute -bottom-1 left-1/2 h-2 w-2 -translate-x-1/2 rotate-45 border-b border-r border-[#0074FD] bg-white"></div>
 
                 {/* 기존 모양 유지 */}
-                <div className="flex rounded-2xl border border-[#0074FD] bg-white p-2 p-[5px] shadow-[0_4px_16px_rgba(0,0,0,0.2)]">
+                <div className="flex rounded-2xl border border-[#0074FD] bg-white p-[5px] shadow-[0_4px_16px_rgba(0,0,0,0.2)]">
                   <div className="flex h-[24px] w-[24px] items-center justify-center rounded-[50%] bg-white shadow-lg">
                     <Image
                       src="/assets/icons/profile1.svg"
