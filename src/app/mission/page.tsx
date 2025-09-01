@@ -91,7 +91,7 @@ const page = () => {
 
           <div className="flex flex-col items-center text-[12px] font-bold leading-[130%] md:mt-[15px] md:text-[14px] lg:mt-[20px] lg:text-[16px]">
             <p>✅참여 방법: 영수증 인증 후 리뷰 카드 작성</p>
-            <p>⏰미션 기간: 2025.07.27 ~ 2025.08.31</p>
+            <p>⏰미션 기간: 2025.07.27 ~ 2025.09.30</p>
             <p>🎁미션 보상: 기간 내 미션 수행시 리워드 두배</p>
           </div>
         </div>
