@@ -14,6 +14,7 @@ const SearchOverlay = () => {
     const q = keyword.trim();
     if (!q) return;
     router.push(`/search?q=${encodeURIComponent(q)}`);
+    closeSearch();
   };
 
   return (
