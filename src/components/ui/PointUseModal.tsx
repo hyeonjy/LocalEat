@@ -27,11 +27,9 @@ const PointUseModal = ({
   const handleExchange = async () => {
     try {
       await exchangeRequest(user?.id, coupon.value, coupon.amount, email);
-      alert('포인트 교환이 완료되었습니다.');
       onClose();
     } catch (error: any) {
       console.error(error);
-      alert(error.message);
     }
   };
 

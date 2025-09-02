@@ -19,7 +19,7 @@ const EditorSidebar = ({
   return (
     <Tabs
       defaultValue="template"
-      className="z-10 h-[calc(100vh-65px)] w-full overflow-y-auto border-r bg-white px-4 py-6"
+      className="z-10 h-[calc(100vh-65px)] w-full overflow-y-auto border-r bg-white px-4 py-6 pt-[10px]"
     >
       <TabsList className="flex border-none">
         {TABS.map((t) => (
