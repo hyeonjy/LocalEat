@@ -30,7 +30,7 @@ const StoryCanvas = ({
     : scale;
 
   return (
-    <main className="flex h-[550px] w-[300px] items-center justify-center bg-[#F5F5F5] py-4 lg:h-[calc(100vh-65px)] lg:py-10 [@media(min-width:550px)]:w-full">
+    <main className="flex h-[550px] w-[300px] items-center justify-center bg-[#F5F5F5] lg:h-[calc(100vh-65px)] lg:py-10 [@media(min-width:550px)]:h-[90vh] [@media(min-width:550px)]:w-full">
       <div
         ref={storyEditor.canvasRef}
         className="relative overflow-visible rounded bg-white shadow-inner"
