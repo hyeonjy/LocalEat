@@ -108,7 +108,7 @@ const StoryEditorPage = () => {
 
           {/* 모바일 레이아웃 */}
           <div className="block lg:hidden">
-            <div className="relative w-full">
+            <div className="relative mx-auto mb-[0px] flex h-[550px] w-full justify-center">
               <StoryCanvas
                 storyEditor={storyEditor}
                 canvasProps={{ canvasW, canvasH, scale }}
