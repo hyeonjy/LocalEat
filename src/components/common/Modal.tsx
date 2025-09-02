@@ -103,7 +103,7 @@ export const ModalWithButtons = ({
 
       {/* Modal */}
       <div
-        className={`relative h-[263px] w-[500px] rounded-[12px] bg-white pb-[34px] pl-[40px] pr-[24px] pt-[24px] shadow-[0px_0px_4px_0px_rgba(0,0,0,0.15)] ${className}`}
+        className={`relative h-[263px] w-[500px] rounded-[12px] bg-white pb-[34px] pl-[20px] pr-[10px] pt-[10px] shadow-[0px_0px_4px_0px_rgba(0,0,0,0.15)] md:pl-[40px] md:pr-[24px] md:pt-[24px] ${className}`}
       >
         {/* Header - 닫기 버튼만 */}
         {showHeader && showCloseButton && (
@@ -136,7 +136,7 @@ export const ModalWithButtons = ({
                 </div>
               )}
               {title && (
-                <div className="text-[20px] font-semibold text-[#171719]">
+                <div className="text-[15px] font-semibold text-[#171719] md:text-[20px]">
                   {title}
                 </div>
               )}
@@ -144,7 +144,7 @@ export const ModalWithButtons = ({
           )}
 
           {/* 내용 */}
-          <div className="flex justify-start text-[14px] font-normal text-[#47474D]">
+          <div className="flex justify-start text-[12px] font-normal text-[#47474D] md:text-[14px]">
             {children}
           </div>
         </div>
@@ -159,7 +159,7 @@ export const ModalWithButtons = ({
                   button.onClick();
                   onClose();
                 }}
-                className={`flex rounded-[8px] px-5 py-2 font-medium transition-all duration-200 ${
+                className={`flex rounded-[8px] px-5 py-2 text-[12px] font-medium leading-[130%] transition-all duration-200 md:text-[16px] ${
                   button.variant === 'primary'
                     ? subtitleType === 'orange'
                       ? 'bg-[#FA4D09] text-white hover:bg-orange-600'
@@ -209,7 +209,9 @@ export const LoginGuideModal = ({
     ]}
   >
     <div className="space-y-3">
-      <p>로그인을 원하지 않는 경우 '돌아가기' 버튼을 눌러주세요.</p>
+      <p className="text-[12px] leading-[100%] text-[#47474D] md:text-[14px]">
+        로그인을 원하지 않는 경우 '돌아가기' 버튼을 눌러주세요.
+      </p>
     </div>
   </ModalWithButtons>
 );

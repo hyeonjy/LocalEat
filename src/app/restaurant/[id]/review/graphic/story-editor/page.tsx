@@ -30,7 +30,6 @@ const StoryEditorPage = () => {
 
   const handleSaveStory = async () => {
     if (!storyEditor.canvasRef.current) {
-      alert('canvasRef.current가 null입니다.');
       return;
     }
 

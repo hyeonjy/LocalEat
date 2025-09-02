@@ -2,7 +2,9 @@
 import { getRestaurantStatus } from '@/lib/getRestaurantStatus';
 import { RestaurantProps } from '@/types/restaurant';
 import Image from 'next/image';
+import { useState } from 'react';
 import RestaurantHeaderButton from './RestaurantHeaderButton';
+import RestaurantReviewMap from './RestaurantReviewMap';
 
 type RestaurantHeaderProps = {
   restaurant: RestaurantProps;
@@ -10,6 +12,7 @@ type RestaurantHeaderProps = {
 
 const RestaurantHeader = ({ restaurant }: RestaurantHeaderProps) => {
   const openingState = getRestaurantStatus(restaurant.opening_hours);
+  const [isMapOpen, setIsMapOpen] = useState(false);
 
   return (
     <div className="flex w-full max-w-[1280px] flex-col items-center justify-between gap-[24px] px-[16px] py-[20px] md:h-[414px] md:flex-row md:gap-[20px] md:px-[40px] md:pb-[32px] md:pt-[40px] lg:gap-[24px]">
@@ -23,7 +26,7 @@ const RestaurantHeader = ({ restaurant }: RestaurantHeaderProps) => {
 
       <div className="w-full md:w-[464px] lg:w-[588px]">
         <p className="mb-[4px] flex items-center gap-2 text-[16px] font-normal leading-[130%] text-[#787882]">
-          <span>{restaurant.address.split(' ')[0]}</span>
+          <span>{restaurant.address.split(' ')[0]} </span>
           <span>|</span>
           <span>{restaurant.category}</span>
         </p>
@@ -53,7 +56,13 @@ const RestaurantHeader = ({ restaurant }: RestaurantHeaderProps) => {
             width={24}
             height={24}
           />
-          {restaurant.address}
+          <span className="whitespace-nowrap">{restaurant.address}</span>
+          <button
+            onClick={() => setIsMapOpen(true)}
+            className="cursor-pointer whitespace-nowrap text-[#3177E8] hover:underline"
+          >
+            지도
+          </button>
         </p>
 
         <p className="mb-[10px] flex h-[24px] items-center gap-2 text-[16px] font-normal leading-[130%] text-[#171719]">
@@ -88,6 +97,29 @@ const RestaurantHeader = ({ restaurant }: RestaurantHeaderProps) => {
         </p>
         <RestaurantHeaderButton restaurantId={restaurant.id} />
       </div>
+
+      {isMapOpen && (
+        <RestaurantReviewMap
+          place={{
+            id: restaurant.id,
+            name: restaurant.name,
+            address: restaurant.address,
+            lat: restaurant.lat,
+            lng: restaurant.lng,
+            phone: restaurant.phone,
+            category: restaurant.category,
+            opening_hours: restaurant.opening_hours,
+            closed_days: restaurant.closed_days,
+            parking: restaurant.parking ?? false,
+            pet_allowed: restaurant.pet_allowed ?? false,
+            image_url: restaurant.image_url,
+            created_at: restaurant.created_at,
+            average_rating: restaurant.averageRating.toString(),
+            review_count: restaurant.reviewCount.toString(),
+          }}
+          onClose={() => setIsMapOpen(false)}
+        />
+      )}
     </div>
   );
 };

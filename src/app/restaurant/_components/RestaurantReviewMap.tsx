@@ -52,6 +52,7 @@ function distanceMeters(
 
 const RestaurantReviewMap = ({ place, onClose }: RestaurantReviewMapProps) => {
   const mapRef = useRef<any>(null);
+  const modalRef = useRef<HTMLDivElement>(null);
   const [currentLevel, setCurrentLevel] = useState(2);
   const [mapHeight, setMapHeight] = useState('333px');
   const [mapWidth, setMapWidth] = useState('100%');
@@ -101,6 +102,23 @@ const RestaurantReviewMap = ({ place, onClose }: RestaurantReviewMapProps) => {
     };
   }, [place.lat, place.lng]);
 
+  // 배경 클릭 감지
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        modalRef.current &&
+        !modalRef.current.contains(event.target as Node)
+      ) {
+        onClose();
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [onClose]);
+
   if (error) return;
   if (loading) return;
 
@@ -149,7 +167,10 @@ const RestaurantReviewMap = ({ place, onClose }: RestaurantReviewMapProps) => {
 
   return (
     <div className="fixed inset-0 z-50 flex items-start justify-center bg-[rgba(0,0,0,0.6)] pt-[101px] lg:pt-[79px]">
-      <div className="relative max-w-[288px] rounded-lg bg-white shadow-lg md:max-w-[519px] lg:max-w-[980px]">
+      <div
+        ref={modalRef}
+        className="relative max-w-[288px] rounded-lg bg-white shadow-lg md:max-w-[519px] lg:max-w-[980px]"
+      >
         <button
           onClick={onClose}
           className="absolute right-0 top-[-28px] z-20 flex items-center justify-center"
