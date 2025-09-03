@@ -2,12 +2,50 @@ import { BASE_H, BASE_W } from '@/constants/storyEditor';
 import type { Template } from '@/types/template';
 import { useEffect, useRef, useState } from 'react';
 
+/** ===== Types ===== */
+type BaseElement = {
+  id: string;
+  type: 'text' | 'tag' | 'sticker';
+  x: number; // 원본 좌표계 기준 "중심" X
+  y: number; // 원본 좌표계 기준 "중심" Y
+  width: number; // 원본 좌표계의 너비
+  height: number; // 원본 좌표계의 높이
+  originalWidth: number;
+  originalHeight: number;
+  rotation?: number;
+  flipX?: boolean;
+};
+
+type TextElement = BaseElement & {
+  type: 'text';
+  content: string;
+  color: string;
+  backgroundColor?: string;
+  fontSize: number;
+};
+
+type TagElement = BaseElement & {
+  type: 'tag';
+  content: string;
+  color: string;
+  backgroundColor?: string;
+  fontSize: number;
+};
+
+type StickerElement = BaseElement & {
+  type: 'sticker';
+  src: string;
+};
+
+export type StoryElement = TextElement | TagElement | StickerElement;
+
+/** ===== Hook ===== */
 export const useStoryEditor = () => {
   const [selectedTemplate, setSelectedTemplate] = useState<Template | null>(
     null,
   );
   const [image, setImage] = useState<string | null>(null);
-  const [elements, setElements] = useState<any[]>([]);
+  const [elements, setElements] = useState<StoryElement[]>([]);
   const [selectedElementId, setSelectedElementId] = useState<string | null>(
     null,
   );
@@ -20,21 +58,18 @@ export const useStoryEditor = () => {
   // localStorage에서 스토리 데이터 복원
   useEffect(() => {
     const savedStoryData = localStorage.getItem('storyData');
-    if (savedStoryData) {
-      try {
-        const storyData = JSON.parse(savedStoryData);
-        if (storyData.elements && storyData.elements.length > 0) {
-          setElements(storyData.elements);
-        }
-        if (storyData.selectedTemplate) {
-          setSelectedTemplate(storyData.selectedTemplate);
-        }
-        if (storyData.image) {
-          setImage(storyData.image);
-        }
-      } catch (error) {
-        console.error('스토리 데이터 복원 실패:', error);
+    if (!savedStoryData) return;
+
+    try {
+      const storyData = JSON.parse(savedStoryData);
+      if (Array.isArray(storyData.elements) && storyData.elements.length > 0) {
+        setElements(storyData.elements);
       }
+      if (storyData.selectedTemplate)
+        setSelectedTemplate(storyData.selectedTemplate);
+      if (storyData.image) setImage(storyData.image);
+    } catch (error) {
+      console.error('스토리 데이터 복원 실패:', error);
     }
   }, []);
 
@@ -59,7 +94,7 @@ export const useStoryEditor = () => {
 
   const addNewElement = (option: any) => {
     const newId = `${option.id}_${Date.now()}`;
-    let newElement;
+    let newElement: StoryElement | undefined;
 
     if (option.type === 'text') {
       newElement = {
@@ -75,7 +110,7 @@ export const useStoryEditor = () => {
         fontSize: 14,
         originalWidth: option.width,
         originalHeight: option.height,
-      };
+      } as TextElement;
     } else if (option.type === 'tag') {
       const tagSize = calculateTagSize(option.content, 14);
       newElement = {
@@ -91,7 +126,7 @@ export const useStoryEditor = () => {
         fontSize: 14,
         originalWidth: tagSize.width,
         originalHeight: tagSize.height,
-      };
+      } as TagElement;
     } else if (option.type === 'sticker') {
       newElement = {
         id: newId,
@@ -103,11 +138,11 @@ export const useStoryEditor = () => {
         height: 60,
         originalWidth: 60,
         originalHeight: 60,
-      };
+      } as StickerElement;
     }
 
     if (newElement) {
-      setElements((prev) => [...prev, newElement]);
+      setElements((prev) => [...prev, newElement!]);
       setSelectedElementId(newId);
     }
   };
@@ -115,14 +150,18 @@ export const useStoryEditor = () => {
   const handleTemplateSelect = (template: Template) => {
     setSelectedTemplate(template);
     setImage(template.background);
-    setElements(
-      template.elements.map((el) => ({
-        ...el,
-        fontSize: el.fontSize || 14,
-        originalWidth: el.width,
-        originalHeight: el.height,
-      })),
-    );
+
+    // 템플릿 요소는 "원본 좌표계(495x743)" 기준의 중심좌표(x,y)라고 가정
+    const mapped = template.elements.map((el: any) => ({
+      ...el,
+      fontSize: el.fontSize || 14,
+      originalWidth: el.width,
+      originalHeight: el.height,
+      x: el.x ?? BASE_W / 2,
+      y: el.y ?? BASE_H / 2,
+    })) as StoryElement[];
+
+    setElements(mapped);
     setSelectedElementId(null);
   };
 
@@ -136,20 +175,23 @@ export const useStoryEditor = () => {
   const handleCopyElement = (e?: React.MouseEvent) => {
     if (e) e.stopPropagation();
     if (!selectedElementId) return;
+
     setElements((prev) => {
-      const el = prev.find((e) => e.id === selectedElementId);
+      const el = prev.find((it) => it.id === selectedElementId);
       if (!el) return prev;
 
-      const newId = el.id + '_' + Date.now();
-      const newEl = {
+      const newId = `${el.id}_${Date.now()}`;
+      const newEl: StoryElement = {
         ...el,
         id: newId,
         x: el.x + 20,
         y: el.y + 20,
         originalWidth: el.width,
         originalHeight: el.height,
-        fontSize: el.fontSize || 14,
-      };
+        ...(el.type !== 'sticker'
+          ? { fontSize: (el as TextElement | TagElement).fontSize || 14 }
+          : {}),
+      } as StoryElement;
 
       setTimeout(() => setSelectedElementId(newId), 0);
       return [...prev, newEl];
@@ -169,7 +211,7 @@ export const useStoryEditor = () => {
     const element = elements.find((el) => el.id === id);
     if (element && (element.type === 'text' || element.type === 'tag')) {
       setEditingElementId(id);
-      setEditingText(element.content);
+      setEditingText((element as TextElement | TagElement).content);
     }
   };
 
@@ -183,7 +225,10 @@ export const useStoryEditor = () => {
       if (newText) {
         setElements((prev) =>
           prev.map((el) =>
-            el.id === editingElementId ? { ...el, content: newText } : el,
+            el.id === editingElementId &&
+            (el.type === 'text' || el.type === 'tag')
+              ? ({ ...el, content: newText } as StoryElement)
+              : el,
           ),
         );
       } else {
@@ -209,17 +254,17 @@ export const useStoryEditor = () => {
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
-    if (file && file.type.startsWith('image/')) {
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        const dataUrl = e.target?.result as string;
-        setImage(dataUrl);
-        setSelectedTemplate(null);
-        setElements([]);
-        setSelectedElementId(null);
-      };
-      reader.readAsDataURL(file);
-    }
+    if (!file || !file.type.startsWith('image/')) return;
+
+    const reader = new FileReader();
+    reader.onload = (ev) => {
+      const dataUrl = ev.target?.result as string;
+      setImage(dataUrl);
+      setSelectedTemplate(null);
+      setElements([]);
+      setSelectedElementId(null);
+    };
+    reader.readAsDataURL(file);
   };
 
   const handleCanvasClick = () => {
@@ -229,57 +274,62 @@ export const useStoryEditor = () => {
     }
   };
 
+  /** === 좌표/크기 업데이트: 외부는 "스케일된 값"을 넘기고, 여기서 1회 역변환 === */
   const updateElementPosition = (
     id: string,
-    x: number,
-    y: number,
+    scaledLeft: number,
+    scaledTop: number,
     scale: { x: number; y: number },
   ) => {
     setElements((prev) =>
-      prev.map((el) =>
-        el.id === id
-          ? {
-              ...el,
-              x: (x + (el.width * scale.x) / 2) / scale.x,
-              y: (y + (el.height * scale.y) / 2) / scale.y,
-            }
-          : el,
-      ),
+      prev.map((el) => {
+        if (el.id !== id) return el;
+        const originalX = scaledLeft / scale.x + el.width / 2;
+        const originalY = scaledTop / scale.y + el.height / 2;
+        return { ...el, x: originalX, y: originalY };
+      }),
     );
   };
 
   const updateElementSizeAndPosition = (
     id: string,
-    x: number,
-    y: number,
-    width: number,
-    height: number,
+    scaledLeft: number,
+    scaledTop: number,
+    scaledWidth: number,
+    scaledHeight: number,
     scale: { x: number; y: number },
   ) => {
     setElements((prev) =>
       prev.map((el) => {
-        if (el.id === id) {
-          const newElement = {
-            ...el,
-            x: (x + width / 2) / scale.x,
-            y: (y + height / 2) / scale.y,
-            width: width / scale.x,
-            height: height / scale.y,
-          };
+        if (el.id !== id) return el;
 
-          if (el.type === 'text' || el.type === 'tag') {
-            const originalFontSize = 14;
-            const originalWidth = el.originalWidth || el.width;
-            const originalHeight = el.originalHeight || el.height;
-            const widthRatio = width / scale.x / originalWidth;
-            const heightRatio = height / scale.y / originalHeight;
-            const scaleRatio = Math.min(widthRatio, heightRatio);
-            newElement.fontSize = Math.max(originalFontSize * scaleRatio, 8);
-          }
+        const originalWidth = scaledWidth / scale.x;
+        const originalHeight = scaledHeight / scale.y;
+        const originalX = scaledLeft / scale.x + originalWidth / 2;
+        const originalY = scaledTop / scale.y + originalHeight / 2;
 
-          return newElement;
+        const next: StoryElement = {
+          ...el,
+          x: originalX,
+          y: originalY,
+          width: originalWidth,
+          height: originalHeight,
+        };
+
+        if (el.type === 'text' || el.type === 'tag') {
+          const originalFontSize = 14;
+          const baseW = el.originalWidth || el.width;
+          const baseH = el.originalHeight || el.height;
+          const widthRatio = originalWidth / baseW;
+          const heightRatio = originalHeight / baseH;
+          const scaleRatio = Math.min(widthRatio, heightRatio);
+          (next as TextElement | TagElement).fontSize = Math.max(
+            originalFontSize * scaleRatio,
+            8,
+          );
         }
-        return el;
+
+        return next;
       }),
     );
   };

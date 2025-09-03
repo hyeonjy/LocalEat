@@ -1,17 +1,32 @@
-/* globals.css 맨 아래쯤 */
+/* Swiper 버튼 아이콘 제거 */
 .swiper-button-prev::after,
 .swiper-button-next::after {
   content: none !important;
 }
 
-/* (선택) 링크/이미지 드래그 방지 */
+/* 링크/이미지 드래그 방지 */
 .swiper-slide a,
 .swiper-slide img {
   -webkit-user-drag: none;
   user-drag: none;
 }
 
-/* .swiper {
-  overflow-x: hidden !important;
-  overflow-y: visible !important;
-} */
+/* 스토리 캔버스 반응형 처리 */
+.story-canvas {
+  width: 495px !important;
+  height: 743px !important;
+}
+
+@media (max-width: 768px) {
+  .story-canvas {
+    width: 400px !important;
+    height: 600px !important;
+  }
+}
+
+@media (max-width: 549px) {
+  .story-canvas {
+    width: 300px !important;
+    height: 450px !important;
+  }
+}
