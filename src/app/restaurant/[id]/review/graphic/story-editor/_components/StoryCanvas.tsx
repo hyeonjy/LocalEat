@@ -20,23 +20,19 @@ const StoryCanvas = ({
 }: StoryCanvasProps) => {
   const { canvasW, canvasH, scale } = canvasProps;
 
-  // 550px 미만일 때의 실제 캔버스 크기와 스케일 계산
+  // 반응형 스케일 계산
   const isSmallScreen =
     typeof window !== 'undefined' && window.innerWidth < 550;
-  const actualCanvasW = isSmallScreen ? 300 : canvasW;
-  const actualCanvasH = isSmallScreen ? (300 * 743) / 495 : canvasH; // 비율에 맞춰 높이도 조정
-  const actualScale = isSmallScreen
-    ? { x: 300 / 495, y: 300 / 495 } // x, y 스케일을 동일하게 설정
-    : scale;
+  const actualScale = isSmallScreen ? { x: 300 / 495, y: 300 / 495 } : scale;
 
   return (
     <main className="flex h-[550px] w-[300px] items-center justify-center bg-[#F5F5F5] lg:h-[calc(100vh-65px)] lg:py-10 [@media(min-width:550px)]:h-[90vh] [@media(min-width:550px)]:w-full">
       <div
         ref={storyEditor.canvasRef}
-        className="relative overflow-visible rounded bg-white shadow-inner"
+        className="story-canvas relative overflow-visible rounded bg-white shadow-inner"
         style={{
-          width: actualCanvasW,
-          height: actualCanvasH,
+          width: canvasW,
+          height: canvasH,
           aspectRatio: '9 / 16',
         }}
         onClick={storyEditor.handleCanvasClick}
@@ -55,8 +51,8 @@ const StoryCanvas = ({
           <Image
             src={storyEditor.selectedTemplate.background}
             alt="template-bg"
-            width={actualCanvasW}
-            height={actualCanvasH}
+            width={canvasW}
+            height={canvasH}
             className="h-full w-full select-none rounded object-cover"
             draggable={false}
           />
@@ -65,8 +61,8 @@ const StoryCanvas = ({
             src={storyEditor.image}
             alt="uploaded"
             className="h-full w-full select-none rounded object-cover"
-            width={actualCanvasW}
-            height={actualCanvasH}
+            width={canvasW}
+            height={canvasH}
             draggable={false}
           />
         ) : (
@@ -77,11 +73,11 @@ const StoryCanvas = ({
 
         {/* 요소들 */}
         {storyEditor.elements.map((el: any) => {
-          // 간단한 위치 계산
+          // 반응형 스케일 계산
           const width = el.width * actualScale.x;
           const height = el.height * actualScale.y;
-          const x = el.x * actualScale.x - width / 2;
-          const y = el.y * actualScale.y - height / 2;
+          const x = (el.x - el.width / 2) * actualScale.x;
+          const y = (el.y - el.height / 2) * actualScale.y;
           const isSelected = el.id === storyEditor.selectedElementId;
 
           if (el.type === 'sticker') {
@@ -199,7 +195,7 @@ const StoryCanvas = ({
                     backgroundColor: el.backgroundColor,
                     transform: `${el.rotation ? `rotate(${el.rotation}deg)` : ''} ${el.flipX ? 'scaleX(-1)' : ''}`,
                     boxSizing: 'border-box',
-                    fontSize: `${(el.fontSize || 14) * Math.pow(Math.min(actualScale.x, actualScale.y), 1.2)}px`,
+                    fontSize: `${(el.fontSize || 14) * Math.min(actualScale.x, actualScale.y) * 0.8}px`,
                   }}
                   onClick={(e) => storyEditor.handleElementClick(e, el.id)}
                   onDoubleClick={(e) =>
@@ -283,7 +279,7 @@ const StoryCanvas = ({
                     transform: `${el.rotation ? `rotate(${el.rotation}deg)` : ''} ${el.flipX ? 'scaleX(-1)' : ''}`,
                     boxSizing: 'border-box',
                     width: '100%',
-                    fontSize: `${(el.fontSize || 14) * Math.pow(Math.min(actualScale.x, actualScale.y), 1.2)}px`,
+                    fontSize: `${(el.fontSize || 14) * Math.min(actualScale.x, actualScale.y) * 0.8}px`,
                   }}
                   onClick={(e) => storyEditor.handleElementClick(e, el.id)}
                   onDoubleClick={(e) =>
