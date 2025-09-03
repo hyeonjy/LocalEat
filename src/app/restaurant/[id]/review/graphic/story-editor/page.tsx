@@ -119,6 +119,7 @@ const StoryEditorPage = () => {
             <MobileEditorSidebar
               onTemplateSelect={storyEditor.handleTemplateSelect}
               addNewElement={storyEditor.addNewElement}
+              onSave={handleSaveStory}
             />
           </div>
         </div>

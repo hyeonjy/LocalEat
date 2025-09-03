@@ -13,11 +13,13 @@ import TextElement from './TextElement';
 interface MobileEditorSidebarProps {
   onTemplateSelect: (template: Template) => void;
   addNewElement: (option: any) => void;
+  onSave?: () => void;
 }
 
 export default function MobileEditorSidebar({
   onTemplateSelect,
   addNewElement,
+  onSave,
 }: MobileEditorSidebarProps) {
   const [mode, setMode] = useState<'collapsed' | 'half' | 'full'>('collapsed');
   const [dragPx, setDragPx] = useState(0);
@@ -131,6 +133,25 @@ export default function MobileEditorSidebar({
           pointerEvents: 'none', // 스크림은 클릭 방해하지 않음
         }}
       />
+
+      {/* 제출 버튼 - 바텀시트 위 오른쪽 고정 */}
+      <button
+        className="fixed right-4 z-[110] flex h-10 w-10 items-center justify-center rounded-full bg-[#FA4D09] shadow-lg transition-transform hover:scale-105 active:scale-95 lg:hidden"
+        style={{
+          bottom: `${heightPx + 16}px`,
+          transition: dragging.current ? 'none' : 'bottom 180ms ease-out',
+        }}
+        onClick={onSave}
+        aria-label="제출"
+      >
+        <Image
+          src="/assets/icons/arrow_right_alt.svg"
+          alt="제출"
+          width={24}
+          height={24}
+          className="text-white"
+        />
+      </button>
 
       {/* 바텀시트 본체 */}
       <div
