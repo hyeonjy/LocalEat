@@ -6,6 +6,7 @@ import html2canvas from 'html2canvas';
 import { useRouter } from 'next/navigation';
 import EditorHeader from './_components/EditorHeader';
 import EditorSidebar from './_components/EditorSidebar';
+import MobileEditorSidebar from './_components/MobileEditorSidebar';
 import StoryCanvas from './_components/StoryCanvas';
 
 const StoryEditorPage = () => {
@@ -115,12 +116,10 @@ const StoryEditorPage = () => {
                 selectedToolbarPos={selectedToolbarPos}
               />
             </div>
-            <div className="w-full">
-              <EditorSidebar
-                onTemplateSelect={storyEditor.handleTemplateSelect}
-                addNewElement={storyEditor.addNewElement}
-              />
-            </div>
+            <MobileEditorSidebar
+              onTemplateSelect={storyEditor.handleTemplateSelect}
+              addNewElement={storyEditor.addNewElement}
+            />
           </div>
         </div>
       </div>
