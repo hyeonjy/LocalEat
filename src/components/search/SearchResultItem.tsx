@@ -1,4 +1,5 @@
 'use client';
+import Link from 'next/link'; // ✅ 추가
 import { useEffect, useMemo, useState } from 'react';
 
 // Swiper
@@ -24,12 +25,19 @@ function useMediaQuery(query: string) {
     mql.addEventListener?.('change', onChange);
     return () => mql.removeEventListener?.('change', onChange);
   }, [query]);
-  // SSR 초기 깜빡임 방지: null 동안은 아무것도 렌더 안 함
   return matches;
 }
 
 export default function SearchResultItem({ it }: ItemProps) {
   const isDesktop = useMediaQuery('(min-width: 376px)');
+
+  // ✅ id를 유연하게 추출 (숫자/문자 모두 허용)
+  const idRaw = it?.id ?? it?.restaurant_id ?? it?.restaurantId;
+  const rid =
+    typeof idRaw === 'number' || typeof idRaw === 'string'
+      ? String(idRaw)
+      : null;
+  const href = rid ? `/restaurant/${rid}` : undefined;
 
   const title = it?.name ?? '이름 미상';
   const category = it?.category ?? '';
@@ -56,31 +64,45 @@ export default function SearchResultItem({ it }: ItemProps) {
     return fallback ? [fallback] : ['아직 등록된 리뷰가 없습니다.'];
   }, [photos, it?.last_review_body]);
 
-  // ✅ SSR → CSR 전환 시점까지는 스와이퍼 렌더 지연 (초기 폭 0으로 초기화 방지)
+  // ✅ 제목 + 별점 블록 (두 군데에서 재사용)
+  const TitleHeader = () => (
+    <div className="flex flex-col">
+      <h2 className="flex items-center gap-[6px] text-[20px] font-semibold leading-[130%] tracking-[-0.3px] text-[#171719]">
+        {href ? (
+          <Link
+            href={href}
+            prefetch={false}
+            className="rounded-[4px] outline-none hover:underline focus:underline"
+            aria-label={`${title} 상세 페이지로 이동`}
+          >
+            {title}
+          </Link>
+        ) : (
+          title
+        )}
+        {category && (
+          <span className="text-[16px] font-normal leading-[130%] tracking-[-0.24px] text-[#787882]">
+            {category}
+          </span>
+        )}
+      </h2>
+      <div className="flex items-center gap-1 text-[16px] font-normal leading-[130%] text-[#171719]">
+        <img
+          src="/assets/icons/red_star.svg"
+          alt="별점"
+          className="h-[16px] w-[16px]"
+        />
+        {rating} <span className="text-[#787882]">리뷰 {reviewCount}</span>
+      </div>
+    </div>
+  );
+
   if (isDesktop === null) {
+    // ✅ SSR→CSR 전환 중: 헤더만 먼저 렌더
     return (
       <div className="flex flex-col items-start gap-[10px] self-stretch border-b border-[#E2E2E4] bg-white pb-[12px] pl-[20px] pr-0 pt-[12px]">
-        {/* 헤더만 먼저 보여주고, 슬라이더는 미디어쿼리 평가 후 렌더 */}
         <div className="flex w-full justify-between pr-[20px]">
-          <div className="flex flex-col">
-            <h2 className="flex items-center gap-[6px] text-[20px] font-semibold leading-[130%] tracking-[-0.3px] text-[#171719]">
-              {title}{' '}
-              {category && (
-                <span className="text-[16px] font-normal leading-[130%] tracking-[-0.24px] text-[#787882]">
-                  {category}
-                </span>
-              )}
-            </h2>
-            <div className="flex items-center gap-1 text-[16px] font-normal leading-[130%] text-[#171719]">
-              <img
-                src="/assets/icons/red_star.svg"
-                alt="별점"
-                className="h-[16px] w-[16px]"
-              />
-              {rating}{' '}
-              <span className="text-[#787882]">리뷰 {reviewCount}</span>
-            </div>
-          </div>
+          <TitleHeader />
           <img
             src="/assets/icons/bookmark.svg"
             alt="북마크"
@@ -95,24 +117,7 @@ export default function SearchResultItem({ it }: ItemProps) {
     <div className="flex flex-col items-start gap-[10px] self-stretch overflow-x-clip border-b border-[#E2E2E4] bg-white pb-[12px] pl-[20px] pr-0 pt-[12px]">
       {/* 헤더 */}
       <div className="flex w-full justify-between pr-[20px]">
-        <div className="flex flex-col">
-          <h2 className="flex items-center gap-[6px] text-[20px] font-semibold leading-[130%] tracking-[-0.3px] text-[#171719]">
-            {title}{' '}
-            {category && (
-              <span className="text-[16px] font-normal leading-[130%] tracking-[-0.24px] text-[#787882]">
-                {category}
-              </span>
-            )}
-          </h2>
-          <div className="flex items-center gap-1 text-[16px] font-normal leading-[130%] text-[#171719]">
-            <img
-              src="/assets/icons/red_star.svg"
-              alt="별점"
-              className="h-[16px] w-[16px]"
-            />
-            {rating} <span className="text-[#787882]">리뷰 {reviewCount}</span>
-          </div>
-        </div>
+        <TitleHeader />
         <img
           src="/assets/icons/bookmark.svg"
           alt="북마크"
@@ -120,9 +125,8 @@ export default function SearchResultItem({ it }: ItemProps) {
         />
       </div>
 
-      {/* ========= 레이아웃 분기: "하나만" 렌더 ========= */}
+      {/* ========= 이하 기존 내용 동일 ========= */}
       {isDesktop ? (
-        /* ≥ 376px: (이미지+텍스트) 카드 단위 */
         <div
           className="w-full select-none overflow-hidden"
           style={{ overscrollBehaviorX: 'contain' }}
@@ -139,7 +143,6 @@ export default function SearchResultItem({ it }: ItemProps) {
             wrapperTag="ul"
             className="w-full [&>.swiper-wrapper]:m-0 [&>.swiper-wrapper]:list-none [&>.swiper-wrapper]:p-0"
             style={{ touchAction: 'pan-x' }}
-            // ✅ 숨김→표시/사이즈 변경 대응
             observer
             observeParents
             observeSlideChildren
@@ -181,7 +184,6 @@ export default function SearchResultItem({ it }: ItemProps) {
           </Swiper>
         </div>
       ) : (
-        /* ≤ 375px: 이미지 윗줄 / 댓글 아랫줄 (각각 별도 Swiper) */
         <>
           {/* 이미지 줄 */}
           <div
