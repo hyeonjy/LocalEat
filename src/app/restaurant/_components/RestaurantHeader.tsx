@@ -95,7 +95,10 @@ const RestaurantHeader = ({ restaurant }: RestaurantHeaderProps) => {
           {restaurant.parking ? '주차 가능' : '주차 불가'} |{' '}
           {restaurant.pet_allowed ? '반려동물 출입 가능' : '반려동물 출입 제한'}
         </p>
-        <RestaurantHeaderButton restaurantId={restaurant.id} />
+        <RestaurantHeaderButton
+          restaurantId={restaurant.id}
+          shareCount={restaurant.share_count}
+        />
       </div>
 
       {isMapOpen && (

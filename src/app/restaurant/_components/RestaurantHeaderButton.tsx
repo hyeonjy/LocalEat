@@ -7,7 +7,15 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useEffect, useRef, useState } from 'react';
 
-const RestaurantHeaderButton = ({ restaurantId }: { restaurantId: number }) => {
+type RestaurantHeaderButtonProps = {
+  restaurantId: number;
+  shareCount: number;
+};
+
+const RestaurantHeaderButton = ({
+  restaurantId,
+  shareCount,
+}: RestaurantHeaderButtonProps) => {
   const [open, setOpen] = useState(false);
   const [isGuideOpen, setIsGuideOpen] = useState(false);
   const modalRef = useRef<HTMLDivElement>(null);
@@ -63,7 +71,7 @@ const RestaurantHeaderButton = ({ restaurantId }: { restaurantId: number }) => {
             height={24}
             className="h-[24px]"
           />
-          <p>12</p>
+          <p>{shareCount}</p>
         </div>
       </div>
       <button
