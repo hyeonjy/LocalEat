@@ -84,14 +84,30 @@ export default function SearchMap({
     } else {
       map.setCenter(new kakao.maps.LatLng(center.lat, center.lng));
     }
-  }, [map, places, shouldShowPins, focusTopFirst, topZoomLevel, center.lat, center.lng]);
+  }, [
+    map,
+    places,
+    shouldShowPins,
+    focusTopFirst,
+    topZoomLevel,
+    center.lat,
+    center.lng,
+  ]);
 
   if (error) return <div className="h-full w-full">지도 로딩 에러</div>;
   if (loading) return <div className="h-full w-full">지도 불러오는 중…</div>;
 
   // ===== 아래는 네가 이미 구현한 커스텀 마커/말풍선 그대로 유지 =====
-  const PILL_H = 36, GAP_Y = 15, TRI_H = 10, CARD_W = 182, CARD_H = 255;
+  const PILL_H = 36,
+    GAP_Y = 15,
+    TRI_H = 10,
+    CARD_W = 182,
+    CARD_H = 255;
   const OFFSET_Y = PILL_H + GAP_Y;
+
+  // === 삼각형 관련 변수 ===
+  const CARD_BG = '#fff';
+  const TRI_OVERLAP = 1;
 
   return (
     <Map
@@ -141,13 +157,19 @@ export default function SearchMap({
           zIndex={20}
         >
           <div
-            style={{ transform: `translateY(-${OFFSET_Y}px)`, pointerEvents: 'auto' }}
+            style={{
+              transform: `translateY(-${OFFSET_Y}px)`,
+              pointerEvents: 'auto',
+            }}
             onClick={(e) => e.stopPropagation()}
           >
-            <div className="relative mx-auto" style={{ width: CARD_W, height: CARD_H + TRI_H }}>
+            <div
+              className="relative mx-auto"
+              style={{ width: CARD_W, height: CARD_H + TRI_H }}
+            >
               <div
                 className="absolute left-0 top-0 overflow-hidden rounded-[12px] shadow-[0_12px_24px_rgba(0,0,0,0.2)]"
-                style={{ width: CARD_W, height: CARD_H, background: '#D9D9D9' }}
+                style={{ width: CARD_W, height: CARD_H, background: '#fff' }}
               >
                 {activePlace.cover_image_url ? (
                   <div className="m-4 h-[223px] w-[150px] overflow-hidden rounded-[12px]">
@@ -159,18 +181,18 @@ export default function SearchMap({
                     />
                   </div>
                 ) : (
-                  <div className="m-4 h-[223px] w-[150px] rounded-[12px] bg-[#cfcfcf]" />
+                  <div className="m-4 h-[223px] w-[150px] rounded-[12px] bg-[#fff]" />
                 )}
               </div>
               <div
                 className="absolute left-1/2 -translate-x-1/2"
                 style={{
-                  bottom: 0,
+                  bottom: TRI_OVERLAP,
                   width: 0,
                   height: 0,
                   borderLeft: '8px solid transparent',
                   borderRight: '8px solid transparent',
-                  borderTop: `${TRI_H}px solid #D9D9D9`,
+                  borderTop: `${TRI_H + TRI_OVERLAP}px solid ${CARD_BG}`,
                   filter: 'drop-shadow(0 2px 2px rgba(0,0,0,0.15))',
                 }}
               />
