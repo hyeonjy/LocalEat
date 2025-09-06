@@ -33,6 +33,7 @@ export type RestaurantProps = {
   created_at: string;
   reviewCount: number;
   averageRating: number;
+  share_count: number;
 };
 
 export type TopRestaurantProps = {
