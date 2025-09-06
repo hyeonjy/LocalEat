@@ -98,6 +98,7 @@ const RestaurantHeader = ({ restaurant }: RestaurantHeaderProps) => {
         <RestaurantHeaderButton
           restaurantId={restaurant.id}
           shareCount={restaurant.share_count}
+          imageUrl={restaurant.image_url}
         />
       </div>
 
