@@ -109,11 +109,14 @@ const RestaurantList = ({ restaurants, isTopRated }: RestaurantListProps) => {
     <>
       <ul className="mx-auto flex w-full flex-col gap-0 md:gap-[40px] lg:gap-[64px]">
         {restaurants.map((restaurant, index) => (
-          <>
-            <li
-              key={restaurant.id}
-              className="flex h-[769px] w-full flex-col border-t-[0.5px] border-[#C7C7CC] px-[16px] py-[24px] md:hidden"
-            >
+          <div
+            key={
+              isTopRated
+                ? 'topRated-' + restaurant.id
+                : 'topRecent-' + restaurant.id
+            }
+          >
+            <li className="flex h-[769px] w-full flex-col border-t-[0.5px] border-[#C7C7CC] px-[16px] py-[24px] md:hidden">
               <div className="flex items-center gap-[10px]">
                 <span className="flex h-[29px] items-center justify-center gap-[10px] rounded-[4px] bg-[#FEEDE6] px-[6px] py-[4px] text-[16px] font-normal leading-[130%] text-[#FA4D09]">
                   {restaurant.address.split(' ')[1] || '지역'}
@@ -431,7 +434,7 @@ const RestaurantList = ({ restaurants, isTopRated }: RestaurantListProps) => {
                 </div>
               </div>
             </li>
-          </>
+          </div>
         ))}
       </ul>
 
