@@ -68,6 +68,18 @@ const SearchPageClient = ({ initialKeyword }: { initialKeyword: string }) => {
           <div className="fixed left-0 right-0 top-[64px] z-20 block p-3 lg:hidden">
             <TopBar initialKeyword={initialKeyword} />
           </div>
+
+          {/* ✅ 검색값이 없어도 BottomSheet를 항상 마운트 (FilterBar만 노출됨) */}
+          <MobileBottomSheet
+            items={[]} // 결과 없음
+            status="success" // 무엇이든 OK; 내부는 URL 기준으로 분기함
+            error={undefined}
+            hasNextPage={false}
+            isFetchingNextPage={false}
+            fetchNextPage={() => {}} // no-op
+            initialKeyword={initialKeyword}
+            // enableDesktop
+          />
         </section>
       </div>
     );
@@ -119,14 +131,18 @@ const SearchPageClient = ({ initialKeyword }: { initialKeyword: string }) => {
           <TopBar initialKeyword={initialKeyword} />
         </div>
 
+        {/* ✅ 검색 활성화일 때도 항상 마운트 (내부에서 리스트/헤더 보여줌) */}
         <MobileBottomSheet
-          items={items}
+          items={items ?? []}
           status={normalizedStatus}
-          error={q.error}
-          hasNextPage={!!q.hasNextPage}
-          isFetchingNextPage={!!q.isFetchingNextPage}
-          fetchNextPage={() => void q.fetchNextPage()}
+          error={q?.error}
+          hasNextPage={!!q?.hasNextPage}
+          isFetchingNextPage={!!q?.isFetchingNextPage}
+          fetchNextPage={() => {
+            if (q?.fetchNextPage) void q.fetchNextPage();
+          }}
           initialKeyword={initialKeyword}
+          // enableDesktop
         />
       </section>
     </div>

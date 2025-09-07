@@ -2,6 +2,7 @@
 'use client';
 
 import Image from 'next/image';
+import { useSearchParams } from 'next/navigation';
 import { useEffect, useRef, useState } from 'react';
 import FilterBar from './FilterBar';
 import SearchResultList from './SearchResultList';
@@ -27,6 +28,10 @@ export default function MobileBottomSheet({
   initialKeyword,
   enableDesktop = false,
 }: Props) {
+  const sp = useSearchParams();
+  const hasCriteria = !!(sp.get('q')?.trim() || sp.get('keywords'));
+  const isFilterOnly = !hasCriteria;
+
   const [mode, setMode] = useState<'half' | 'full'>('half');
   const [dragPx, setDragPx] = useState(0);
 
@@ -46,6 +51,15 @@ export default function MobileBottomSheet({
     return () => window.removeEventListener('resize', onResize);
   }, []);
 
+  // 필터만 상태일 때는 항상 half로 고정 + 드래그 무효
+  useEffect(() => {
+    if (isFilterOnly) {
+      setMode('half');
+      setDragPx(0);
+      dragging.current = false;
+    }
+  }, [isFilterOnly]);
+
   const HEADER_H = 64;
   const BASE_H = Math.round(vh * 0.55); // half 높이
   const FULL_H = vh + HEADER_H; // full일 때 기존 헤더 높이만큼 더 올라감
@@ -54,13 +68,13 @@ export default function MobileBottomSheet({
 
   // === 드래그 공용 ===
   const startDragAt = (y: number) => {
-    if (mode !== 'half') return;
+    if (mode !== 'half' || isFilterOnly) return;
     dragging.current = true;
     startY.current = y;
     setDragPx(0);
   };
   const moveDragTo = (y: number) => {
-    if (!dragging.current || mode !== 'half') return;
+    if (!dragging.current || mode !== 'half' || isFilterOnly) return;
     const dy = startY.current - y; // 위로 올리면 +
     setDragPx(dy > 0 ? Math.min(dy, MAX_DELTA) : 0);
   };
@@ -99,81 +113,98 @@ export default function MobileBottomSheet({
   const isRect = mode === 'full' || prog >= 0.5; // 사각형 전환 시점
 
   // 헤더/스크림
-  const headerOpacity = mode === 'full' ? 1 : reveal;
-  const scrimOpacity = mode === 'full' ? 1 : Math.min(0.9, prog * 0.9);
+  const headerOpacity = isFilterOnly ? 0 : mode === 'full' ? 1 : reveal;
+  const scrimOpacity = isFilterOnly
+    ? 0
+    : mode === 'full'
+      ? 1
+      : Math.min(0.9, prog * 0.9);
 
-  const rounding = isRect ? '' : 'rounded-t-2xl border border-[#E2E2E4]';
+  // 외형(라운딩/보더)
+  const chromeClass = isFilterOnly
+    ? 'rounded-t-2xl border border-[#E2E2E4]'
+    : isRect
+      ? ''
+      : 'rounded-t-2xl border border-[#E2E2E4]';
+
+  // 모바일만(기본), 데스크탑 테스트시 enableDesktop=true
   const visibilityClass = enableDesktop ? '' : 'lg:hidden';
 
-  // ✅ 헤더 높이를 0→60px로 동적 적용
   const headerHeight = Math.round(60 * headerOpacity);
+
+  // 그립/스페이서 표시 여부
+  const showHandle = !isFilterOnly && mode === 'half';
 
   return (
     <>
-      {/* 흰 스크림: 뒤 배경을 점점 덮음 (시트보다 아래, 지도보다 위) */}
+      {/* 스크림: 검색/필터가 있을 때만 */}
       <div
-        className={`fixed inset-0 z-[60] bg-white transition-opacity duration-200 ${visibilityClass}`}
+        className={`fixed inset-0 z-[999] bg-white transition-opacity duration-200 ${visibilityClass}`}
         style={{
           opacity: scrimOpacity,
-          pointerEvents: mode === 'full' || prog > 0 ? 'auto' : 'none',
+          pointerEvents:
+            !isFilterOnly && (mode === 'full' || prog > 0) ? 'auto' : 'none',
         }}
       />
 
-      {/* 바텀시트 본체: height로 위로 자라남, half→full 넘어가면 사각형 */}
+      {/* 바텀시트 본체 */}
       <div
-        className={`fixed inset-x-0 bottom-0 z-[70] overscroll-none bg-white shadow-xl ${rounding} ${visibilityClass} flex flex-col`}
+        data-testid="mobile-bottom-sheet"
+        className={`fixed inset-x-0 bottom-0 z-[1000] overscroll-none bg-white ${chromeClass} ${visibilityClass} flex flex-col`}
         style={{
-          height: `${heightPx}px`,
-          paddingTop: mode === 'full' ? HEADER_H : 0, // full에서 기존 헤더 자리만큼 밀어줌
-          transition: dragging.current
-            ? 'none'
-            : 'height 180ms ease-out, padding-top 180ms ease-out',
+          height: isFilterOnly ? undefined : `${heightPx}px`,
+          minHeight: isFilterOnly ? 96 : undefined,
+          paddingTop: isFilterOnly ? 0 : mode === 'full' ? HEADER_H : 0,
+          transition:
+            isFilterOnly || dragging.current
+              ? 'none'
+              : 'height 180ms ease-out, padding-top 180ms ease-out',
           willChange: dragging.current ? 'height' : undefined,
         }}
       >
-        {/* ✅ 헤더: 처음엔 높이 0, 드래그 진행에 따라 60px까지 커짐 */}
-        <div
-          className="relative flex shrink-0 select-none items-center overflow-hidden border-b border-[#E2E2E4]"
-          style={{
-            height: headerHeight, // 0 → 60
-            opacity: headerOpacity,
-            pointerEvents:
-              mode === 'full' || headerOpacity > 0.05 ? 'auto' : 'none',
-          }}
-        >
+        {/* 헤더: 검색/필터 있을 때만 */}
+        {!isFilterOnly && (
           <div
-            className="absolute inset-x-0 top-0 transition-transform duration-200"
+            className="relative flex shrink-0 select-none items-center overflow-hidden border-b border-[#E2E2E4]"
             style={{
-              transform: `translateY(${(1 - headerOpacity) * 16}px)`, // 아래(+16px)에서 0으로
+              height: headerHeight,
+              opacity: headerOpacity,
+              pointerEvents:
+                mode === 'full' || headerOpacity > 0.05 ? 'auto' : 'none',
             }}
           >
-            <div className="flex h-[60px] items-center justify-between">
-              <button
-                onClick={() => setMode('half')}
-                className="p-2"
-                aria-label="뒤로"
-              >
-                <Image
-                  width={28}
-                  height={28}
-                  src="/assets/icons/arrow_left.svg"
-                  alt="뒤로가기_버튼"
-                />
-              </button>
-              <p className="min-w-0 flex-1 truncate text-center text-[16px] font-semibold text-[#111]">
-                {initialKeyword || ''}
-              </p>
-              <button className="p-2" aria-label="메뉴">
-                <span className="block h-[2px] w-5 bg-black" />
-                <span className="mt-1 block h-[2px] w-5 bg-black" />
-                <span className="mt-1 block h-[2px] w-5 bg-black" />
-              </button>
+            <div
+              className="absolute inset-x-0 top-0 transition-transform duration-200"
+              style={{ transform: `translateY(${(1 - headerOpacity) * 16}px)` }}
+            >
+              <div className="flex h-[60px] items-center justify-between p-[16px]">
+                <button
+                  onClick={() => setMode('half')}
+                  className="p-2"
+                  aria-label="뒤로"
+                >
+                  <Image
+                    width={28}
+                    height={28}
+                    src="/assets/icons/arrow_left.svg"
+                    alt="뒤로가기_버튼"
+                  />
+                </button>
+                <p className="min-w-0 flex-1 truncate text-[16px] font-semibold text-[#111]">
+                  {initialKeyword || ''}
+                </p>
+                <button className="p-2" aria-label="메뉴">
+                  <span className="block h-[2px] w-5 bg-black" />
+                  <span className="mt-1 block h-[2px] w-5 bg-black" />
+                  <span className="mt-1 block h-[2px] w-5 bg-black" />
+                </button>
+              </div>
             </div>
           </div>
-        </div>
+        )}
 
-        {/* 그립: half에서만, 드래그 진행에 따라 투명해짐 */}
-        {mode === 'half' && (
+        {/* 그립: 검색/필터 있을 때는 인터랙티브, 없을 때는 동일한 회색 더미 */}
+        {showHandle ? (
           <div
             className="relative z-10 flex shrink-0 cursor-grab touch-none select-none items-center justify-center pt-[16px] active:cursor-grabbing"
             onPointerDown={onPointerDown}
@@ -187,30 +218,48 @@ export default function MobileBottomSheet({
           >
             <div className="h-1.5 w-[134px] rounded-full bg-[#D1D1D6]" />
           </div>
+        ) : (
+          // ✅ 필터만 상태: 동일한 높이/여백 + 같은 회색(#D1D1D6), 인터랙션 없음
+          <div className="relative z-10 flex shrink-0 items-center justify-center pt-[16px]">
+            <div className="h-1.5 w-[134px] rounded-full bg-[#D1D1D6]" />
+          </div>
         )}
 
-        {/* ✅ 콘텐츠: flex로 정확히 남은 영역 100% 차지 (여백 X) */}
-        <div className="flex min-h-0 flex-1 flex-col">
-          <div className="shrink-0 px-[20px] py-[16px]">
-            <FilterBar />
-          </div>
-
+        {/* 콘텐츠 */}
+        <div
+          className={
+            isFilterOnly ? 'flex flex-col' : 'flex min-h-0 flex-1 flex-col'
+          }
+        >
           <div
-            className="min-h-0 flex-1 overflow-y-auto px-3"
-            // iOS 홈 인디케이터 여백 없애려면 0 유지,
-            // 안전영역 살리려면 아래 줄 사용:
-            // style={{ paddingBottom: 'env(safe-area-inset-bottom, 0px)' }}
-            style={{ paddingBottom: '0px' }}
+            className="shrink-0 px-[20px] py-[16px]"
+            style={
+              isFilterOnly
+                ? { paddingBottom: 'max(env(safe-area-inset-bottom), 10px)' }
+                : undefined
+            }
           >
-            <SearchResultList
-              items={items}
-              status={status}
-              error={error}
-              hasNextPage={!!hasNextPage}
-              isFetchingNextPage={!!isFetchingNextPage}
-              fetchNextPage={fetchNextPage}
+            <FilterBar
+              className={`block ${enableDesktop ? '' : 'lg:hidden'}`}
+              disableModal
             />
           </div>
+
+          {hasCriteria && (
+            <div
+              className="min-h-0 flex-1 overflow-y-auto px-3"
+              style={{ paddingBottom: '0px' }}
+            >
+              <SearchResultList
+                items={items}
+                status={status}
+                error={error}
+                hasNextPage={!!hasNextPage}
+                isFetchingNextPage={!!isFetchingNextPage}
+                fetchNextPage={fetchNextPage}
+              />
+            </div>
+          )}
         </div>
       </div>
     </>

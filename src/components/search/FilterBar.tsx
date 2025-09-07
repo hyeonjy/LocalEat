@@ -107,25 +107,34 @@ export default function FilterBar({
     <div className={`flex flex-col gap-[20px] self-stretch ${className || ''}`}>
       {/* 상단: 필터 버튼 + 기본 카테고리 칩들(바깥에서 on/off) */}
       <div className="relative flex items-center gap-[8px] text-[14px]">
-        {/* 필터 버튼 (숫자는 선택 총합) */}
-        <button
-          type="button"
-          onClick={() => {
-            if (disableModal) onFilterClick?.();
-            else setIsModalOpen(true);
-          }}
-          className="flex h-[30px] flex-none cursor-pointer items-center justify-center gap-[4px] rounded-[20px] border border-[#FA4D09] bg-[#FEEDE6] px-[12px] py-[8px] text-[#FA4D09]"
-        >
-          <Image
-            src="/assets/icons/tune.svg"
-            alt="필터"
-            width={20}
-            height={20}
-          />
-          {selectedCount > 0 ? (
-            <span className="text-[12px] font-semibold">{selectedCount}</span>
-          ) : null}
-        </button>
+        {/* ⬇️ 필터 버튼을 relative 래퍼로 감싸 모달을 버튼 기준으로 8px 아래 고정 */}
+        <div className="relative flex-none">
+          <button
+            type="button"
+            onClick={() => {
+              if (disableModal) onFilterClick?.();
+              else setIsModalOpen((v) => !v);
+            }}
+            className="flex h-[30px] flex-none cursor-pointer items-center justify-center gap-[4px] rounded-[20px] border border-[#FA4D09] bg-[#FEEDE6] px-[12px] py-[8px] text-[#FA4D09]"
+          >
+            <Image
+              src="/assets/icons/tune.svg"
+              alt="필터"
+              width={20}
+              height={20}
+            />
+            {selectedCount > 0 ? (
+              <span className="text-[12px] font-semibold">{selectedCount}</span>
+            ) : null}
+          </button>
+
+          {/* PC 흐름에서만 내부 모달 오픈 (버튼 바로 아래 8px) */}
+          {!disableModal && isModalOpen && (
+            <div className="absolute left-0 top-[calc(100%+8px)] z-[60]">
+              <FilterModal onClose={() => setIsModalOpen(false)} />
+            </div>
+          )}
+        </div>
 
         {/* 기본 카테고리 칩들: 좁은 화면(≈380px)에서 좌우 드래그 */}
         <div className="min-w-0 flex-1">
@@ -185,15 +194,6 @@ export default function FilterBar({
             </Swiper>
           </div>
         </div>
-
-        {/* PC 흐름에서만 내부 모달 오픈 (버튼 바로 아래 8px) */}
-        {!disableModal && isModalOpen && (
-          <div className="relative">
-            <div className="absolute left-0 top-[calc(100%+8px)]">
-              <FilterModal onClose={() => setIsModalOpen(false)} />
-            </div>
-          </div>
-        )}
       </div>
 
       {/* 사진 리뷰 토글 (PC 전용) */}

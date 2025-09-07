@@ -11,7 +11,7 @@ const cornerClasses = [
 const LocalEaterCollection = () => {
   return (
     <section>
-      <div className="mx-auto w-full max-w-[1280px] gap-[10px] self-stretch rounded-[12px] px-[40px] py-[32px] min-[381px]:max-[721px]:px-[16px]">
+      <div className="mx-auto w-full max-w-[1280px] gap-[10px] self-stretch overflow-hidden rounded-[12px] px-[40px] py-[32px] min-[381px]:max-[721px]:px-[16px]">
         <div className="flex w-full items-end justify-between">
           <div className="w-full">
             <p className="pt-[30px] font-semibold leading-[130%] text-[#FA4D09] max-[721px]:text-[16px] min-[722px]:text-[24px]">
