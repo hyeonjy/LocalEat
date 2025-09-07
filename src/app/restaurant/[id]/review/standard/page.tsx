@@ -3,13 +3,15 @@
 import {
   createStandardReview,
   getRestaurantInfoAndMenus,
+  getStandardReviewById,
+  updateStandardReview,
 } from '@/app/actions/restaurant';
 import { Calendar } from '@/components/ui/calendar';
 import { useAuthStore } from '@/store/authStore';
 import { StandardReviewPayload } from '@/types/restaurant';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { useRouter } from 'next/navigation';
-import { useState } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
+import { useEffect, useState } from 'react';
 import KeywordSelection from '../_components/KeywordSelection';
 import MultiPhotoUpload from '../_components/MultiPhotoUpload';
 import RestaurantInfo from '../_components/RestaurantInfo';
@@ -27,6 +29,10 @@ type StandardReviewPageProps = {
 
 const StandardReviewForm = ({ params }: StandardReviewPageProps) => {
   const restaurantId = params.id;
+  const searchParams = useSearchParams();
+  const editReviewId = searchParams.get('edit');
+  const isEditMode = !!editReviewId;
+
   const [visitDate, setVisitDate] = useState<Date | undefined>(new Date());
   const [visitTime, setVisitTime] = useState<string>('');
   const [receiptImage, setReceiptImage] = useState<string | File | null>(null);
@@ -43,9 +49,65 @@ const StandardReviewForm = ({ params }: StandardReviewPageProps) => {
     queryFn: () => getRestaurantInfoAndMenus(restaurantId),
   });
 
+  // 편집 모드일 때 기존 리뷰 데이터 불러오기
+  const { data: existingReviewData, isPending: isReviewLoading } = useQuery({
+    queryKey: ['review', editReviewId],
+    queryFn: () => getStandardReviewById(Number(editReviewId)),
+    enabled: isEditMode && !!editReviewId,
+  });
+
+  // 기존 리뷰 데이터를 폼에 채워넣기
+  useEffect(() => {
+    if (existingReviewData?.data?.review) {
+      const review = existingReviewData.data.review;
+      const photos = existingReviewData.data.photos || [];
+      const receiptVerifications =
+        existingReviewData.data.receipt_verifications || [];
+
+      setContent(review.content || '');
+      setRating(review.rating || 0);
+      setKeywords(review.keywords || []);
+      setVisitTime(review.visited_time_slot || '');
+
+      // 방문 날짜 설정
+      if (review.visited_date) {
+        setVisitDate(new Date(review.visited_date));
+      }
+
+      // 기존 사진들을 File 객체로 변환하여 photos에 저장
+      const convertPhotosToFiles = async () => {
+        const photoFiles = await Promise.all(
+          photos.map(async (photo: any) => {
+            const response = await fetch(photo.image_url);
+            const blob = await response.blob();
+            const file = new File([blob], `existing_${photo.id}.jpg`, {
+              type: blob.type,
+            });
+            // 기존 사진 ID를 파일 객체에 저장
+            (file as any).existingId = photo.id;
+            return file;
+          }),
+        );
+        setPhotos(photoFiles);
+      };
+
+      convertPhotosToFiles();
+
+      // 영수증 사진 설정 (receipt_verifications 배열에서)
+      if (receiptVerifications.length > 0) {
+        const receiptPhoto = receiptVerifications[0];
+        setReceiptImage(receiptPhoto.image_url);
+      } else {
+        setReceiptImage(null);
+      }
+    }
+  }, [existingReviewData]);
+
   const { mutateAsync: submitReview, isPending: isSubmitting } = useMutation({
     mutationFn: (payload: StandardReviewPayload) =>
-      createStandardReview(payload),
+      isEditMode
+        ? updateStandardReview(payload, Number(editReviewId))
+        : createStandardReview(payload),
     onSuccess: async (result, variables) => {
       if (!result.success) {
         if (result.reason === 'UNAUTHORIZED') {
@@ -54,7 +116,7 @@ const StandardReviewForm = ({ params }: StandardReviewPageProps) => {
           router.push('/signin');
           return;
         }
-        alert('리뷰 등록 실패');
+        alert(isEditMode ? '리뷰 수정 실패' : '리뷰 등록 실패');
         return;
       }
 
@@ -65,17 +127,20 @@ const StandardReviewForm = ({ params }: StandardReviewPageProps) => {
         queryClient.invalidateQueries({
           queryKey: ['restaurant', restaurantId],
         }),
+        queryClient.invalidateQueries({
+          queryKey: ['reviews'],
+        }),
       ]);
 
-      alert('리뷰 등록 성공');
+      alert(isEditMode ? '리뷰 수정 성공' : '리뷰 등록 성공');
       router.push(`/restaurant/${restaurantId}`);
     },
     onError: () => {
-      alert('리뷰 등록 실패');
+      alert(isEditMode ? '리뷰 수정 실패' : '리뷰 등록 실패');
     },
   });
 
-  if (isPending) return <div>로딩 중…</div>;
+  if (isPending || (isEditMode && isReviewLoading)) return <div>로딩 중…</div>;
   if (error) return <div>에러 발생: {error.message}</div>;
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -224,7 +289,7 @@ const StandardReviewForm = ({ params }: StandardReviewPageProps) => {
           disabled={isSubmitting}
           className="flex h-[37px] w-[68px] items-center justify-center rounded-[8px] bg-[#FA4D09] px-[20px] py-[8px] text-[16px] font-medium leading-[130%] text-white disabled:opacity-60"
         >
-          등록
+          {isEditMode ? '수정' : '등록'}
         </button>
       </div>
     </form>

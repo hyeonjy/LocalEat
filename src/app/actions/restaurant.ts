@@ -196,3 +196,42 @@ export const updateRestaurantShareCount = async (restaurantId: number) => {
 
   return data;
 };
+
+export const getStandardReviewById = async (reviewId: number) => {
+  const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
+
+  const res = await fetch(
+    `${backendUrl}/restaurants/review/standard/${reviewId}`,
+  );
+  const data = await res.json();
+
+  if (!res.ok) {
+    throw new Error(data.message || '에러 발생');
+  }
+
+  return data;
+};
+
+export const updateStandardReview = async (
+  reviewData: StandardReviewPayload,
+  reviewId: number,
+) => {
+  const accessToken = cookies().get('accessToken')?.value;
+  const refreshToken = cookies().get('refreshToken')?.value;
+
+  const serverApi = createServerApi(accessToken, refreshToken);
+
+  try {
+    const res = await serverApi.patch(
+      `/restaurants/review/standard/${reviewId}`,
+      reviewData,
+    );
+
+    return { success: true, data: res.data };
+  } catch (error: any) {
+    if (error.name === 'RefreshTokenExpired') {
+      return { success: false, reason: 'UNAUTHORIZED' };
+    }
+    return { success: false, reason: 'UNKNOWN_ERROR' };
+  }
+};
