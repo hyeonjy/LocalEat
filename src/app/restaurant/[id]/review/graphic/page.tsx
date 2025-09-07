@@ -72,7 +72,7 @@ const GraphicReviewForm = ({ params }: GraphicReviewPageProps) => {
           router.push('/signin');
           return;
         }
-        alert('리뷰 등록 실패');
+        // alert('리뷰 등록 실패');
         return;
       }
 
@@ -89,11 +89,11 @@ const GraphicReviewForm = ({ params }: GraphicReviewPageProps) => {
       localStorage.removeItem('storyData');
       localStorage.removeItem(`graphicReview_${restaurantId}`);
 
-      alert('리뷰 등록 성공');
+      // alert('리뷰 등록 성공');
       router.push(`/restaurant/${restaurantId}`);
     },
     onError: () => {
-      alert('리뷰 등록 실패');
+      // alert('리뷰 등록 실패');
     },
   });
 

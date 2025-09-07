@@ -1,10 +1,11 @@
 'use client';
 
+import { deleteReview } from '@/app/actions/restaurant';
 import { getUserReceipts, getUserReviews } from '@/app/actions/user';
 import { Star } from '@/app/restaurant/[id]/review/_components/RatingInput';
 import StoryPreview from '@/app/restaurant/[id]/review/_components/StoryPreview';
 import { useAuthStore } from '@/store/authStore';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
@@ -26,6 +27,28 @@ const page = () => {
   const [period, setPeriod] = useState<string>('전체');
   const { user } = useAuthStore();
   const router = useRouter();
+  const queryClient = useQueryClient();
+
+  // 리뷰 삭제 함수
+  const handleDeleteReview = async (reviewId: number) => {
+    try {
+      const result = await deleteReview(reviewId);
+
+      if (result.success) {
+        queryClient.invalidateQueries({ queryKey: ['reviews', reviewFilter] });
+      } else {
+        if (result.reason === 'UNAUTHORIZED') {
+          alert('로그인이 필요합니다.');
+          router.push('/signin');
+        } else {
+          alert('리뷰 삭제에 실패했습니다.');
+        }
+      }
+    } catch (error) {
+      console.error('리뷰 삭제 중 오류 발생:', error);
+      alert('리뷰 삭제 중 오류가 발생했습니다.');
+    }
+  };
 
   // 드롭다운 외부 클릭 시 드롭다운 닫기
   useEffect(() => {
@@ -213,8 +236,8 @@ const page = () => {
                                   className="w-full rounded-b-[8px] px-[12px] py-[8px] text-left text-[14px] font-normal text-[#FF3B30] hover:bg-[#F5F5F5]"
                                   onClick={(e) => {
                                     e.stopPropagation();
-                                    // 삭제 기능 구현
                                     setOpenDropdownId(null);
+                                    handleDeleteReview(review.id);
                                   }}
                                 >
                                   삭제하기
@@ -275,6 +298,52 @@ const page = () => {
 
                     {review.type === 'graphic' && (
                       <div className="relative h-[330px] w-[247px] overflow-hidden">
+                        <div className="absolute right-2 top-2 z-10">
+                          <Image
+                            src="/assets/icons/more.svg"
+                            alt="more"
+                            width={24}
+                            height={24}
+                            className="cursor-pointer"
+                            onClick={() =>
+                              setOpenDropdownId(
+                                openDropdownId === review.id ? null : review.id,
+                              )
+                            }
+                          />
+
+                          {openDropdownId === review.id && (
+                            <div
+                              data-dropdown
+                              className="absolute right-0 top-[23px] z-20 w-[100px] rounded-[8px] border border-[#E2E2E4] bg-white shadow-[0px_2px_8px_0px_rgba(0,0,0,0.15)]"
+                            >
+                              <button
+                                className="w-full rounded-t-[8px] px-[12px] py-[8px] text-left text-[14px] font-normal text-[#171719] hover:bg-[#F5F5F5]"
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  setOpenDropdownId(null);
+                                  // 방문 스토리 편집 페이지로 이동
+                                  router.push(
+                                    `/restaurant/${review.restaurant_id}/review/graphic/story-editor?edit=${review.id}`,
+                                  );
+                                }}
+                              >
+                                편집하기
+                              </button>
+                              <div className="h-[1px] bg-[#E2E2E4]"></div>
+                              <button
+                                className="w-full rounded-b-[8px] px-[12px] py-[8px] text-left text-[14px] font-normal text-[#FF3B30] hover:bg-[#F5F5F5]"
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  setOpenDropdownId(null);
+                                  handleDeleteReview(review.id);
+                                }}
+                              >
+                                삭제하기
+                              </button>
+                            </div>
+                          )}
+                        </div>
                         <StoryPreview
                           backgroundImage={review.background_image_url}
                           elements={review.elements}
