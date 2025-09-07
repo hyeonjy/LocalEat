@@ -2,6 +2,7 @@
 import {
   addRestaurantReaction,
   deleteRestaurantReaction,
+  deleteReview,
 } from '@/app/actions/restaurant';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { cn } from '@/lib/utils';
@@ -14,7 +15,8 @@ import {
 } from '@/types/restaurant';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import Image from 'next/image';
-import { useState } from 'react';
+import { useRouter } from 'next/navigation';
+import { useEffect, useState } from 'react';
 import KeywordSection from './KeywordSection';
 import StorySlider from './StorySlider';
 
@@ -41,10 +43,61 @@ const ReviewTabs = ({
   onSortChange,
 }: ReviewTabsProps) => {
   const [showAllStandardReviews, setShowAllStandardReviews] = useState(false);
+  const [openDropdownId, setOpenDropdownId] = useState<number | null>(null);
   const { user } = useAuthStore();
   const queryClient = useQueryClient();
+  const router = useRouter();
 
   console.log('standardReveiws:', standardReviews);
+
+  // 리뷰 삭제 함수
+  const handleDeleteReview = async (reviewId: number) => {
+    try {
+      const result = await deleteReview(reviewId);
+
+      if (result.success) {
+        queryClient.invalidateQueries({
+          queryKey: ['restaurant', restaurantId],
+        });
+      } else {
+        if (result.reason === 'UNAUTHORIZED') {
+          alert('로그인이 필요합니다.');
+          router.push('/signin');
+        } else {
+          alert('리뷰 삭제에 실패했습니다.');
+        }
+      }
+    } catch (error) {
+      console.error('리뷰 삭제 중 오류 발생:', error);
+      alert('리뷰 삭제 중 오류가 발생했습니다.');
+    }
+  };
+
+  // 드롭다운 외부 클릭 시 드롭다운 닫기
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      const target = event.target as HTMLElement;
+      // 드롭다운 버튼이나 드롭다운 메뉴 내부를 클릭한 경우는 무시
+      if (target.closest('[data-dropdown]')) {
+        return;
+      }
+
+      if (openDropdownId !== null) {
+        setOpenDropdownId(null);
+      }
+    };
+
+    if (openDropdownId !== null) {
+      // mousedown 대신 click 이벤트 사용하고 약간의 지연 추가
+      setTimeout(() => {
+        document.addEventListener('click', handleClickOutside);
+      }, 0);
+    }
+
+    return () => {
+      document.removeEventListener('click', handleClickOutside);
+    };
+  }, [openDropdownId]);
 
   const addReactionMutation = useMutation({
     mutationFn: ({
@@ -225,13 +278,56 @@ const ReviewTabs = ({
                                 </p>
                               </div>
                             </div>
-                            <Image
-                              src={'/assets/icons/more.svg'}
-                              alt="더보기 아이콘"
-                              width={24}
-                              height={24}
-                              className="h-[24px] w-[24px]"
-                            />
+                            {user?.id === standardReview.user_id && (
+                              <div className="relative">
+                                <Image
+                                  src={'/assets/icons/more.svg'}
+                                  alt="더보기 아이콘"
+                                  width={24}
+                                  height={24}
+                                  className="h-[24px] w-[24px] cursor-pointer"
+                                  onClick={() =>
+                                    setOpenDropdownId(
+                                      openDropdownId === standardReview.id
+                                        ? null
+                                        : standardReview.id,
+                                    )
+                                  }
+                                />
+
+                                {openDropdownId === standardReview.id && (
+                                  <div
+                                    data-dropdown
+                                    className="absolute right-0 top-[23px] z-20 w-[100px] rounded-[8px] border border-[#E2E2E4] bg-white shadow-[0px_2px_8px_0px_rgba(0,0,0,0.15)]"
+                                  >
+                                    <button
+                                      className="w-full rounded-t-[8px] px-[12px] py-[8px] text-left text-[14px] font-normal text-[#171719] hover:bg-[#F5F5F5]"
+                                      onClick={(e) => {
+                                        e.stopPropagation();
+                                        setOpenDropdownId(null);
+                                        // 리뷰 편집 페이지로 이동
+                                        router.push(
+                                          `/restaurant/${restaurantId}/review/standard?edit=${standardReview.id}`,
+                                        );
+                                      }}
+                                    >
+                                      편집하기
+                                    </button>
+                                    <div className="h-[1px] bg-[#E2E2E4]"></div>
+                                    <button
+                                      className="w-full rounded-b-[8px] px-[12px] py-[8px] text-left text-[14px] font-normal text-[#FF3B30] hover:bg-[#F5F5F5]"
+                                      onClick={(e) => {
+                                        e.stopPropagation();
+                                        setOpenDropdownId(null);
+                                        handleDeleteReview(standardReview.id);
+                                      }}
+                                    >
+                                      삭제하기
+                                    </button>
+                                  </div>
+                                )}
+                              </div>
+                            )}
                           </div>
                           <p className="mb-[10px] line-clamp-3 h-[48px] w-full text-[12px] text-lg font-normal leading-[130%] text-[#2E2E32] md:mb-[16px] md:line-clamp-2 md:h-[42px] md:text-[16px]">
                             {standardReview.content}
