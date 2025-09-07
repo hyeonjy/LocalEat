@@ -116,7 +116,7 @@ const StandardReviewForm = ({ params }: StandardReviewPageProps) => {
           router.push('/signin');
           return;
         }
-        alert(isEditMode ? '리뷰 수정 실패' : '리뷰 등록 실패');
+        // alert(isEditMode ? '리뷰 수정 실패' : '리뷰 등록 실패');
         return;
       }
 
@@ -132,11 +132,11 @@ const StandardReviewForm = ({ params }: StandardReviewPageProps) => {
         }),
       ]);
 
-      alert(isEditMode ? '리뷰 수정 성공' : '리뷰 등록 성공');
+      // alert(isEditMode ? '리뷰 수정 성공' : '리뷰 등록 성공');
       router.push(`/restaurant/${restaurantId}`);
     },
     onError: () => {
-      alert(isEditMode ? '리뷰 수정 실패' : '리뷰 등록 실패');
+      // alert(isEditMode ? '리뷰 수정 실패' : '리뷰 등록 실패');
     },
   });
 

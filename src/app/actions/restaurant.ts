@@ -235,3 +235,21 @@ export const updateStandardReview = async (
     return { success: false, reason: 'UNKNOWN_ERROR' };
   }
 };
+
+export const deleteReview = async (reviewId: number) => {
+  const accessToken = cookies().get('accessToken')?.value;
+  const refreshToken = cookies().get('refreshToken')?.value;
+
+  const serverApi = createServerApi(accessToken, refreshToken);
+
+  try {
+    await serverApi.delete(`/restaurants/review/${reviewId}`);
+  } catch (error: any) {
+    if (error.name === 'RefreshTokenExpired') {
+      return { success: false, reason: 'UNAUTHORIZED' };
+    }
+    return { success: false, reason: 'UNKNOWN_ERROR' };
+  }
+
+  return { success: true, message: '리뷰가 성공적으로 삭제되었습니다.' };
+};
