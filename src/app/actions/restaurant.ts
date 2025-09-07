@@ -67,8 +67,9 @@ export const createStandardReview = async (
       reviewData,
     );
 
-    // 리뷰 등록 후 해당 레스토랑 페이지 캐시 무효화
+    // 리뷰 등록 후 해당 레스토랑 페이지와 로컬잇 페이지 캐시 무효화
     revalidatePath(`/restaurant/${reviewData.restaurantId}`);
+    revalidatePath('/localeat');
 
     return { success: true, data: res.data };
   } catch (error: any) {
@@ -91,8 +92,9 @@ export const createGraphicReview = async (reviewData: GraphicReviewPayload) => {
       reviewData,
     );
 
-    // 리뷰 등록 후 해당 레스토랑 페이지 캐시 무효화
+    // 리뷰 등록 후 해당 레스토랑 페이지와 로컬잇 페이지 캐시 무효화
     revalidatePath(`/restaurant/${reviewData.restaurantId}`);
+    revalidatePath('/localeat');
 
     return { success: true, data: res.data };
   } catch (error: any) {
@@ -106,7 +108,9 @@ export const createGraphicReview = async (reviewData: GraphicReviewPayload) => {
 export const getTopRatedRestaurants = async () => {
   const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
 
-  const res = await fetch(`${backendUrl}/restaurants/top-rated`);
+  const res = await fetch(`${backendUrl}/restaurants/top-rated`, {
+    cache: 'no-store', // 캐시 비활성화로 실시간 데이터 가져오기
+  });
   const data = await res.json();
 
   if (!res.ok) {
@@ -119,7 +123,9 @@ export const getTopRatedRestaurants = async () => {
 export const getTopRecentRestaurants = async () => {
   const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
 
-  const res = await fetch(`${backendUrl}/restaurants/top-recent`);
+  const res = await fetch(`${backendUrl}/restaurants/top-recent`, {
+    cache: 'no-store', // 캐시 비활성화로 실시간 데이터 가져오기
+  });
   const data = await res.json();
 
   if (!res.ok) {
