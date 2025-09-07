@@ -10,7 +10,7 @@ const FilterModal = ({ onClose }: { onClose: () => void }) => {
   const pathname = usePathname();
   const searchParams = useSearchParams();
 
-  // 🔹 기본 '전체' 옵션 자동 선택 로직 (로컬 그룹에서 '전체'가 있을 때)
+  // 🔹 기본 '전체' 옵션 자동 선택
   const defaultKeywords = useMemo<string[]>(() => {
     const localGroup =
       FILTER_GROUPS.find(
@@ -20,7 +20,7 @@ const FilterModal = ({ onClose }: { onClose: () => void }) => {
     return hasAll ? ['전체'] : [];
   }, []);
 
-  // URL -> 초기 선택값 (없으면 defaultKeywords 적용)
+  // URL -> 초기 선택값 (없으면 defaultKeywords)
   const initialSelected = useMemo(() => {
     try {
       const raw = searchParams.get('keywords');
@@ -45,9 +45,7 @@ const FilterModal = ({ onClose }: { onClose: () => void }) => {
     const params = new URLSearchParams(searchParams.toString());
     if (selected.length) params.set('keywords', JSON.stringify(selected));
     else params.delete('keywords');
-    // 페이징 초기화가 필요하면 offset 제거
-    params.delete('offset');
-
+    params.delete('offset'); // 페이징 초기화
     router.push(`${pathname}?${params.toString()}`, { scroll: false });
     onClose();
   };
@@ -64,8 +62,94 @@ const FilterModal = ({ onClose }: { onClose: () => void }) => {
 
   return (
     <>
-      {/* ====== 모바일: 바텀시트 ====== */}
-      <div className="lg:hidden">
+      {/* ====== ① 초소형(≤375px): 풀 스크린 + 전용 헤더 ====== */}
+      <div className="hidden max-[375px]:flex">
+        {/* 오버레이는 풀스크린 자체가 덮으므로 생략해도 됨(원하면 추가 가능) */}
+        <div
+          role="dialog"
+          aria-modal="true"
+          className="fixed inset-0 z-[999] flex h-[100dvh] w-[100vw] flex-col bg-white"
+        >
+          {/* 전용 헤더 */}
+          <div
+            className="relative flex shrink-0 select-none items-center overflow-hidden border-b border-[#E2E2E4]"
+            style={{
+              height: 60,
+              opacity: 1,
+              pointerEvents: 'auto',
+            }}
+          >
+            <div
+              className="absolute inset-x-0 top-0"
+              style={{ transform: 'translateY(0px)' }}
+            >
+              <div className="flex h-[60px] items-center justify-between p-[16px]">
+                <p className="min-w-0 flex-1 truncate text-[16px] font-semibold text-[#111]">
+                  로컬 필터
+                </p>
+                <button onClick={onClose} className="p-2" aria-label="뒤로">
+                  <Image
+                    width={20}
+                    height={20}
+                    src="/assets/icons/exit.svg"
+                    alt="뒤로가기_버튼"
+                  />
+                </button>
+              </div>
+            </div>
+          </div>
+
+          {/* 콘텐츠 */}
+          <div className="min-h-0 flex-1 overflow-y-auto px-4 pb-4 pt-3">
+            {FILTER_GROUPS.map((group) => (
+              <div key={group.key} className="mb-6 flex w-full flex-col gap-2">
+                <h3 className="text-base font-semibold leading-[150%] text-[#000]">
+                  {group.title}
+                </h3>
+                <div className="flex w-[331px] max-w-full flex-wrap gap-2">
+                  {group.options.map((option) => {
+                    const active = selected.includes(option);
+                    return (
+                      <button
+                        key={option}
+                        type="button"
+                        className={tagBtnClass(active)}
+                        onClick={() => toggle(option)}
+                      >
+                        {option}
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+            ))}
+          </div>
+
+          {/* 하단 버튼 (safe-area 대응) */}
+          <div
+            className="flex items-center justify-center gap-[9px] border-t border-[#E2E2E4] bg-white px-4 py-4"
+            style={{ paddingBottom: 'max(env(safe-area-inset-bottom), 16px)' }}
+          >
+            <button
+              type="button"
+              onClick={reset}
+              className="flex h-[44px] flex-1 items-center justify-center gap-[4px] rounded-[8px] border border-[#C7C7CC] bg-white px-[20px] text-[#2E2E32]"
+            >
+              초기화
+            </button>
+            <button
+              type="button"
+              onClick={applyFilters}
+              className="flex h-[44px] flex-1 items-center justify-center gap-[4px] rounded-[8px] bg-[#FA4D09] px-[20px] text-white"
+            >
+              필터 적용
+            </button>
+          </div>
+        </div>
+      </div>
+
+      {/* ====== ② 모바일(>375px ~ <lg): 바텀시트(65vh) ====== */}
+      <div className="max-[375px]:hidden lg:hidden">
         <div
           className="fixed inset-0 z-[998] bg-black/40"
           onClick={onClose}
@@ -96,8 +180,6 @@ const FilterModal = ({ onClose }: { onClose: () => void }) => {
                 <h3 className="text-base font-semibold leading-[150%] text-[#000]">
                   {group.title}
                 </h3>
-
-                {/* 버튼 박스: 너비 331px */}
                 <div className="flex w-[331px] max-w-full flex-wrap gap-2">
                   {group.options.map((option) => {
                     const active = selected.includes(option);
@@ -117,7 +199,6 @@ const FilterModal = ({ onClose }: { onClose: () => void }) => {
             ))}
           </div>
 
-          {/* 풋터 */}
           <div
             className="flex items-center justify-center gap-[9px] border-t border-[#E2E2E4] bg-white px-4 py-4"
             style={{ paddingBottom: 'max(env(safe-area-inset-bottom), 16px)' }}
@@ -140,7 +221,7 @@ const FilterModal = ({ onClose }: { onClose: () => void }) => {
         </div>
       </div>
 
-      {/* ====== 데스크탑: 트리거 버튼 바로 아래 8px (FilterBar의 relative 기준) ====== */}
+      {/* ====== ③ 데스크탑(≥lg): 트리거 버튼 아래 8px 팝오버 ====== */}
       <div className="absolute left-0 top-[calc(100%+8px)] z-[999] hidden w-[396px] flex-col overflow-hidden rounded-[16px] border border-[#E2E2E4] bg-white shadow-[0_0_20px_0_rgba(0,0,0,0.15)] lg:flex">
         <div className="flex w-full items-center justify-between px-[24px] py-[16px]">
           <h2 className="text-[16px] font-bold leading-[130%] tracking-[0.16px] text-[#000]">
@@ -162,8 +243,6 @@ const FilterModal = ({ onClose }: { onClose: () => void }) => {
               <h3 className="text-base font-semibold leading-[150%] text-[#000]">
                 {group.title}
               </h3>
-
-              {/* 버튼 박스: 너비 331px */}
               <div className="flex w-[331px] max-w-full flex-wrap gap-2">
                 {group.options.map((option) => {
                   const active = selected.includes(option);

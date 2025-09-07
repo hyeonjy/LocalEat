@@ -1,5 +1,7 @@
 'use client';
-import Link from 'next/link'; // ✅ 추가
+import { useAuthStore } from '@/store/authStore';
+import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { useEffect, useMemo, useState } from 'react';
 
 // Swiper
@@ -14,7 +16,7 @@ type ItemProps = {
   it: any;
 };
 
-// ✅ 간단한 미디어쿼리 훅: 클라이언트에서만 동작
+// 간단 미디어쿼리
 function useMediaQuery(query: string) {
   const [matches, setMatches] = useState<boolean | null>(null);
   useEffect(() => {
@@ -30,8 +32,12 @@ function useMediaQuery(query: string) {
 
 export default function SearchResultItem({ it }: ItemProps) {
   const isDesktop = useMediaQuery('(min-width: 376px)');
+  const router = useRouter();
 
-  // ✅ id를 유연하게 추출 (숫자/문자 모두 허용)
+  // ✅ 로그인 유저 (null이면 비로그인)
+  const user = useAuthStore((s: any) => s.user);
+
+  // id/기본 데이터
   const idRaw = it?.id ?? it?.restaurant_id ?? it?.restaurantId;
   const rid =
     typeof idRaw === 'number' || typeof idRaw === 'string'
@@ -47,7 +53,7 @@ export default function SearchResultItem({ it }: ItemProps) {
   const reviewCount = Number.isFinite(reviewCountNum) ? reviewCountNum : 0;
 
   const photos: PhotoPreview[] = (it?.photos_preview as any[]) ?? [];
-  const cover = it?.cover_image_url as string | undefined;
+  const cover = (it?.cover_image_url as string | undefined) ?? undefined;
 
   const imageSlides: PhotoPreview[] = useMemo(() => {
     if (photos && photos.length > 0) return photos;
@@ -64,10 +70,75 @@ export default function SearchResultItem({ it }: ItemProps) {
     return fallback ? [fallback] : ['아직 등록된 리뷰가 없습니다.'];
   }, [photos, it?.last_review_body]);
 
-  // ✅ 제목 + 별점 블록 (두 군데에서 재사용)
+  // ✅ 찜 로컬 상태(초기 false). *이 컴포넌트는 조회를 하지 않음*
+  const [isFav, setIsFav] = useState(false);
+  const [favBusy, setFavBusy] = useState(false);
+
+  // 로그아웃되면 로컬 상태 초기화(선택)
+  useEffect(() => {
+    if (!user) setIsFav(false);
+  }, [user]);
+
+  // ✅ 토글(저장/삭제)만 수행
+  const onToggleFavorite = async () => {
+    if (!rid) return;
+
+    if (!user) {
+      alert('로그인이 필요합니다.');
+      router.push('/login');
+      return;
+    }
+
+    if (favBusy) return;
+    setFavBusy(true);
+
+    // 백엔드에 저장할 스냅샷 필드(선택)
+    const snapRegion =
+      it?.region ?? it?.address_region ?? it?.area ?? it?.location ?? '';
+    const snapMainImageUrl = cover ?? imageSlides?.[0]?.image_url ?? undefined;
+
+    try {
+      const res = await fetch('/api/favorites', {
+        method: 'POST',
+        credentials: 'include',
+        headers: {
+          'content-type': 'application/json',
+          // 🔴 중요: 유저 id를 Next API로 함께 보냄(Next가 백엔드로 포워딩)
+          ...(user?.id ? { 'x-user-id': String(user.id) } : {}),
+        },
+        body: JSON.stringify({
+          restaurantId: rid,
+          snapName: title,
+          snapRegion,
+          snapMainImageUrl,
+        }),
+      });
+
+      if (res.ok) {
+        // 서버가 { action: 'inserted' | 'deleted', ... }를 반환
+        let next = !isFav;
+        try {
+          const data = await res.json();
+          if (data?.action === 'inserted') next = true;
+          else if (data?.action === 'deleted') next = false;
+        } catch {
+          // 바디 파싱 실패 시 낙관적으로 토글 유지
+        }
+        setIsFav(next);
+      } else {
+        console.error('toggle favorite failed', await res.text());
+      }
+    } catch (e) {
+      console.error(e);
+    } finally {
+      setFavBusy(false);
+    }
+  };
+
+  // ✅ 제목 + 별점 블록
   const TitleHeader = () => (
     <div className="flex flex-col">
-      <h2 className="flex items-center gap-[6px] text-[20px] font-semibold leading-[130%] tracking-[-0.3px] text-[#171719]">
+      <h2 className="flex items-center gap-[6px] text-[20px] font-semibold leading-[130%] tracking-[-0.3px] text-[#171719] max-[375px]:text-[16px]">
         {href ? (
           <Link
             href={href}
@@ -81,12 +152,13 @@ export default function SearchResultItem({ it }: ItemProps) {
           title
         )}
         {category && (
-          <span className="text-[16px] font-normal leading-[130%] tracking-[-0.24px] text-[#787882]">
+          <span className="text-[16px] font-normal leading-[130%] tracking-[-0.24px] text-[#787882] max-[375px]:text-[10px]">
             {category}
           </span>
         )}
       </h2>
-      <div className="flex items-center gap-1 text-[16px] font-normal leading-[130%] text-[#171719]">
+
+      <div className="flex items-center gap-1 text-[16px] font-normal leading-[130%] text-[#171719] max-[375px]:text-[12px]">
         <img
           src="/assets/icons/red_star.svg"
           alt="별점"
@@ -97,35 +169,56 @@ export default function SearchResultItem({ it }: ItemProps) {
     </div>
   );
 
+  const bookmarkDisabled = favBusy || isDesktop === null;
+  const bookmarkIcon = isFav
+    ? '/assets/icons/bookmark_filled.svg'
+    : '/assets/icons/bookmark.svg';
+
   if (isDesktop === null) {
-    // ✅ SSR→CSR 전환 중: 헤더만 먼저 렌더
     return (
       <div className="flex flex-col items-start gap-[10px] self-stretch border-b border-[#E2E2E4] bg-white pb-[12px] pl-[20px] pr-0 pt-[12px]">
         <div className="flex w-full justify-between pr-[20px]">
           <TitleHeader />
-          <img
-            src="/assets/icons/bookmark.svg"
-            alt="북마크"
-            className="h-[24px] w-[24px]"
-          />
+          <button
+            type="button"
+            aria-label={isFav ? '찜 해제' : '찜하기'}
+            aria-pressed={isFav}
+            disabled
+            className="opacity-70"
+          >
+            <img
+              src={bookmarkIcon}
+              alt="북마크"
+              className="h-[24px] w-[24px]"
+            />
+          </button>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="flex flex-col items-start gap-[10px] self-stretch overflow-x-clip border-b border-[#E2E2E4] bg-white pb-[12px] pl-[20px] pr-0 pt-[12px]">
+    <div className="flex flex-col items-start gap-[10px] self-stretch overflow-x-clip border-b border-[#E2E2E4] bg-white pb-[12px] pl-[10px] pr-0 pt-[12px]">
       {/* 헤더 */}
       <div className="flex w-full justify-between pr-[20px]">
         <TitleHeader />
-        <img
-          src="/assets/icons/bookmark.svg"
-          alt="북마크"
-          className="h-[24px] w-[24px]"
-        />
+        <button
+          type="button"
+          onClick={onToggleFavorite}
+          aria-label={isFav ? '찜 해제' : '찜하기'}
+          aria-pressed={isFav}
+          disabled={bookmarkDisabled}
+          className={`grid h-[28px] w-[28px] place-items-center rounded-md transition-opacity ${bookmarkDisabled ? 'opacity-60' : 'hover:opacity-80'}`}
+        >
+          <img
+            src={bookmarkIcon}
+            alt={isFav ? '북마크됨' : '북마크'}
+            className="h-[24px] w-[24px]"
+          />
+        </button>
       </div>
 
-      {/* ========= 이하 기존 내용 동일 ========= */}
+      {/* ====== 이하 기존 슬라이드 UI 동일 ====== */}
       {isDesktop ? (
         <div
           className="w-full select-none overflow-hidden"
@@ -185,7 +278,6 @@ export default function SearchResultItem({ it }: ItemProps) {
         </div>
       ) : (
         <>
-          {/* 이미지 줄 */}
           <div
             className="w-full select-none overflow-hidden"
             style={{ overscrollBehaviorX: 'contain' }}
@@ -235,7 +327,6 @@ export default function SearchResultItem({ it }: ItemProps) {
             </Swiper>
           </div>
 
-          {/* 텍스트 줄 */}
           <div
             className="mt-[8px] w-full select-none overflow-hidden"
             style={{ overscrollBehaviorX: 'contain' }}

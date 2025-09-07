@@ -19,8 +19,12 @@ export default function SearchMap({
   places,
   isLoading = false,
   hasQuery = true,
-  focusTopFirst = true,    // ✅ 추가: 랭킹 1번에 포커스
-  topZoomLevel = 4,        // ✅ 추가: 줌 레벨(작을수록 확대)
+  focusTopFirst = true, // 랭킹 1 우선 포커스
+  topZoomLevel = 4, // 작을수록 더 확대
+  preferAreaView = true, // 결과 많으면 지역 뷰(줌아웃)
+  areaMinCount = 6, // 이 개수 이상이면 지역 뷰
+  areaZoomLevel = 6, // 지역 뷰 줌 레벨
+  centerOffsetYPx = 200, // ✅ 중앙에서 '아래로' 531px만큼 센터 이동(양수)
 }: {
   center: { lat: number; lng: number };
   places: Place[];
@@ -28,6 +32,10 @@ export default function SearchMap({
   hasQuery?: boolean;
   focusTopFirst?: boolean;
   topZoomLevel?: number;
+  preferAreaView?: boolean;
+  areaMinCount?: number;
+  areaZoomLevel?: number;
+  centerOffsetYPx?: number; // 기본 531
 }) {
   const [loading, error] = useKakaoLoader({
     appkey: process.env.NEXT_PUBLIC_KAKAO_JS_KEY!,
@@ -46,43 +54,75 @@ export default function SearchMap({
   // 결과 바뀌면 오버레이 닫기
   useEffect(() => setActiveId(null), [places]);
 
-  // 🔒 첫 번째(랭킹1)으로 센터 이동을 중복 방지
+  // 랭킹1 포커스 중복 방지
   const lastTopIdRef = useRef<number | null>(null);
 
-  // 필요시 오버레이 공간만큼 픽셀 오프셋 주는 유틸 (주석 해제해서 사용 가능)
-  // const panToWithOffset = (m: kakao.maps.Map, lat: number, lng: number, dx = 0, dy = 0) => {
-  //   const proj = m.getProjection();
-  //   const p = proj.pointFromCoords(new kakao.maps.LatLng(lat, lng));
-  //   const target = proj.coordsFromPoint(new kakao.maps.Point(p.x + dx, p.y + dy));
-  //   m.panTo(target);
-  // };
+  // ✅ 픽셀 오프셋으로 센터 이동(현재 줌 기준의 2D 좌표 → 아래로 양수 dy)
+  // dy가 양수이면 지도의 '센터'가 화면에서 아래로 내려가므로,
+  // 대상 포인트는 화면에서 더 '위'에 보이게 됩니다.
+  const panToWithOffset = (
+    m: kakao.maps.Map,
+    lat: number,
+    lng: number,
+    dx = 0,
+    dy = 0,
+  ) => {
+    const proj = m.getProjection();
+    const p = proj.pointFromCoords(new kakao.maps.LatLng(lat, lng));
+    const target = proj.coordsFromPoint(
+      new kakao.maps.Point(p.x + dx, p.y + dy),
+    );
+    m.setCenter(target);
+  };
 
-  // 결과에 맞춰 이동/확대
+  // 결과에 맞춰 한 번만 이동/확대 + 2D로 531px 아래(센터)로 오프셋
   useEffect(() => {
     if (!map || !shouldShowPins) return;
 
-    const top = places[0]; // SQL 정렬순 1등
-    const topId = top?.id ?? null;
-
-    // ✅ 랭킹1 우선 포커스(한 번만)
-    if (focusTopFirst && top && lastTopIdRef.current !== topId) {
-      lastTopIdRef.current = topId;
-      map.relayout?.();
-      map.setLevel(topZoomLevel);
-      map.setCenter(new kakao.maps.LatLng(top.lat, top.lng));
-      // 오버레이 공간을 위해 아래처럼 약간 위로 올리고 싶다면:
-      // panToWithOffset(map, top.lat, top.lng, 0, 80);  // dy=+는 화면 아래쪽으로 이동
-      return;
-    }
-
-    // 기본: 전체 결과가 보이도록 fitBounds
     const bounds = new kakao.maps.LatLngBounds();
     places.forEach((p) => bounds.extend(new kakao.maps.LatLng(p.lat, p.lng)));
     map.relayout?.();
+
+    const dy = centerOffsetYPx; // ✅ 아래로 531px
+
+    // 결과가 많으면 지역 뷰 우선
+    const useArea = preferAreaView && places.length >= areaMinCount;
+    if (useArea && !bounds.isEmpty()) {
+      const sw = bounds.getSouthWest();
+      const ne = bounds.getNorthEast();
+      const centerLat = (sw.getLat() + ne.getLat()) / 2;
+      const centerLng = (sw.getLng() + ne.getLng()) / 2;
+
+      map.setLevel(areaZoomLevel);
+      panToWithOffset(map, centerLat, centerLng, 0, dy);
+      return;
+    }
+
+    // 랭킹 1 우선 포커스 + 오프셋
+    const top = places[0];
+    const topId = top?.id ?? null;
+    if (focusTopFirst && top && lastTopIdRef.current !== topId) {
+      lastTopIdRef.current = topId;
+      map.setLevel(topZoomLevel);
+      panToWithOffset(map, top.lat, top.lng, 0, dy);
+      return;
+    }
+
+    // 기본: 전체 보이기 → fitBounds 후 중앙을 오프셋하여 재설정
     if (!bounds.isEmpty()) {
       map.setBounds(bounds);
+
+      const sw = bounds.getSouthWest();
+      const ne = bounds.getNorthEast();
+      const centerLat = (sw.getLat() + ne.getLat()) / 2;
+      const centerLng = (sw.getLng() + ne.getLng()) / 2;
+
+      // setBounds 반영 직후 한 틱 뒤 오프셋 적용
+      setTimeout(() => {
+        panToWithOffset(map, centerLat, centerLng, 0, dy);
+      }, 0);
     } else {
-      map.setCenter(new kakao.maps.LatLng(center.lat, center.lng));
+      panToWithOffset(map, center.lat, center.lng, 0, dy);
     }
   }, [
     map,
@@ -92,12 +132,16 @@ export default function SearchMap({
     topZoomLevel,
     center.lat,
     center.lng,
+    preferAreaView,
+    areaMinCount,
+    areaZoomLevel,
+    centerOffsetYPx, // 531(px)
   ]);
 
   if (error) return <div className="h-full w-full">지도 로딩 에러</div>;
   if (loading) return <div className="h-full w-full">지도 불러오는 중…</div>;
 
-  // ===== 아래는 네가 이미 구현한 커스텀 마커/말풍선 그대로 유지 =====
+  // ===== 커스텀 마커/말풍선 UI =====
   const PILL_H = 36,
     GAP_Y = 15,
     TRI_H = 10,
@@ -105,7 +149,6 @@ export default function SearchMap({
     CARD_H = 255;
   const OFFSET_Y = PILL_H + GAP_Y;
 
-  // === 삼각형 관련 변수 ===
   const CARD_BG = '#fff';
   const TRI_OVERLAP = 1;
 
