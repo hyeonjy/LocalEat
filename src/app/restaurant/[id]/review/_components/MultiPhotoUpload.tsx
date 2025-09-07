@@ -25,6 +25,9 @@ const MultiPhotoUpload = ({
     };
   }, [photos]);
 
+  // 전체 사진 목록
+  const totalPhotoCount = photos.length;
+
   const getPhotoCellRadius = (index: number) => {
     const radiusMap = {
       0: 'rounded-tl-[12px]',
@@ -61,7 +64,7 @@ const MultiPhotoUpload = ({
           />
           <span className="mt-[4px] font-semibold">사진 추가</span>
           <span className="mt-[2px] font-medium">
-            {photos.length}/{MAX_PHOTOS}
+            {totalPhotoCount}/{MAX_PHOTOS}
           </span>
           <input
             type="file"
@@ -72,7 +75,7 @@ const MultiPhotoUpload = ({
           />
         </label>
 
-        {photos.length === 0 ? (
+        {totalPhotoCount === 0 ? (
           <div className="my-auto flex h-[214px] w-[222px] items-center justify-center rounded-[20px] bg-[#E5E6E8] text-[14px] font-semibold text-white md:text-[10px] lg:text-[16px]">
             예시 확인하기
           </div>
@@ -81,6 +84,7 @@ const MultiPhotoUpload = ({
             {Array.from({ length: MAX_PHOTOS }).map((_, index) => {
               const file = photos[index];
               const photoUrl = photoUrls[index];
+
               return (
                 <div
                   key={index}

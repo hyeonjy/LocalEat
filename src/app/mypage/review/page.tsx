@@ -6,7 +6,8 @@ import StoryPreview from '@/app/restaurant/[id]/review/_components/StoryPreview'
 import { useAuthStore } from '@/store/authStore';
 import { useQuery } from '@tanstack/react-query';
 import Image from 'next/image';
-import { useState } from 'react';
+import { useRouter } from 'next/navigation';
+import { useEffect, useState } from 'react';
 
 const FILTERS = ['전체', '승인완료', '승인대기', '승인거절'];
 const PERIODS = [
@@ -21,8 +22,36 @@ const page = () => {
     'all' | 'graphic' | 'standard'
   >('all');
   const [receiptFilter, setReceiptFilter] = useState<string>('전체');
+  const [openDropdownId, setOpenDropdownId] = useState<number | null>(null);
   const [period, setPeriod] = useState<string>('전체');
   const { user } = useAuthStore();
+  const router = useRouter();
+
+  // 드롭다운 외부 클릭 시 드롭다운 닫기
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      const target = event.target as HTMLElement;
+      // 드롭다운 버튼이나 드롭다운 메뉴 내부를 클릭한 경우는 무시
+      if (target.closest('[data-dropdown]')) {
+        return;
+      }
+
+      if (openDropdownId !== null) {
+        setOpenDropdownId(null);
+      }
+    };
+
+    if (openDropdownId !== null) {
+      // mousedown 대신 click 이벤트 사용하고 약간의 지연 추가
+      setTimeout(() => {
+        document.addEventListener('click', handleClickOutside);
+      }, 0);
+    }
+
+    return () => {
+      document.removeEventListener('click', handleClickOutside);
+    };
+  }, [openDropdownId]);
 
   const { data: reviewData, isPending } = useQuery({
     queryKey: ['reviews', reviewFilter],
@@ -136,21 +165,63 @@ const page = () => {
 
             <div className="mt-[12px] flex flex-col items-center gap-[15px] pb-[12px] md:grid md:grid-cols-3">
               {filteredReviews?.map((review: any, index: number) => (
-                <div className="mt-[1px] h-[330px] px-[20px] md:px-0">
-                  <div
-                    key={review.id || index}
-                    className="h-[330px] w-[247px] overflow-hidden rounded-[12px] bg-white shadow-[0px_0px_4px_0px_rgba(0,0,0,0.15)]"
-                  >
+                <div
+                  className="mt-[1px] h-[330px] px-[20px] md:px-0"
+                  key={review.id}
+                >
+                  <div className="h-[330px] w-[247px] overflow-hidden rounded-[12px] bg-white shadow-[0px_0px_4px_0px_rgba(0,0,0,0.15)]">
                     {review.type === 'standard' && (
                       <div className="relative flex h-full flex-col">
                         <div className="relative flex h-[208px] flex-col rounded-t-[12px] bg-[#FCFCFD] p-3">
-                          <Image
-                            src="/assets/icons/more.svg"
-                            alt="more"
-                            width={24}
-                            height={24}
-                            className="absolute right-3 top-3"
-                          />
+                          <div className="relative w-full">
+                            <Image
+                              src="/assets/icons/more.svg"
+                              alt="more"
+                              width={24}
+                              height={24}
+                              className="absolute right-0 top-0 z-10 cursor-pointer"
+                              onClick={() =>
+                                setOpenDropdownId(
+                                  openDropdownId === review.id
+                                    ? null
+                                    : review.id,
+                                )
+                              }
+                            />
+
+                            {openDropdownId === review.id && (
+                              <div
+                                data-dropdown
+                                className="absolute right-0 top-[23px] z-20 w-[100px] rounded-[8px] border border-[#E2E2E4] bg-white shadow-[0px_2px_8px_0px_rgba(0,0,0,0.15)]"
+                              >
+                                <button
+                                  className="w-full rounded-t-[8px] px-[12px] py-[8px] text-left text-[14px] font-normal text-[#171719] hover:bg-[#F5F5F5]"
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    setOpenDropdownId(null);
+                                    // 리뷰 편집 페이지로 이동
+                                    console.log('in');
+                                    router.push(
+                                      `/restaurant/${review.restaurant_id}/review/standard?edit=${review.id}`,
+                                    );
+                                  }}
+                                >
+                                  편집하기
+                                </button>
+                                <div className="h-[1px] bg-[#E2E2E4]"></div>
+                                <button
+                                  className="w-full rounded-b-[8px] px-[12px] py-[8px] text-left text-[14px] font-normal text-[#FF3B30] hover:bg-[#F5F5F5]"
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    // 삭제 기능 구현
+                                    setOpenDropdownId(null);
+                                  }}
+                                >
+                                  삭제하기
+                                </button>
+                              </div>
+                            )}
+                          </div>
 
                           {/* 리뷰 텍스트 */}
                           <div className="mt-[40px] h-[72px] w-full rounded-[12px] border border-[#E2E2E4] px-[10px] py-[20px]">
@@ -163,6 +234,7 @@ const page = () => {
                           <div className="mt-[14px] flex items-center">
                             {[1, 2, 3, 4, 5].map((n) => (
                               <Star
+                                key={review.id + n}
                                 width={15}
                                 height={15}
                                 filled={n <= review.rating}
