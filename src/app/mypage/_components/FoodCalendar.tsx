@@ -20,7 +20,6 @@ function ymd(date: Date) {
     })
     .split('. ')
     .map((v) => v.replace('.', ''));
-
   return `${y}-${m}-${d}`;
 }
 
@@ -45,7 +44,7 @@ export default function FoodCalendar({ reviews }: { reviews: Review[] }) {
     const y = date.getFullYear();
     const m = date.getMonth() + 1;
     return (
-      <div className="mb-[6px] mt-[12px] flex h-[31px] w-[792px] items-center justify-center gap-6 p-[10px]">
+      <div className="mb-[6px] mt-[12px] flex h-[31px] w-full max-w-[792px] items-center justify-center gap-6 p-[10px]">
         <Image
           aria-label="이전달"
           onClick={() =>
@@ -80,15 +79,17 @@ export default function FoodCalendar({ reviews }: { reviews: Review[] }) {
   };
 
   return (
-    <div className="food-cal">
+    // 기본(≤1024): 96px, ≤375: 44px, ≥1280: 110px
+    <div className="food-cal overflow-hidden [--tile:96px] max-[375px]:[--tile:44px] xl:[--tile:110px]">
       <Header date={activeStartDate} />
+
       <Calendar
         // 월 단위 뷰만
         locale="ko-KR"
         calendarType="gregory"
         minDetail="month"
         maxDetail="month"
-        showNeighboringMonth={true}
+        showNeighboringMonth
         // 제어형 월 이동
         activeStartDate={activeStartDate}
         onActiveStartDateChange={(v) => {
@@ -109,13 +110,8 @@ export default function FoodCalendar({ reviews }: { reviews: Review[] }) {
           const more = photos.length - 1;
 
           return (
-            <div className="relative mt-1 h-[110px] w-full overflow-hidden rounded-[12px]">
-              <Image
-                src={main}
-                alt=""
-                fill
-                className="h-full w-full object-cover"
-              />
+            <div className="relative mt-1 h-[var(--tile)] w-full overflow-hidden rounded-[12px]">
+              <Image src={main} alt="" fill className="object-cover" />
               {more > 0 && (
                 <span className="absolute right-1 top-1 rounded-full bg-[#FA4D09] px-[6px] py-[2px] text-[12px] font-bold text-white">
                   {more + 1}
@@ -126,14 +122,15 @@ export default function FoodCalendar({ reviews }: { reviews: Review[] }) {
         }}
         // 셀 외형
         tileClassName={() =>
-          '!bg-[#F6F6F6] !rounded-[12px] !border !border-[#E2E2E4] h-[110px] w-[110px]'
+          '!bg-[#F6F6F6] !rounded-[12px] !border !border-[#E2E2E4] min-h-[var(--tile)]'
         }
-        className="!w-[792px] !border-0 [&_.react-calendar__month-view__days]:gap-[4px] [&_.react-calendar__month-view__days__day--weekend_abbr]:!text-[#ADADB3] [&_.react-calendar__tile_abbr]:!text-[#ADADB3]"
-        // 날짜 숫자 스타일
+        // 컨테이너 폭: 유동 + 최대 792px
+        className="!w-full max-w-[792px] overflow-hidden !border-0 [&_.react-calendar__month-view__days]:gap-[4px] [&_.react-calendar__month-view__days__day--weekend_abbr]:!text-[#ADADB3] [&_.react-calendar__tile_abbr]:!text-[#ADADB3]"
+        // 날짜 숫자: 사진 있는 날은 숨김
         formatDay={(_, date) => {
           const key = ymd(date);
           const hasPhotos = (photosByDate[key]?.length ?? 0) > 0;
-          return hasPhotos ? '' : String(date.getDate()); // 리뷰 있으면 숫자 제거
+          return hasPhotos ? '' : String(date.getDate());
         }}
       />
     </div>
