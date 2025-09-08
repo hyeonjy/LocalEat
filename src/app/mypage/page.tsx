@@ -229,7 +229,10 @@ const page = () => {
                 {/* Desktop (≥md): 4열 그리드 */}
                 <ul className="mt-[12px] hidden grid-cols-4 gap-[20px] md:grid">
                   {favorites.map((f) => (
-                    <li key={f.restaurant_id} className="w-[180px] flex-shrink-0">
+                    <li
+                      key={f.restaurant_id}
+                      className="w-[180px] flex-shrink-0"
+                    >
                       <FavCard item={f} />
                     </li>
                   ))}
@@ -243,7 +246,7 @@ const page = () => {
             <h2 className="text-[32px] font-bold leading-[130%] tracking-[-0.48px] text-[#171719]">
               좋아한 잇터 컬렉션
             </h2>
-            <ul className="flex w-[100%] gap-6 pt-[12px]">
+            <ul className="flex w-[100%] gap-6 overflow-hidden pt-[12px]">
               <li>
                 <div className="flex w-[282px] flex-col items-start overflow-hidden rounded-[20px] bg-white shadow-[0_0_4px_rgba(0,0,0,0.15)]">
                   <div className="relative w-full">
