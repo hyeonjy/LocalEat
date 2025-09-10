@@ -73,7 +73,7 @@ const page = () => {
   const favorites = favData ?? [];
 
   return (
-    <div className="/* 기본(≤375): 풀 너비 */ /* 376~1279px: 최대 832px로 중앙 정렬 */ /* ≥1280px: 기존 1200px 컨테이너 */ mx-auto w-full max-w-none px-4 max-[375px]:px-0 min-[376px]:max-w-[832px] xl:max-w-[1200px] xl:px-0">
+    <div className="mx-auto w-full max-w-none px-4 max-[375px]:px-0 min-[376px]:max-w-[832px] xl:max-w-[1200px] xl:px-0">
       {/* ─────────────────────────── PC ≥1280 : 좌/우 레이아웃(마이페이지_0) */}
       <div className="hidden max-[1280px]:mt-[116px] xl:mt-[113px] xl:flex xl:gap-[126px]">
         {/* ===== 왼쪽 사이드바 ===== */}
@@ -218,15 +218,15 @@ const page = () => {
             className="absolute right-2 top-2"
           />
 
-          {/* ▼ 여기 줄만 교체 */}
-          <div className="relative -mt-[48px] flex max-[832px]:flex max-[832px]:flex-col max-[832px]:items-center max-[832px]:gap-4 min-[833px]:items-end min-[833px]:gap-6">
-            {/* 왼쪽 프로필 블록 (그대로) */}
-            <div className="flex flex-col items-center gap-4 pl-[60px] max-[832px]:gap-3">
+          {/* ▼ 변경: flex → grid + 방어 레이아웃 */}
+          <div className="relative -mt-[48px] grid items-end gap-4 max-[832px]:grid-cols-1 min-[833px]:grid-cols-[auto,1fr] min-[833px]:gap-6">
+            {/* 왼쪽 프로필 블록 */}
+            <div className="flex flex-col items-center gap-4 max-[832px]:gap-3 max-[832px]:pl-0 min-[833px]:pl-[60px]">
               <div className="h-[120px] w-[120px] overflow-hidden rounded-full shadow ring-4 ring-white">
                 {user?.profileImage ? (
                   <img
                     src={user.profileImage}
-                    alt="프로필_이미지"
+                    alt="프로필"
                     className="h-full w-full object-cover"
                   />
                 ) : (
@@ -245,9 +245,11 @@ const page = () => {
                 </p>
               </div>
             </div>
-            <div className="flex w-full justify-end gap-[10px] pr-[30px]">
-              {/* 작성한 리뷰 카드 — 박스는 div, 버튼만 Link / 고정 196x112 */}
-              <div className="flex w-full flex-col items-center justify-center rounded-[16px] border border-[#E6E7EA] bg-white p-[24px] min-[833px]:col-start-3 min-[833px]:h-[160px] min-[833px]:w-[244px]">
+
+            {/* 오른쪽 카드 래퍼: wrap + 중앙 정렬 방어 */}
+            <div className="flex flex-wrap gap-[10px] max-[900px]:justify-center min-[833px]:w-full min-[833px]:justify-end min-[833px]:pr-[30px]">
+              {/* 작성한 리뷰 카드 */}
+              <div className="flex w-full flex-col items-center justify-center rounded-[16px] border border-[#E6E7EA] bg-white p-[24px] min-[833px]:h-[160px] min-[833px]:w-[clamp(180px,40vw,244px)]">
                 <p className="text-center text-[12px] text-[#8C8C8C]">
                   작성한 리뷰
                 </p>
@@ -262,8 +264,8 @@ const page = () => {
                 </Link>
               </div>
 
-              {/* 내 포인트 카드 — 동일 규격 */}
-              <div className="flex w-full flex-col items-center justify-center rounded-[16px] border border-[#E6E7EA] bg-white p-[24px] min-[833px]:col-start-4 min-[833px]:h-[160px] min-[833px]:w-[244px]">
+              {/* 내 포인트 카드 */}
+              <div className="flex w-full flex-col items-center justify-center rounded-[16px] border border-[#E6E7EA] bg-white p-[24px] min-[833px]:h-[160px] min-[833px]:w-[clamp(180px,40vw,244px)]">
                 <p className="text-center text-[12px] text-[#8C8C8C]">
                   내 포인트
                 </p>
@@ -348,28 +350,46 @@ const page = () => {
 
       {/* ─────────────────────────── 모바일 ≤375 : 모바일 전용(마이페이지_2) */}
       <div className="mt-[16px] hidden max-[375px]:block">
-        {/* 섹션: 프로필 요약(세로) */}
-        <section aria-label="프로필 요약">
-          <div className="flex items-center gap-3">
-            <div className="h-[56px] w-[56px] overflow-hidden rounded-full bg-[#CCCCCC]">
+        {/* 섹션: 프로필 헤더(스샷 맞춤) */}
+        <section aria-label="프로필 헤더" className="relative">
+          {/* 커버 */}
+          <div className="h-[140px] bg-[#F5F6F8]" />
+          <Image
+            src="/assets/icons/setting.svg"
+            alt="setting"
+            width={24}
+            height={24}
+            className="absolute right-2 top-2"
+          />
+          {/* 아바타 + 텍스트 */}
+          <div className="relative -mt-[48px] flex flex-col items-center">
+            <div className="h-[96px] w-[96px] overflow-hidden rounded-full bg-[#E5E5E5] shadow ring-4 ring-white">
               {user?.profileImage ? (
                 // eslint-disable-next-line @next/next/no-img-element
-                <img src={user.profileImage} alt="프로필" />
-              ) : (
-                <div className="h-full w-full bg-[#E5E5E5]" />
-              )}
+                <img
+                  src={user.profileImage}
+                  alt="프로필"
+                  className="h-full w-full object-cover"
+                />
+              ) : null}
             </div>
-            <div>
-              <p className="text-[16px] font-bold text-[#171719]">
-                {user?.nickname ?? '게스트'}
-              </p>
-              <p className="mt-[2px] text-[12px] text-[#787882]">
-                팔로워 0 · 팔로잉 0
-              </p>
-            </div>
-          </div>
 
-          <div className="mt-3 grid grid-cols-2 gap-3">
+            <span className="mt-3 inline-flex items-center rounded-[8px] bg-[#FFEDE5] px-3 py-1 text-[12px] font-semibold text-[#FA4D09]">
+              서울시 강서구
+            </span>
+
+            <p className="mt-2 text-[20px] font-bold text-[#171719]">
+              {user?.nickname ?? '게스트'}
+            </p>
+            <p className="mt-1 text-[12px] text-[#787882]">
+              팔로워 0&nbsp;&nbsp;팔로잉 0
+            </p>
+          </div>
+        </section>
+
+        {/* 리뷰/포인트 카드 & 버튼 */}
+        <section className="mt-3">
+          <div className="grid grid-cols-2 gap-3">
             <Link
               href="/mypage/review"
               className="flex h-[60px] items-center justify-center rounded-[12px] border border-[#C7C7CC]"
