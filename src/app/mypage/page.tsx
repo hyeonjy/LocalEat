@@ -226,7 +226,7 @@ const page = () => {
                 {user?.profileImage ? (
                   <img
                     src={user.profileImage}
-                    alt="프로필"
+                    alt="프로필_이미지"
                     className="h-full w-full object-cover"
                   />
                 ) : (
