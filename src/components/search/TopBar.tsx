@@ -2,7 +2,7 @@
 
 import Image from 'next/image';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
-import { FormEvent, useState } from 'react';
+import { FormEvent, useMemo, useRef, useState } from 'react';
 import FilterBar from './FilterBar';
 import FilterModal from './FilterModal';
 
@@ -13,70 +13,151 @@ const TopBar = ({ initialKeyword }: { initialKeyword: string }) => {
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [value, setValue] = useState(initialKeyword ?? '');
+  const [focused, setFocused] = useState(false);
 
   const hasCriteria = !!(sp.get('q')?.trim() || sp.get('keywords'));
+
+  // 예시 자동완성 데이터 (API 연동 시 교체)
+  const suggestions = useMemo(
+    () => [
+      '마포구 맛집',
+      '마포구 냉면',
+      '마포구 카페',
+      '홍대 파스타',
+      '연남동 디저트',
+      '상수동 술집',
+    ],
+    [],
+  );
+
+  // value로 시작하는 첫 번째 추천어(자기 자신 제외)
+  const hint = useMemo(() => {
+    if (!value.trim()) return '';
+    const v = value.trim().toLowerCase();
+    const hit = suggestions.find(
+      (s) => s.toLowerCase().startsWith(v) && s.toLowerCase() !== v,
+    );
+    return hit ?? '';
+  }, [value, suggestions]);
 
   const submit = (e?: FormEvent) => {
     e?.preventDefault();
     const q = value.trim();
-
-    // 기존 쿼리 유지(+ keywords 등), q만 갱신
     const params = new URLSearchParams(sp.toString());
     if (q) {
       params.set('q', q);
-      params.delete('offset'); // 페이지네이션 초기화
+      params.delete('offset');
     } else {
       params.delete('q');
       params.delete('offset');
     }
-
     const next = params.toString();
     router.push(next ? `${pathname}?${next}` : pathname, { scroll: false });
   };
 
   const clearAllToFilterOnly = () => {
-    // q, keywords, offset 제거 -> 필터만 상태
     const params = new URLSearchParams(sp.toString());
     params.delete('q');
     params.delete('keywords');
     params.delete('offset');
-
-    setValue(''); // 입력창 비우기(옵션)
+    setValue('');
     const next = params.toString();
     router.push(next ? `${pathname}?${next}` : pathname, { scroll: false });
   };
 
   const clearInput = () => setValue('');
 
+  // 자동완성 클릭 시 채우고 제출(원하면 제출 제거 가능)
+  const applyHintAndSubmit = () => {
+    if (!hint) return;
+    setValue(hint);
+    // setTimeout으로 DOM state 반영 후 submit
+    setTimeout(() => submit(), 0);
+  };
+
+  // blur시 자동완성 박스가 클릭되기 전에 닫히지 않도록 약간 지연
+  const blurTimeout = useRef<number | null>(null);
+  const onBlurSafely = () => {
+    blurTimeout.current = window.setTimeout(() => setFocused(false), 80);
+  };
+  const cancelBlurTimeout = () => {
+    if (blurTimeout.current) {
+      window.clearTimeout(blurTimeout.current);
+      blurTimeout.current = null;
+    }
+  };
+
   return (
     <>
       <div className="flex min-w-0 gap-2">
-        {/* <1024px: 왼쪽 아이콘이 검색/뒤로가기로 토글 */}
-        <form
-          onSubmit={submit}
-          className="flex w-full min-w-0 items-center gap-[8px] rounded-xl border-2 border-[#FA4D09] bg-white px-4 py-3 lg:max-w-[464px]"
-        >
-          {/* 모바일/태블릿(<=1024) 아이콘 */}
-          {hasCriteria ? (
-            <button
-              type="button"
-              aria-label="뒤로"
-              className="shrink-0 lg:hidden"
-              title="뒤로"
-              onClick={clearAllToFilterOnly}
-            >
-              <Image
-                src="/assets/icons/arrow_left.svg"
-                alt="뒤로가기"
-                width={24}
-                height={24}
-              />
-            </button>
-          ) : (
+        {/* 폭 동기화를 위해 relative 래퍼 추가 */}
+        <div className="relative w-full lg:max-w-[464px]">
+          <form
+            onSubmit={submit}
+            className="flex w-full min-w-0 items-center gap-[8px] rounded-xl border-2 border-[#FA4D09] bg-white px-4 py-3"
+          >
+            {/* 모바일/태블릿 아이콘 토글 */}
+            {hasCriteria ? (
+              <button
+                type="button"
+                aria-label="뒤로"
+                className="shrink-0 lg:hidden"
+                title="뒤로"
+                onClick={clearAllToFilterOnly}
+              >
+                <Image
+                  src="/assets/icons/arrow_left.svg"
+                  alt="뒤로가기"
+                  width={24}
+                  height={24}
+                />
+              </button>
+            ) : (
+              <button
+                type="submit"
+                aria-label="검색"
+                className="shrink-0 lg:hidden"
+                title="검색"
+              >
+                <Image
+                  src="/assets/icons/search.svg"
+                  alt="검색 실행"
+                  width={24}
+                  height={24}
+                />
+              </button>
+            )}
+
+            {/* 입력창 */}
+            <input
+              value={value}
+              onChange={(e) => setValue(e.target.value)}
+              onFocus={() => setFocused(true)}
+              onBlur={onBlurSafely}
+              onKeyDown={(e) => {
+                if (e.key === 'Escape') clearInput();
+                if (e.key === 'ArrowDown' && hint) {
+                  // ↓ 누르면 힌트 적용
+                  e.preventDefault();
+                  applyHintAndSubmit();
+                }
+              }}
+              type="search"
+              inputMode="search"
+              enterKeyHint="search"
+              autoComplete="off"
+              autoCorrect="off"
+              spellCheck={false}
+              placeholder="검색어를 입력하세요"
+              aria-label="검색어 입력"
+              className="min-w-0 flex-1 bg-transparent text-[16px] text-[#171719] outline-none placeholder:text-[#8C8C8C] lg:text-[15px]"
+            />
+
+            {/* 데스크탑(>=1024) 검색 아이콘 */}
             <button
               type="submit"
               aria-label="검색"
-              className="shrink-0 lg:hidden"
+              className="hidden shrink-0 lg:inline"
               title="검색"
             >
               <Image
@@ -86,48 +167,41 @@ const TopBar = ({ initialKeyword }: { initialKeyword: string }) => {
                 height={24}
               />
             </button>
+
+            {/* 지우기 버튼 */}
+            <button
+              type="button"
+              onClick={clearInput}
+              aria-label="입력 지우기"
+              className="shrink-0"
+              title="지우기"
+            >
+              <Image
+                src="/assets/icons/exit.svg"
+                alt="취소_아이콘"
+                width={24}
+                height={24}
+              />
+            </button>
+          </form>
+
+          {/* ✅ 자동완성 “한 칸” — 인풋 폭과 100% 동기화 */}
+          {focused && hint && (
+            <div
+              className="absolute left-0 right-0 z-40 mt-2"
+              onMouseDown={cancelBlurTimeout} // 클릭 시 blur 닫힘 방지
+            >
+              <button
+                type="button"
+                onClick={applyHintAndSubmit}
+                className="w-full rounded-lg border border-[#E6E7EA] bg-white px-4 py-3 text-left text-[15px] leading-[1.2] hover:bg-[#FFF5F1] focus:outline-none focus:ring-2 focus:ring-[#FA4D09]/30"
+                aria-label={`자동완성: ${hint}`}
+              >
+                {hint}
+              </button>
+            </div>
           )}
-
-          {/* 입력창 */}
-          <input
-            value={value}
-            onChange={(e) => setValue(e.target.value)}
-            className="min-w-0 flex-1"
-            placeholder="검색어를 입력하세요"
-            aria-label="검색어 입력"
-          />
-
-          {/* 데스크탑(>=1024)에서는 항상 검색 아이콘 유지 */}
-          <button
-            type="submit"
-            aria-label="검색"
-            className="hidden shrink-0 lg:inline"
-            title="검색"
-          >
-            <Image
-              src="/assets/icons/search.svg"
-              alt="검색 실행"
-              width={24}
-              height={24}
-            />
-          </button>
-
-          {/* 지우기 버튼 */}
-          <button
-            type="button"
-            onClick={clearInput}
-            aria-label="입력 지우기"
-            className="shrink-0"
-            title="지우기"
-          >
-            <Image
-              src="/assets/icons/exit.svg"
-              alt="취소_아이콘"
-              width={24}
-              height={24}
-            />
-          </button>
-        </form>
+        </div>
 
         {isModalOpen && <FilterModal onClose={() => setIsModalOpen(false)} />}
       </div>
