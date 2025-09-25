@@ -188,17 +188,21 @@ const TopBar = ({ initialKeyword }: { initialKeyword: string }) => {
           {/* ✅ 자동완성 “한 칸” — 인풋 폭과 100% 동기화 */}
           {focused && hint && (
             <div
-              className="absolute left-0 right-0 z-40 mt-2"
+              className="absolute left-0 right-0 z-40"
               onMouseDown={cancelBlurTimeout} // 클릭 시 blur 닫힘 방지
             >
-              <button
-                type="button"
-                onClick={applyHintAndSubmit}
-                className="w-full rounded-lg border border-[#E6E7EA] bg-white px-4 py-3 text-left text-[15px] leading-[1.2] hover:bg-[#FFF5F1] focus:outline-none focus:ring-2 focus:ring-[#FA4D09]/30"
-                aria-label={`자동완성: ${hint}`}
-              >
-                {hint}
-              </button>
+              <ul className="rounded-b-[12px] border border-[#C7C7CC] bg-white px-4 py-3 text-left text-[15px] leading-[1.2]">
+                <li>
+                  <button
+                    type="button"
+                    onClick={applyHintAndSubmit}
+                    className="w-full rounded-lg border border-[#E6E7EA] bg-white px-4 py-3 text-left text-[15px] leading-[1.2] hover:bg-[#FFF5F1] focus:outline-none focus:ring-2 focus:ring-[#FA4D09]/30"
+                    aria-label={`자동완성: ${hint}`}
+                  >
+                    {hint}
+                  </button>
+                </li>
+              </ul>
             </div>
           )}
         </div>
