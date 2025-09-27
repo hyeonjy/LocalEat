@@ -71,7 +71,6 @@ const TopBar = ({ initialKeyword }: { initialKeyword: string }) => {
   const applyHintAndSubmit = () => {
     if (!hint) return;
     setValue(hint);
-    // setTimeout으로 DOM state 반영 후 submit
     setTimeout(() => submit(), 0);
   };
 
@@ -87,14 +86,21 @@ const TopBar = ({ initialKeyword }: { initialKeyword: string }) => {
     }
   };
 
+  const isDropdownOpen = focused && !!hint;
+
   return (
     <>
       <div className="flex min-w-0 gap-2">
-        {/* 폭 동기화를 위해 relative 래퍼 추가 */}
+        {/* 폭 동기화를 위한 래퍼 */}
         <div className="relative w-full lg:max-w-[464px]">
           <form
             onSubmit={submit}
-            className="flex w-full min-w-0 items-center gap-[8px] rounded-xl border-2 border-[#FA4D09] bg-white px-4 py-3"
+            className={[
+              'flex w-full min-w-0 items-center gap-[8px] bg-white px-4 py-3',
+              'rounded-xl border-2 border-[#FA4D09]',
+              // 드롭다운 열렸을 때 아래쪽을 분리해서 한 덩어리처럼 연결
+              isDropdownOpen ? 'rounded-b-none border-b-0' : '',
+            ].join(' ')}
           >
             {/* 모바일/태블릿 아이콘 토글 */}
             {hasCriteria ? (
@@ -137,7 +143,6 @@ const TopBar = ({ initialKeyword }: { initialKeyword: string }) => {
               onKeyDown={(e) => {
                 if (e.key === 'Escape') clearInput();
                 if (e.key === 'ArrowDown' && hint) {
-                  // ↓ 누르면 힌트 적용
                   e.preventDefault();
                   applyHintAndSubmit();
                 }
@@ -185,16 +190,20 @@ const TopBar = ({ initialKeyword }: { initialKeyword: string }) => {
             </button>
           </form>
 
-          {/* ✅ 자동완성 “한 칸” — 인풋 폭과 100% 동기화 */}
-          {focused && hint && (
+          {/* ✅ 자동완성: 입력 폭과 100% 동기화 + 정확히 하단에 밀착 */}
+          {isDropdownOpen && (
             <div
-              className="absolute left-0 right-0 z-40 flex flex-col gap-[10px] rounded-b-[12px] border border-[#C7C7CC] bg-white px-4 py-3 text-left text-[15px] leading-[1.2]"
+              className={[
+                'absolute left-0 right-0 top-full z-40 -mt-px', // 폼 바로 아래 1px 겹치기
+                'rounded-b-[12px] border border-t-0 border-[#C7C7CC]',
+                'bg-white px-4 py-3 text-left text-[15px] leading-[1.2]',
+              ].join(' ')}
               onMouseDown={cancelBlurTimeout} // 클릭 시 blur 닫힘 방지
             >
               <p className="w-full font-[Pretendard] text-[12px] font-bold leading-[130%] tracking-[-0.24px] text-[#92929B]">
                 자동완성
               </p>
-              <ul>
+              <ul className="mt-[10px]">
                 <li>
                   <button
                     type="button"
