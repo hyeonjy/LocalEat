@@ -204,14 +204,18 @@ const TopBar = ({ initialKeyword }: { initialKeyword: string }) => {
                 자동완성
               </p>
               <ul className="mt-[10px]">
-                <li>
-                  <button
-                    type="button"
-                    onClick={applyHintAndSubmit}
-                    aria-label={`자동완성: ${hint}`}
-                  >
-                    {hint}
-                  </button>
+                <li className="flex gap-[10px]">
+                  <Image
+                    src="/assets/icons/map_avatar.svg"
+                    alt="지도_아바타"
+                    width={20}
+                    height={20}
+                  />
+                  <div className="flex gap-[4px]">
+                    <h4 className="text-base font-normal leading-[130%] text-[#171719] [font-family:'Pretendard']">
+                      {hint}
+                    </h4>
+                  </div>
                 </li>
               </ul>
             </div>
